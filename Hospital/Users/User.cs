@@ -1,3 +1,5 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 namespace Hospital
 {
     enum Role
@@ -7,11 +9,19 @@ namespace Hospital
         SECRETARY,
         DIRECTOR
     }
+
+    [BsonIgnoreExtraElements]
     class User
     {
-        private string username;
-        private string password;
-        private Role role;
-        private Person person;
+        // todo: might want to add objectId here
+        public string username {get;}
+        public string password {get;}
+        public Role role {get;}
+        //private Person person;
+        public User(string username, string password, Role role) {
+            this.username = username;
+            this.password = password;
+            this.role = role;
+        }
     }
 } 
