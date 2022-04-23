@@ -1,0 +1,7 @@
+namespace Hospital
+{
+    class Person
+    {
+        
+    }
+} 
