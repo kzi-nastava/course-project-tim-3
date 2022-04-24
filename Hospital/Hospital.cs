@@ -14,12 +14,12 @@
         public User? Login(string username, string password)
         {
             var users = GetUsers();
-            var query = 
+            var matchingUsers = 
                 from user in users.AsQueryable()
                 where user.password == password && user.username == username
                 select user;
             // count on database that there is only one with this username
-            if (query.Any()) return query.First();
+            if (matchingUsers.Any()) return matchingUsers.First();
             return null;
         }
 
