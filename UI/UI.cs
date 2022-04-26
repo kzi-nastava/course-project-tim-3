@@ -27,7 +27,7 @@ class HospitalUI
             success = TryLogin();
         }
         Console.Clear();
-        System.Console.WriteLine("Welcome, " + _user?.username + "!");
+        System.Console.WriteLine("Welcome, " + _user?.Username + "!");
     }
 
     public void AddUser(string username, string password, string firstName, string lastName, Role role) { // TODO: DELETE

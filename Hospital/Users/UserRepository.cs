@@ -21,7 +21,7 @@ namespace Hospital
             var users = GetUsers();
             var matchingUsers = 
                 from user in users.AsQueryable()
-                where user.password == password && user.username == username
+                where user.Password == password && user.Username == username
                 select user;
             // count on database that there is only one with this username
             if (matchingUsers.Any()) return matchingUsers.First();
@@ -32,7 +32,7 @@ namespace Hospital
         {
             var newUser = new User(username, password, firstName, lastName, role);
             var users = GetUsers();
-            users.ReplaceOne(user => user.username == newUser.username, newUser, new ReplaceOptions {IsUpsert = true});
+            users.ReplaceOne(user => user.Username == newUser.Username, newUser, new ReplaceOptions {IsUpsert = true});
         }
     }
 } 

@@ -6,7 +6,7 @@ namespace Hospital
         public static void Main(string[] args)
         {
             var ui = new HospitalUI();
-            // generate tests
+            // generate tests TODO: move this to dedicated teting interface
             for (int i = 0; i < 100; i++)
             {
                 User user;
@@ -18,7 +18,7 @@ namespace Hospital
                     user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.PATIENT);
                 else
                     user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.SECRETARY);
-                ui.AddUser(user.username, user.password, user.person.FirstName, user.person.LastName, user.role);
+                ui.AddUser(user.Username, user.Password, user.Person.FirstName, user.Person.LastName, user.Role);
                 File.AppendAllText("db/users.json", user.ToBsonDocument().ToJson());
             }
             ui.Start();
