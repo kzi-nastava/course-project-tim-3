@@ -11,14 +11,14 @@ namespace Hospital
             {
                 User user;
                 if (i % 4 == 0)
-                    user = new User("a" + i, "a" + i, Role.DIRECTOR);
+                    user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.DIRECTOR);
                 else if (i % 4 == 1)
-                    user = new User("a" + i, "a" + i, Role.DOCTOR);
+                    user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.DOCTOR);
                 else if (i % 4 == 2)
-                    user = new User("a" + i, "a" + i, Role.PATIENT);
+                    user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.PATIENT);
                 else
-                    user = new User("a" + i, "a" + i, Role.SECRETARY);
-                ui.AddUser(user.username, user.password, user.role);
+                    user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.SECRETARY);
+                ui.AddUser(user.username, user.password, user.person.FirstName, user.person.LastName, user.role);
                 File.AppendAllText("db/users.json", user.ToBsonDocument().ToJson());
             }
             ui.Start();
