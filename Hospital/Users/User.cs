@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+
 namespace Hospital
 {
     public enum Role
@@ -29,7 +30,8 @@ namespace Hospital
         }
 
         [BsonConstructor]
-        public User(string username, string password, Person person, Role role) {
+        public User(string username, string password, Person person, Role role)
+        {
             this.Username = username;
             this.Password = password;
             this.Role = role;

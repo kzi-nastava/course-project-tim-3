@@ -30,7 +30,8 @@ class HospitalUI
         System.Console.WriteLine("Welcome, " + _user?.Username + "!");
     }
 
-    public void AddUser(string username, string password, string firstName, string lastName, Role role) { // TODO: DELETE
+    public void AddUser(string username, string password, string firstName, string lastName, Role role)
+    { // TODO: DELETE
         _hospital.UserRepo.AddUser(username, password, firstName, lastName, role);
     }
 }
