@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.IO;
 
 namespace Hospital
 {
@@ -8,6 +9,7 @@ namespace Hospital
         {
             var ui = new HospitalUI();
             // generate tests TODO: move this to dedicated teting interface
+            var hospitalContents = new {Users = new List<User>()};
             for (int i = 0; i < 100; i++)
             {
                 User user;
@@ -20,7 +22,9 @@ namespace Hospital
                 else
                     user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.SECRETARY);
                 ui.AddUser(user.Username, user.Password, user.Person.FirstName, user.Person.LastName, user.Role);
-                File.AppendAllText("db/users.json", user.ToBsonDocument().ToJson());
+                hospitalContents.Users.Add(user);
+                File.WriteAllText("db/hospital.json", hospitalContents.ToBsonDocument().ToJson(
+                    new JsonWriterSettings {Indent = true}));
             }
             ui.Start();
         }
