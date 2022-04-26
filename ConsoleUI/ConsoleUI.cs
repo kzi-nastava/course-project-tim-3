@@ -28,6 +28,19 @@ class ConsoleUI
         }
         Console.Clear();
         System.Console.WriteLine("Welcome, " + _user?.Username + "!");
+        // TODO: spawn UIs below
+        switch (_user?.Role)
+        {
+            case Role.DIRECTOR:
+            case Role.DOCTOR:
+            case Role.PATIENT:
+            case Role.SECRETARY:
+                break;
+
+            default:
+                System.Console.WriteLine("SOMETHING WENT HORRIBLY WRONG. TERMINATING");
+                break;
+        }
     }
 
     public void AddUser(string username, string password, string firstName, string lastName, Role role)
