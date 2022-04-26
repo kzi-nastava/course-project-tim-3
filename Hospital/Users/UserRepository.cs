@@ -30,9 +30,9 @@ namespace Hospital
 
         public void AddUser(string username, string password, Role role)
         {
-            var user = new User(username, password, role);
+            var newUser = new User(username, password, role);
             var users = GetUsers();
-            users.InsertOne(user);
+            users.ReplaceOne(user => user.username == newUser.username, newUser, new ReplaceOptions {IsUpsert = true});
         }
     }
 } 
