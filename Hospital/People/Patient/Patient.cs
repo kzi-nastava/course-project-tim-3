@@ -4,9 +4,9 @@ namespace Hospital
     {
         public string Sickness { get; }  // TODO: change this, this is temporary
 
-        public Patient(string firstName, string lastName) : base(firstName, lastName)
+        public Patient(string firstName, string lastName, string sickness = "DEATH") : base(firstName, lastName)
         {
-            Sickness = "DEATH";
+            Sickness = sickness;
         }
     }
 }

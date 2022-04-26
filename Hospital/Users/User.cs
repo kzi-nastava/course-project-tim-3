@@ -16,6 +16,7 @@ namespace Hospital
         // todo: might want to add objectId here
         public string Username {get;}
         public string Password {get;}
+        [BsonRepresentation(BsonType.String)]
         public Role Role {get;}
         public Person Person {get;}
 
