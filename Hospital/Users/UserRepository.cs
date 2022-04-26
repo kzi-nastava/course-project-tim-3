@@ -16,23 +16,23 @@ namespace Hospital
             return _dbClient.GetDatabase("hospital").GetCollection<User>("users");
         }
 
-        public User? Login(string username, string password)
+        public User? Login(string email, string password)
         {
             var users = GetUsers();
             var matchingUsers = 
                 from user in users.AsQueryable()
-                where user.Password == password && user.Username == username
+                where user.Password == password && user.Email == email
                 select user;
-            // count on database that there is only one with this username
+            // count on database that there is only one with this email
             if (matchingUsers.Any()) return matchingUsers.First();
             return null;
         }
 
-        public void AddUser(string username, string password, string firstName, string lastName, Role role)
+        public void AddUser(string email, string password, string firstName, string lastName, Role role)
         {
-            var newUser = new User(username, password, firstName, lastName, role);
+            var newUser = new User(email, password, firstName, lastName, role);
             var users = GetUsers();
-            users.ReplaceOne(user => user.Username == newUser.Username, newUser, new ReplaceOptions {IsUpsert = true});
+            users.ReplaceOne(user => user.Email == newUser.Email, newUser, new ReplaceOptions {IsUpsert = true});
         }
     }
 } 

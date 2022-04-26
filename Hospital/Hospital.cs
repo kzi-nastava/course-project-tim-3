@@ -13,9 +13,9 @@
             UserRepo = new UserRepository(_dbClient);
         }
 
-        public User? Login(string username, string password)
+        public User? Login(string email, string password)
         {
-            return UserRepo.Login(username, password);
+            return UserRepo.Login(email, password);
         }
      }
  }

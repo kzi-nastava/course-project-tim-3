@@ -21,7 +21,7 @@ namespace Hospital
                     user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.PATIENT);
                 else
                     user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.SECRETARY);
-                ui.AddUser(user.Username, user.Password, user.Person.FirstName, user.Person.LastName, user.Role);
+                ui.AddUser(user.Email, user.Password, user.Person.FirstName, user.Person.LastName, user.Role);
                 hospitalContents.Users.Add(user);
                 File.WriteAllText("db/hospital.json", hospitalContents.ToBsonDocument().ToJson(
                     new JsonWriterSettings {Indent = true}));

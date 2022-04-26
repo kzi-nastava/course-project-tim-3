@@ -6,12 +6,12 @@ class ConsoleUI
 
     private bool TryLogin()
     {
-        System.Console.Write("input username >> ");
-        var username = Console.ReadLine();
+        System.Console.Write("input email >> ");
+        var email = Console.ReadLine();
         System.Console.Write("input password >> ");
         var password = Console.ReadLine();
-        if (username is null || password is null) throw new Exception("AAAAAA"); // TODO: make better exception
-        _user = _hospital.Login(username, password);
+        if (email is null || password is null) throw new Exception("AAAAAA"); // TODO: make better exception
+        _user = _hospital.Login(email, password);
         if (_user is null)
         {
             System.Console.WriteLine("NO SUCH USER!! PLEASE TRY AGAIN"); 
@@ -27,7 +27,7 @@ class ConsoleUI
             success = TryLogin();
         }
         Console.Clear();
-        System.Console.WriteLine("Welcome, " + _user?.Username + "!");
+        System.Console.WriteLine("Welcome, " + _user?.Person.FirstName + "!");
         // TODO: spawn UIs below
         switch (_user?.Role)
         {
@@ -43,8 +43,8 @@ class ConsoleUI
         }
     }
 
-    public void AddUser(string username, string password, string firstName, string lastName, Role role)
+    public void AddUser(string email, string password, string firstName, string lastName, Role role)
     { // TODO: DELETE
-        _hospital.UserRepo.AddUser(username, password, firstName, lastName, role);
+        _hospital.UserRepo.AddUser(email, password, firstName, lastName, role);
     }
 }
