@@ -1,6 +1,6 @@
 namespace Hospital
 {
-    abstract class Person
+    public abstract class Person
     {
         
     }

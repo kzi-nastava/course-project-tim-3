@@ -1,9 +1,9 @@
 ﻿using MongoDB.Bson;
 namespace Hospital
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var ui = new HospitalUI();
             // generate tests

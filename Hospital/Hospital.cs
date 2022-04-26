@@ -3,7 +3,7 @@
 
  namespace Hospital
  {
-     class Hospital
+     public class Hospital
      {
         private MongoClient _dbClient = new MongoClient("mongodb://root:root@localhost:27017"); // TODO: move this
         public UserRepository UserRepo {get;}
