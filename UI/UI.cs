@@ -31,6 +31,6 @@ class HospitalUI
     }
 
     public void AddUser(string username, string password, Role role) { // TODO: DELETE
-        _hospital.AddUser(username, password, role);
+        _hospital.UserRepo.AddUser(username, password, role);
     }
 }

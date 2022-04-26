@@ -2,7 +2,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 namespace Hospital
 {
-    enum Role
+    public enum Role
     {
         DOCTOR,
         PATIENT,
@@ -11,7 +11,7 @@ namespace Hospital
     }
 
     [BsonIgnoreExtraElements]
-    class User
+    public class User
     {
         // todo: might want to add objectId here
         public string username {get;}

@@ -1,32 +1,21 @@
  using MongoDB.Driver;
  using MongoDB.Bson;
+
  namespace Hospital
  {
      class Hospital
      {
         private MongoClient _dbClient = new MongoClient("mongodb://root:root@localhost:27017"); // TODO: move this
+        public UserRepository UserRepo {get;}
 
-        private IMongoCollection<User> GetUsers()
+        public Hospital()
         {
-            return _dbClient.GetDatabase("hospital").GetCollection<User>("users");
+            UserRepo = new UserRepository(_dbClient);
         }
 
         public User? Login(string username, string password)
         {
-            var users = GetUsers();
-            var matchingUsers = 
-                from user in users.AsQueryable()
-                where user.password == password && user.username == username
-                select user;
-            // count on database that there is only one with this username
-            if (matchingUsers.Any()) return matchingUsers.First();
-            return null;
-        }
-
-        public void AddUser(string username, string password, Role role) {
-            var user = new User(username, password, role);
-            var users = GetUsers();
-            users.InsertOne(user);
+            return UserRepo.Login(username, password);
         }
      }
  }
