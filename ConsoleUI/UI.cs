@@ -1,5 +1,5 @@
 namespace Hospital;
-class HospitalUI
+class ConsoleUI
 {
     private Hospital _hospital = new Hospital();
     private User? _user;
