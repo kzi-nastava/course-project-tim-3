@@ -20,7 +20,7 @@ namespace Hospital
         {
             var newDoctor = new Doctor(firstName, lastName, specialty);
             var doctors = GetDoctors();
-            doctors.ReplaceOne(user => user.Email == newUser.Email, newDoctor, new ReplaceOptions {IsUpsert = true});
+            doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
         }
     }
 }
