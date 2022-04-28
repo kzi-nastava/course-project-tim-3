@@ -15,10 +15,11 @@ namespace Hospital
     public class User
     {
         // todo: might want to add objectId here
-        public string Email {get;}
-        public string Password {get;}
+        public string Email {get; set;}
+        public string Password {get; set;}
         [BsonRepresentation(BsonType.String)]
-        public Role Role {get;}
+        public Role Role {get; set;}
+        [BsonElement]
         public Person Person {get;}
 
         public User(string email, string password, string firstName, string lastName, Role role)
