@@ -6,8 +6,8 @@ public abstract class ConsoleUI
 
     public abstract void Start();
 
-    public ConsoleUI(Hospital _hospital)
+    public ConsoleUI(Hospital hospital)
     {
-        this._hospital = _hospital;
+        this._hospital = hospital;
     }
 }
