@@ -1,4 +1,14 @@
 namespace Hospital;
+[System.Serializable]
+public class NullInputException : System.Exception
+{
+    public NullInputException() { }
+    public NullInputException(string message) : base(message) { }
+    public NullInputException(string message, System.Exception inner) : base(message, inner) { }
+    protected NullInputException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
 
 public class SecretaryUI : ConsoleUI
 {
@@ -17,6 +27,17 @@ public class SecretaryUI : ConsoleUI
             Console.WriteLine(command);
         }
     }
+
+    public string selectOption()
+    {
+        
+        Console.Write("Please enter a command: ");
+        string? input = Console.ReadLine();
+        if (input is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        return input.ToLower().Trim();
 
     public override void Start()
     {
