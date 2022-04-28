@@ -7,7 +7,7 @@ namespace Hospital
     {
         public static void Main(string[] args)
         {
-            var ui = new ConsoleUI();
+            var ui = new HospitalUI(new Hospital());
             // generate tests TODO: move this to dedicated teting interface
             var hospitalContents = new {Users = new List<User>()};
             for (int i = 0; i < 100; i++)
