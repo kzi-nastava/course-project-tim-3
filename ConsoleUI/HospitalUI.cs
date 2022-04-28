@@ -20,7 +20,7 @@ public class HospitalUI : ConsoleUI
 
     public override void Start()
     {
-         _hospital.UserRepo.UpdateUserPassword("a-2","a2"); //TEST
+        //  _hospital.UserRepo.UpdateUserPassword("a-2","a2"); //TEST
         var success = false;
         while (!success)
         {
