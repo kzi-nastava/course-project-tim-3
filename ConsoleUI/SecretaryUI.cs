@@ -55,15 +55,18 @@ public class SecretaryUI : ConsoleUI
             }
             else if (selectedOption == "help")
             {
+                Console.Clear();
                 printCommands(Commands);
             }
             else if (selectedOption == "exit")
-            {
+            {   
+                Console.Clear();
                 Console.WriteLine("Exiting...");
                 Environment.Exit(0);
             }
             else
             {
+                Console.Clear();
                 Console.WriteLine("Unrecognized command, please try again");
             }
         }
@@ -72,6 +75,6 @@ public class SecretaryUI : ConsoleUI
         Console.Clear();
         System.Console.WriteLine("");
 
-        printCommands(Commands);
+        printCommands(CRUDCommands);
     }
 }
