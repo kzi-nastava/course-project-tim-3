@@ -57,6 +57,15 @@ namespace Hospital
             return matchingUsers.First();
         }
 
+        public void UpdateUserPassword(string email, string newPassword)
+        {
+            var newUser = GetUser(email);
+            var users = GetUsers();
+            newUser.Password = newPassword;
+
+            users.ReplaceOne(user => user.Email == email, newUser, new ReplaceOptions {IsUpsert = true});
+        }
+
         public void DeleteUser(string email)
         {
             var users = GetUsers();
