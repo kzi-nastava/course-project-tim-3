@@ -7,17 +7,19 @@ namespace Hospital
         [BsonId]
         public ObjectId Id { get; set; }
         public DateTime TimeAndDate {get; set;}
-        public Patient _Patient {get; set;}
-        public Doctor _Doctor {get; set;}
-        public int Duration {get; set;}
+        public Patient Patient {get; set;}
+        public Doctor Doctor {get; set;}
+        public TimeSpan Duration {get; set;} = new TimeSpan(0,0,15,0);
 
-        public Appointment(DateTime timeAndDate, Patient patient, Doctor doctor, int duration) 
+        public Appointment(DateTime timeAndDate, Patient patient, Doctor doctor, TimeSpan duration) 
         {
             Id = ObjectId.GenerateNewId();
             TimeAndDate = timeAndDate;
-            _Patient = patient;
-            _Doctor = doctor;
+            Patient = patient;
+            Doctor = doctor;
             Duration = duration;
         }
+
+        
     }
 }

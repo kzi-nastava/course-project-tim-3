@@ -8,6 +8,5 @@ namespace Hospital
         {
             Anamnesis = anamnesis;
         }
-
     }
 }
