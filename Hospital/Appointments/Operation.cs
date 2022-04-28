@@ -4,7 +4,7 @@ namespace Hospital
     {
        public string Report {get; set;}
 
-       public Operation(DateTime timeAndDate, Patient patient, Doctor doctor, int duration, string report) : base(timeAndDate, patient, doctor, duration)
+       public Operation(DateTime timeAndDate, Patient patient, Doctor doctor, TimeSpan duration, string report) : base(timeAndDate, patient, doctor, duration)
        {
            Report = report;
        }
