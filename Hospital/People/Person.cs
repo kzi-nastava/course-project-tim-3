@@ -9,7 +9,6 @@ namespace Hospital
     {
         [BsonId]
         public ObjectId Id { get; set; }
-        private int myVar;
         public string FirstName {get; set;}
         public string LastName {get; set;}
 
