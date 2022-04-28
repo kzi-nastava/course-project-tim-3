@@ -2,10 +2,11 @@ namespace Hospital
 {
     public class Doctor : Person
     {
-
-        public Doctor(string firstName, string lastName) : base(firstName, lastName)
+        public String Specialty {get; set;}
+        
+        public Doctor(string firstName, string lastName, string specialty) : base(firstName, lastName)
         {
-
+            Specialty = specialty;
         }
     }
 }
