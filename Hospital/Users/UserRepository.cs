@@ -66,6 +66,15 @@ namespace Hospital
             users.ReplaceOne(user => user.Email == email, newUser, new ReplaceOptions {IsUpsert = true});
         }
 
+        public void UpdateUserEmail(string email, string newEmail)
+        {
+            var newUser = GetUser(email);
+            var users = GetUsers();
+            newUser.Email = newEmail;
+
+            users.ReplaceOne(user => user.Email == email, newUser, new ReplaceOptions {IsUpsert = true});
+        }
+
         public void DeleteUser(string email)
         {
             var users = GetUsers();
