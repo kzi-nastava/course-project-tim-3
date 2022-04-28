@@ -18,11 +18,12 @@ public class SecretaryUI : ConsoleUI
     }
 
     public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
+    public List<string> CRUDCommands {get; private set;} = new List<string> {"Creat", "Read", "Update", "Delete"};
 
-    public void printCommands()
+    public void printCommands(List<string> commands)
     {
         Console.WriteLine("Available commands: ");
-        foreach (string command in this.Commands)
+        foreach (string command in commands)
         {
             Console.WriteLine(command);
         }
@@ -45,7 +46,7 @@ public class SecretaryUI : ConsoleUI
         Console.Clear();
         System.Console.WriteLine("");
 
-        printCommands();
+        printCommands(Commands);
         while (true){
             string selectedOption = selectOption();
             if (selectedOption == "options")
@@ -54,7 +55,7 @@ public class SecretaryUI : ConsoleUI
             }
             else if (selectedOption == "help")
             {
-                printCommands();
+                printCommands(Commands);
             }
             else if (selectedOption == "exit")
             {
@@ -68,5 +69,9 @@ public class SecretaryUI : ConsoleUI
         }
     }
     public void CRUDoptions(){
+        Console.Clear();
+        System.Console.WriteLine("");
+
+        printCommands(Commands);
     }
 }
