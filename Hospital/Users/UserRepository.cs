@@ -44,5 +44,13 @@ namespace Hospital
             var users = GetUsers();
             users.ReplaceOne(user => user.Email == newUser.Email, newUser, new ReplaceOptions {IsUpsert = true});
         }
+
+        public void DeleteUser(string email)
+        {
+            var users = GetUsers();
+            var deleted = users.DeleteOne(users => users.Email == email);
+            if (deleted.DeletedCount == 0)
+                throw new UserDoesNotExistException("User " + email + " does not exist.");
+        }
     }
 } 

@@ -20,6 +20,7 @@ public class HospitalUI : ConsoleUI
 
     public override void Start()
     {
+         _hospital.UserRepo.DeleteUser("a1");
         var success = false;
         while (!success)
         {
