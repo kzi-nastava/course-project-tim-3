@@ -76,5 +76,28 @@ public class SecretaryUI : ConsoleUI
         System.Console.WriteLine("");
 
         printCommands(CRUDCommands);
+        while (true){
+            string selectedOption = selectOption();
+            if (selectedOption == "create"){}
+            else if (selectedOption == "read"){}
+            else if (selectedOption == "update"){}
+            else if (selectedOption == "delete"){}
+            else if (selectedOption == "help")
+            {
+                Console.Clear();
+                printCommands(Commands);
+            }
+            else if (selectedOption == "exit")
+            {   
+                Console.Clear();
+                Console.WriteLine("Exiting...");
+                Environment.Exit(0);
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("Unrecognized command, please try again");
+            }
+        }
     }
 }
