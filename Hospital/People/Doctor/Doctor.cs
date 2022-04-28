@@ -9,5 +9,4 @@ namespace Hospital
             Specialty = specialty;
         }
     }
-
 }
