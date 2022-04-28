@@ -18,7 +18,7 @@ public class SecretaryUI : ConsoleUI
     }
 
     public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
-    public List<string> CRUDCommands {get; private set;} = new List<string> {"Creat", "Read", "Update", "Delete"};
+    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Creat", "Read", "Update", "Delete"};
 
     public void printCommands(List<string> commands)
     {
@@ -78,7 +78,8 @@ public class SecretaryUI : ConsoleUI
         printCommands(CRUDCommands);
         while (true){
             string selectedOption = selectOption();
-            if (selectedOption == "create"){}
+            if (selectedOption == "readList"){}
+            else if (selectedOption == "create"){}
             else if (selectedOption == "read"){}
             else if (selectedOption == "update"){}
             else if (selectedOption == "delete"){}
