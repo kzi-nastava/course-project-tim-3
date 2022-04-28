@@ -9,8 +9,6 @@ public class SecretaryUI : ConsoleUI
 
     public List<string> Commands {get; private set;} = new List<string> {"Create", "Read", "Update", "Delete"};
 
-    public override void Start(){}
-
     public void printCommands()
     {
         Console.WriteLine("Available commands: ");
@@ -20,5 +18,11 @@ public class SecretaryUI : ConsoleUI
         }
     }
 
+    public override void Start()
+    {
+        Console.Clear();
+        System.Console.WriteLine("");
 
+        printCommands();
+    }
 }
