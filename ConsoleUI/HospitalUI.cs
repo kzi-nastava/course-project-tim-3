@@ -35,6 +35,8 @@ public class HospitalUI : ConsoleUI
             case Role.DOCTOR:
             case Role.PATIENT:
             case Role.SECRETARY:
+            var ui = new SecretaryUI(this._hospital, this._user);
+                ui.Start();
                 break;
 
             default:
