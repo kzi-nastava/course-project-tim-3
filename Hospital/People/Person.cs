@@ -4,7 +4,6 @@ using MongoDB.Bson;
 namespace Hospital
 {
     [BsonKnownTypes(typeof(Patient), typeof(Doctor))]
-    
     public abstract class Person
     {
         [BsonId]
