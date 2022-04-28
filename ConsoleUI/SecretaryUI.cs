@@ -17,7 +17,7 @@ public class SecretaryUI : ConsoleUI
         this._user = _user;
     }
 
-    public List<string> Commands {get; private set;} = new List<string> {"Create", "Read", "Update", "Delete"};
+    public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
 
     public void printCommands()
     {
@@ -38,6 +38,7 @@ public class SecretaryUI : ConsoleUI
             throw new NullInputException("Null value as input");
         }
         return input.ToLower().Trim();
+    }
 
     public override void Start()
     {
@@ -45,5 +46,27 @@ public class SecretaryUI : ConsoleUI
         System.Console.WriteLine("");
 
         printCommands();
+        while (true){
+            string selectedOption = selectOption();
+            if (selectedOption == "options")
+            {
+                CRUDoptions();
+            }
+            else if (selectedOption == "help")
+            {
+                printCommands();
+            }
+            else if (selectedOption == "exit")
+            {
+                Console.WriteLine("Exiting...");
+                Environment.Exit(0);
+            }
+            else
+            {
+                Console.WriteLine("Unrecognized command, please try again");
+            }
+        }
+    }
+    public void CRUDoptions(){
     }
 }
