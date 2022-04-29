@@ -27,6 +27,8 @@ public class PatientUI : ConsoleUI
     //those times should be stored somewhere else
     DateTime openingTime = new DateTime(2000, 10, 20, 9, 0, 0);
     DateTime closingTime = new DateTime(2000, 10, 20, 17, 0, 0);
+    DateTime now = DateTime.Now;
+    TimeSpan appointmentDuration = new TimeSpan(0,0,15,0);
 
     
 
@@ -61,11 +63,16 @@ public class PatientUI : ConsoleUI
             Console.WriteLine("Error - wrong date. Aborting...");    
             return null;
         }
+
+        if (DateTime.Compare(result.Date, now.Date) == -1 )
+        {
+            Console.WriteLine("Error - date is in past. Aborting...");    
+            return null;
+        }
         
         // time selection
 
         int appointmentIndex = 0;
-        TimeSpan appointmentDuration = new TimeSpan(0,0,15,0);
         DateTime iterationTime = openingTime;
         
         while (iterationTime.TimeOfDay != closingTime.TimeOfDay)
@@ -89,7 +96,6 @@ public class PatientUI : ConsoleUI
         try
         {
             selectedIndex = Int32.Parse(input);
-            Console.WriteLine(selectedIndex);
         }
         catch (FormatException)
         {
@@ -97,7 +103,7 @@ public class PatientUI : ConsoleUI
             return null;
         }
 
-        result = result.AddHours(9);
+        result = result.AddHours(now.Hour);
         if (selectedIndex >= 0 && selectedIndex <= appointmentIndex)
         {
             result = result.Add(selectedIndex*appointmentDuration);
@@ -106,6 +112,14 @@ public class PatientUI : ConsoleUI
         {
             Console.WriteLine("Error - wrong number. Aborting...");
         }
+
+        //TODO: The listed times shouldnt be the ones that expired
+
+        if (DateTime.Compare(result, now) == 1 )
+        {
+            Console.WriteLine("Selected time already expired. Aborting...");    
+            return null;
+        } 
 
         return result;
     }
