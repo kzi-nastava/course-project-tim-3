@@ -2,11 +2,12 @@ namespace Hospital
 {
     public class Patient : Person
     {
-        public string Sickness { get; }  // TODO: change this, this is temporary
-
-        public Patient(string firstName, string lastName, string sickness = "DEATH") : base(firstName, lastName)
+        public MedicalRecord MedicalRecord {get; set;}
+        public Patient(string firstName, string lastName, MedicalRecord medicalRecord) : base(firstName, lastName)
         {
-            Sickness = sickness;
+            FirstName = firstName;
+            LastName = lastName;
+            MedicalRecord = medicalRecord;
         }
     }
 }

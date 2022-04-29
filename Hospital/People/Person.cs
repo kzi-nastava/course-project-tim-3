@@ -10,7 +10,6 @@ namespace Hospital
         public ObjectId Id { get; set; }
         public string FirstName {get; set;}
         public string LastName {get; set;}
-
         public Person(string firstName, string lastName) {
             Id = ObjectId.GenerateNewId();
             FirstName = firstName;

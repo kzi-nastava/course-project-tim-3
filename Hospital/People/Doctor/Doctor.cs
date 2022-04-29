@@ -8,5 +8,10 @@ namespace Hospital
         {
             Specialty = specialty;
         }
+
+        public string toString() 
+        {
+            return Id + " " +FirstName +" "+ LastName +" "+ Specialty;
+        }
     }
 }
