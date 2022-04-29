@@ -29,7 +29,7 @@ namespace Hospital
             var doctors = GetDoctors();
             doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
         }
-        public Doctor getDoctorByName(string name)
+        public Doctor GetDoctorByName(string name)
         {
             var doctors = GetDoctors();
             var foundDoctor = doctors.Find(doctor => doctor.FirstName == name).FirstOrDefault();

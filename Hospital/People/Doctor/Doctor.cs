@@ -9,7 +9,7 @@ namespace Hospital
             Specialty = specialty;
         }
 
-        public string toString() 
+        public override string ToString() 
         {
             return Id + " " +FirstName +" "+ LastName +" "+ Specialty;
         }
