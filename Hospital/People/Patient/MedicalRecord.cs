@@ -1,10 +1,17 @@
-namespace Hospital;
+using MongoDB.Bson.Serialization.Attributes;
 
+namespace Hospital;
+[BsonIgnoreExtraElements]
 public class MedicalRecord {
+    [BsonElement]
     double HeightInCm {get; set;}
+    [BsonElement]
     double WeightInKg {get; set;}
+    [BsonElement]
     List<string> AnamnesisHistory {get;} 
+    [BsonElement]
     List<string> Allergies {get;} 
+    [BsonConstructor]
     public MedicalRecord() 
     {
         HeightInCm = 180.0;
@@ -12,7 +19,8 @@ public class MedicalRecord {
         AnamnesisHistory = new List<string>();
         Allergies = new List<string>();
     }
-    public MedicalRecord(float heightInCm, float weightInKg, List<string> anamnesisHistory, List<string> allergies)
+    [BsonConstructor]
+    public MedicalRecord(double heightInCm, double weightInKg, List<string> anamnesisHistory, List<string> allergies)
     {
         HeightInCm = heightInCm;
         WeightInKg = weightInKg;
@@ -21,6 +29,6 @@ public class MedicalRecord {
     }
     public string toString()
     {
-        return "Height In Cm : " + HeightInCm + "\nWeight In Cm : " + WeightInKg + "\nAnamnesis";
+        return "Height In Cm : " + HeightInCm + "\nWeight In Cm : " + WeightInKg + "\nAnamnesis History : " + AnamnesisHistory + "\nAllergies : " + Allergies;
     }
 }

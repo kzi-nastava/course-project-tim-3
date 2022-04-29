@@ -21,7 +21,7 @@ namespace Hospital
             var patients = GetPatients();
             patients.ReplaceOne(patient => patient.Id == newPatient.Id, newPatient, new ReplaceOptions {IsUpsert = true});
         }
-        public Patient getPatientByName(string name)
+        public Patient GetPatientByName(string name)
         {
             var patients = GetPatients();
             var foundPatient = patients.Find(patient => patient.FirstName == name).FirstOrDefault();
