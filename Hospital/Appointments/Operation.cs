@@ -11,7 +11,7 @@ namespace Hospital
        }
        public override string ToString()
         {
-            return Id + " " + TimeAndDate + " " + Patient + " " + Doctor + " " + Duration + " " + Report;
+            return TimeAndDate + " " + Patient.Id + " " + Doctor.Id + " " + Duration + " " + Report;
         }
     }
 }

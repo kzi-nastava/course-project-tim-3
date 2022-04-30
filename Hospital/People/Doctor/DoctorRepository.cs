@@ -27,10 +27,16 @@ namespace Hospital
         // this should return an empty list if there are no doctors in selected specialty
         public List<Doctor> GetDoctorBySpecialty(Specialty specialty)
         {
-            //TODO: implement this
-            return null;
+            var doctors = GetDoctors();
+            var specizedDoctors =
+                from doctor in doctors.AsQueryable()
+                where doctor.Specialty == specialty
+                select doctor;
+            return specizedDoctors.ToList();
         }
-        public void AddDoctor(Doctor doctor)
+
+        public void AddOrUpdateDoctor(Doctor doctor)
+
         {
             var newDoctor = doctor;
             var doctors = GetDoctors();

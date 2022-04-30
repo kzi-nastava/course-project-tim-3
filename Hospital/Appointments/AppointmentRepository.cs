@@ -10,11 +10,6 @@ namespace Hospital
         {
             this._dbClient = _dbClient;
         }
-        
-        // public IMongoCollection<Appointment> GetAppointments()
-        // {
-        //     return _dbClient.GetDatabase("hospital").GetCollection<Appointment>("appointments");
-        // }
 
         public IMongoCollection<Checkup> GetCheckups()
         {
@@ -26,26 +21,30 @@ namespace Hospital
             return _dbClient.GetDatabase("hospital").GetCollection<Operation>("operations");
         }
 
-        public void AddCheckup(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, TimeSpan duration, string anamnesis)
+        public void AddOrUpdateCheckup(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, TimeSpan duration, string anamnesis)
         {
             var newCheckup = new Checkup(timeAndDate, patient, doctor, anamnesis);
             var checkups = GetCheckups();
-            var apCheck =  newCheckup;
-            checkups.ReplaceOne(appointment => appointment.Id == apCheck.Id, apCheck, new ReplaceOptions {IsUpsert = true});
+            checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
         }
 
-        public void AddCheckup(Checkup newCheckup)
-        {
+        public void AddOrUpdateCheckup(Checkup newCheckup)
+        {;
             var checkups = GetCheckups();
-            checkups.ReplaceOne(appointment => appointment.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
+            checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
         }
 
-        public void AddOperation(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, TimeSpan duration, string report)
+        public void AddOrUpdateOperation(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, TimeSpan duration, string report)
         {
             var newOperation = new Operation(timeAndDate, patient, doctor, report);
             var operations = GetOperations();
-            var apCheck = newOperation;
-            operations.ReplaceOne(appointment => appointment.Id == apCheck.Id, apCheck, new ReplaceOptions {IsUpsert = true});
+            operations.ReplaceOne(operation => operation.Id == newOperation.Id, newOperation, new ReplaceOptions {IsUpsert = true});
+        }
+
+        public void AddOrUpdateOperation(Operation newOperation)
+        {
+            var operations = GetOperations();
+            operations.ReplaceOne(operation => operation.Id == newOperation.Id, newOperation, new ReplaceOptions {IsUpsert = true});
         }
 
         public List<Checkup> GetCheckupsByDoctor(ObjectId id)
@@ -76,10 +75,32 @@ namespace Hospital
             return doctorsOperations;
         }
 
-         public void AddOrUpdateCheckup(Checkup newCheckup)
+        public List<Checkup> GetCheckupsByDay(DateTime date)
         {
             var checkups = GetCheckups();
-            checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
+            List<Checkup> checkupsByDay = checkups.Find(appointment => appointment.TimeAndDate > date && appointment.TimeAndDate < date.AddDays(1)).ToList();
+            return checkupsByDay;
+        }
+
+
+        public Checkup GetCheckupById(ObjectId id)
+        {
+            var checkups = GetCheckups();
+            Checkup checkup = checkups.Find(appointment => appointment.Doctor.Id == id).FirstOrDefault();
+            return checkup;
+        }
+        public bool IsDoctorBusy(DateTime date, Doctor doctor)
+        {
+            List<Checkup> checkups = GetCheckupsByDoctor(doctor.Id);
+            foreach (Checkup checkup in checkups)
+            {
+                Console.WriteLine(checkup.TimeAndDate.ToString(), checkup.TimeAndDate.Add(checkup.Duration).ToString());
+                if (checkup.TimeAndDate <= date && checkup.TimeAndDate.Add(checkup.Duration) > date)
+                {
+                    return true;
+                } 
+            }
+            return false;
         }
     }
 }
