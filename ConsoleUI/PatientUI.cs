@@ -24,12 +24,10 @@ public class GetOutException : System.Exception
 }
 public class PatientUI : ConsoleUI
 {
-    public List<string> MainCommands {get; private set;} = new List<string> {"ma / manage checkups","exit","help"};
-    public List<string> ManageCheckupsCommands {get; private set;} = new List<string>
+    public List<string> MainCommands {get; private set;} = new List<string> {"ma / manage appointments","exit","help"};
+    public List<string> ManageAppointmentsCommands {get; private set;} = new List<string>
     {"cc / create checkup",
-    "uc / update checkup",
-    "va / view appointments",
-    "dc / delete checkup",
+    "va / view and manage appointments",
     "return",
     "exit",
     "help"};
@@ -48,6 +46,7 @@ public class PatientUI : ConsoleUI
         this._user = _user;
     }
 
+    //TODO: Implement this
     public void RegisterCheckup(Checkup c)
     {
 
@@ -265,13 +264,13 @@ public class PatientUI : ConsoleUI
         //public Checkup(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, string anamnesis)
         Checkup newCheckup = new Checkup(
             (DateTime)selectedDate,
-            (Patient)this._user.Person,
-            suitableDoctors[selectedIndex],
-            checkupDuration,
+            new MongoDB.Driver.MongoDBRef("patients", ((Patient)_user.Person).Id),
+            new MongoDB.Driver.MongoDBRef("doctors", suitableDoctors[selectedIndex].Id),
             "no anamnesis");
-
+        
         //TODO: this function is temporary
         RegisterCheckup(newCheckup);
+        
         
     }
     public string selectOption(string commandGroup="")
@@ -290,33 +289,25 @@ public class PatientUI : ConsoleUI
 
     }
 
-    public void manageCheckups()
+    public void manageAppointments()
     {
         Console.Clear();
         System.Console.WriteLine("");
 
-        printCommands(this.ManageCheckupsCommands);
+        printCommands(this.ManageAppointmentsCommands);
         while (true){
             string selectedOption = selectOption("Manage checkups");
             if (selectedOption == "cc" || selectedOption == "create checkup")
             {
                 createCheckup();
             }
-            else if (selectedOption == "uc" || selectedOption == "update checkup")
-            {
-                Console.WriteLine("wip2");
-            }
-            else if (selectedOption == "va" || selectedOption == "view appointments")
+            else if (selectedOption == "va" || selectedOption == "view and manage appointments")
             {
                 Console.WriteLine("wip3");
             }
-            else if (selectedOption == "dc" || selectedOption == "delete checkup")
-            {
-                Console.WriteLine("wip4");
-            }
             else if (selectedOption == "help")
             {
-                printCommands(this.ManageCheckupsCommands);
+                printCommands(this.ManageAppointmentsCommands);
             }
             else if (selectedOption == "return")
             {
@@ -353,9 +344,9 @@ public class PatientUI : ConsoleUI
         printCommands(this.MainCommands);
         while (true){
             string selectedOption = selectOption();
-            if (selectedOption == "ma" || selectedOption == "manage checkups")
+            if (selectedOption == "ma" || selectedOption == "manage appointments")
             {
-                manageCheckups();
+                manageAppointments();
             }
             else if (selectedOption == "help")
             {
