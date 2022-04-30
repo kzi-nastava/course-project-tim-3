@@ -12,14 +12,15 @@ public class NullInputException : System.Exception
 }
 
 public class SecretaryUI : ConsoleUI
-{
+{   
     public SecretaryUI(Hospital _hospital, User? _user) : base(_hospital) 
     {
         this._user = _user;
+        
     }
 
     public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
-    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Creat", "Read", "Update", "Delete"};
+    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete"};
 
     public void printCommands(List<string> commands)
     {
@@ -32,7 +33,7 @@ public class SecretaryUI : ConsoleUI
 
     public string selectOption()
     {
-        
+        Console.WriteLine("");
         Console.Write("Please enter a command: ");
         string? input = Console.ReadLine();
         if (input is null)
@@ -72,7 +73,8 @@ public class SecretaryUI : ConsoleUI
             }
         }
     }
-    public void CRUDoptions(){
+
+   public void CRUDoptions(){
         Console.Clear();
         System.Console.WriteLine("");
 
@@ -80,9 +82,11 @@ public class SecretaryUI : ConsoleUI
         while (true){
             string selectedOption = selectOption();
             if (selectedOption == "readlist"){
-                readList();
+                readListUserPatients();
             }
-            else if (selectedOption == "create"){}
+            else if (selectedOption == "create"){
+                CreateUserPatient();
+            }
             else if (selectedOption == "read"){}
             else if (selectedOption == "update"){}
             else if (selectedOption == "delete"){}
@@ -101,16 +105,18 @@ public class SecretaryUI : ConsoleUI
             {
                 Console.Clear();
                 Console.WriteLine("Unrecognized command, please try again");
+                printCommands(CRUDCommands);
             }
         }
     }
 
-    public void readList()
+    public void readListUserPatients()
     {   
         Console.Clear();
         List<User> usersList = new List<User>();
-        MongoClient _dbClient = new MongoClient("mongodb://root:root@localhost:27017");
-        UserRepository ur = new UserRepository(_dbClient);
+        // MongoClient _dbClient = new MongoClient("mongodb://root:root@localhost:27017");
+        // UserRepository ur = new UserRepository(_dbClient);
+        UserRepository ur = _hospital.UserRepo;
         var users = ur.GetUsers();
         var matchingUsers = from user in users.AsQueryable() select user;
 
@@ -201,4 +207,59 @@ public class SecretaryUI : ConsoleUI
         System.Console.WriteLine("");
 
     }
+
+    public void CreateUserPatient()
+    {   Console.Clear();
+        UserRepository ur = _hospital.UserRepo;
+        System.Console.WriteLine("Enter the following data: ");
+        System.Console.Write("email >> ");
+        string? email = Console.ReadLine();
+        if (email is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        System.Console.Write("password >> ");
+        string? password = Console.ReadLine();
+        if (password is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        System.Console.Write("first name >> ");
+        string? firstName = Console.ReadLine();
+        if (firstName is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        System.Console.Write("last name >> ");
+        string? lastName = Console.ReadLine();
+        if (lastName is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        System.Console.WriteLine(email);
+        if(email == "back"){
+            Console.Clear();
+            System.Console.WriteLine("Returning...");
+        }
+        else if(password == "back"){
+            Console.Clear();
+            System.Console.WriteLine("Returning...");
+
+        }
+        else if(firstName == "back"){
+            Console.Clear();
+            System.Console.WriteLine("Returning...");
+
+        }
+        else if(lastName == "back"){
+            Console.Clear();
+            System.Console.WriteLine("Returning...");
+        }
+        else{
+            Console.Clear();
+            ur.AddUser(email, password, firstName, lastName, Role.PATIENT);
+        }
+        printCommands(CRUDCommands);
+    }
+
 }
