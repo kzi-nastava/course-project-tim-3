@@ -20,6 +20,7 @@ public class HospitalUI : ConsoleUI
 
     public override void Start()
     {
+        // _hospital.UserRepo.AddUser("email1", "password", "firstName", "firstName", Role.PATIENT); //TEST      
         var success = false;
         while (!success)
         {
@@ -37,6 +38,8 @@ public class HospitalUI : ConsoleUI
                 ui.Start();
                 break;
             case Role.SECRETARY:
+            var ui = new SecretaryUI(this._hospital, this._user);
+                ui.Start();
                 break;
 
             default:
@@ -45,8 +48,8 @@ public class HospitalUI : ConsoleUI
         }
     }
 
-    public void AddUser(string email, string password, string firstName, string lastName, Role role)
+    public void AddUser(string email, string password, Person person, Role role)
     { // TODO: DELETE
-        _hospital.UserRepo.AddUser(email, password, firstName, lastName, role);
+        _hospital.UserRepo.AddUser(email, password, person, role);
     }
 }

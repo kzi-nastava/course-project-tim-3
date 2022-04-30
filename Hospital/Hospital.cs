@@ -14,12 +14,15 @@
 
         public PatientRepository PatientRepo {get;}
 
+        public RoomRepository RoomRepo {get;}
+
         public Hospital()
         {
             UserRepo = new UserRepository(_dbClient);
             DoctorRepo = new DoctorRepository(_dbClient);
             AppointmentRepo = new AppointmentRepository(_dbClient);
             PatientRepo = new PatientRepository(_dbClient);
+            RoomRepo = new RoomRepository(_dbClient);
         }
 
         public User? Login(string email, string password)

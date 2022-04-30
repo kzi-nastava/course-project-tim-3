@@ -14,6 +14,7 @@ namespace Hospital
 
             // generate tests TODO: move this to dedicated teting interface
 
+
             // generate users
 
             // for (int i = 0; i < 100; i++)
@@ -64,7 +65,25 @@ namespace Hospital
             // {
             //     Console.WriteLine(c.toString());
             // }
-            
+     
+            //var hospitalContents = new {Users = new List<User>()};
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    User user;
+            //    if (i % 4 == 0)
+            //        user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.DIRECTOR);
+            //    else if (i % 4 == 1)
+            //        user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.DOCTOR);
+            //    else if (i % 4 == 2)
+            //        user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.PATIENT);
+            //    else
+            //        user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.SECRETARY);
+            //    ui.AddUser(user.Email, user.Password, user.Person, user.Role);
+            //    hospitalContents.Users.Add(user);
+            //    File.WriteAllText("db/hospital.json", hospitalContents.ToBsonDocument().ToJson(
+            //        new JsonWriterSettings {Indent = true}));
+            //}
+            //ui.Start();
         }
     }
 }
