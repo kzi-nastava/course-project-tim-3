@@ -17,11 +17,11 @@ namespace Hospital
     {
         // todo: might want to add objectId here
         
-        public string Email {get;}
-        public string Password {get;}
+        public string Email {get;set;}
+        public string Password {get;set;}
         [BsonRepresentation(BsonType.String)]
-        public Role Role {get;}
-        public MongoDBRef Person {get;}
+        public Role Role {get;set;}
+        public MongoDBRef Person {get;set;}
 
         public User(string email, string password, string firstName, string lastName, Role role)
         {
@@ -63,6 +63,13 @@ namespace Hospital
                     this.Person = new MongoDBRef("patients",person.Id);
                     break;
                 }
+                case Role.DIRECTOR:
+                    this.Person = new MongoDBRef("directors", person.Id);
+                    break;
+                case Role.SECRETARY:
+                default:
+                    this.Person = new MongoDBRef("secretaries", person.Id);
+                    break;
             }
         }
     }

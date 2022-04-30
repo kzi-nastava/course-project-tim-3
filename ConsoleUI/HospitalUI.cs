@@ -32,6 +32,9 @@ public class HospitalUI : ConsoleUI
         switch (_user?.Role)
         {
             case Role.DIRECTOR:
+                DirectorUI dirUI = new DirectorUI(_hospital);
+                dirUI.Start();
+                break;
             case Role.DOCTOR:
                 DoctorUI doctorUI = new DoctorUI(_hospital, _user);
                 doctorUI.Start();
@@ -41,8 +44,8 @@ public class HospitalUI : ConsoleUI
                 ui.Start();
                 break;
             case Role.SECRETARY:
-            var ui = new SecretaryUI(this._hospital, this._user);
-                ui.Start();
+            var secUI = new SecretaryUI(this._hospital, this._user);
+                secUI.Start();
                 break;
 
             default:
