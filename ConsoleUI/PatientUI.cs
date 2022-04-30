@@ -40,7 +40,7 @@ public class PatientUI : ConsoleUI
     public PatientUI(Hospital _hospital, User? _user) : base(_hospital) 
     {
         this._user = _user;
-        current = _hospital.PatientRepo.GetPatientByName(_user.Person.FirstName);
+        current = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
     }
 
     public void UpdateCheckup(){
@@ -487,7 +487,7 @@ public class PatientUI : ConsoleUI
         //public Checkup(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, string anamnesis)
         Checkup newCheckup = new Checkup(
             (DateTime)selectedDate,
-            new MongoDB.Driver.MongoDBRef("patients", ((Patient)_user.Person).Id),
+            new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
             new MongoDB.Driver.MongoDBRef("doctors", suitableDoctors[selectedIndex].Id),
             "no anamnesis");
         
