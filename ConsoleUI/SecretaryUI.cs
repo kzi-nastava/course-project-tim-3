@@ -20,7 +20,7 @@ public class SecretaryUI : ConsoleUI
     }
 
     public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
-    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete"};
+    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", "Back"};
 
     public void printCommands(List<string> commands)
     {
@@ -87,19 +87,20 @@ public class SecretaryUI : ConsoleUI
             else if (selectedOption == "create"){
                 CreateUserPatient();
             }
-            else if (selectedOption == "read"){}
-            else if (selectedOption == "update"){}
-            else if (selectedOption == "delete"){}
-            else if (selectedOption == "help")
+            else if (selectedOption == "read"){
+                ReadUserPatient();
+            }
+            else if (selectedOption == "update"){
+                updateUserPatient();
+            }
+            else if (selectedOption == "delete"){
+                DeleteUserPatient();
+            }
+            else if (selectedOption == "back")
             {
                 Console.Clear();
                 printCommands(Commands);
-            }
-            else if (selectedOption == "exit")
-            {   
-                Console.Clear();
-                Console.WriteLine("Exiting...");
-                Environment.Exit(0);
+                break;
             }
             else
             {
@@ -114,8 +115,6 @@ public class SecretaryUI : ConsoleUI
     {   
         Console.Clear();
         List<User> usersList = new List<User>();
-        // MongoClient _dbClient = new MongoClient("mongodb://root:root@localhost:27017");
-        // UserRepository ur = new UserRepository(_dbClient);
         UserRepository ur = _hospital.UserRepo;
         var users = ur.GetUsers();
         var matchingUsers = from user in users.AsQueryable() select user;
@@ -262,4 +261,92 @@ public class SecretaryUI : ConsoleUI
         printCommands(CRUDCommands);
     }
 
+    public void ReadUserPatient(){
+        Console.Clear();
+        UserRepository ur = _hospital.UserRepo;
+        System.Console.Write("Enter the user mail to view his data: ");
+        string? email = Console.ReadLine();
+        if (email is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        var user = ur.GetUser(email);
+        System.Console.WriteLine("Email : " + user.Email.ToString());
+        System.Console.WriteLine("Password : " + user.Password.ToString());
+        System.Console.WriteLine("First Name : " + user.Person.FirstName.ToString());
+        System.Console.WriteLine("Last Name : " + user.Person.LastName.ToString());
+        System.Console.WriteLine("");
+        System.Console.Write("Type back to get to menu: ");
+        string? back = Console.ReadLine();
+
+        while(back != "back"){
+        Console.Clear();
+        System.Console.Write("Type back to get to menu: ");
+        back = Console.ReadLine();
+        }
+
+        Console.Clear();
+        printCommands(CRUDCommands);
+    }
+
+    public void updateUserPatient()
+    {
+        Console.Clear();
+        UserRepository ur = _hospital.UserRepo;
+        System.Console.Write("Enter <email> or <password> depending of what you want update: ");
+        
+        string? enter = Console.ReadLine();
+        if(enter == "email"){
+            System.Console.Write("Enter users email: ");
+            string? email = Console.ReadLine();
+            if (email is null)
+            {
+                throw new NullInputException("Null value as input");
+            }
+            System.Console.Write("Enter new email: ");
+            string? emailNew = Console.ReadLine();
+            if (emailNew is null)
+            {
+                throw new NullInputException("Null value as input");
+            }
+            ur.UpdateUserEmail(email,emailNew);
+
+        }
+        else if(enter == "password"){
+            System.Console.Write("Enter users password : ");
+            string? email = Console.ReadLine();
+            if (email is null)
+            {
+                throw new NullInputException("Null value as input");
+            }
+            System.Console.Write("Enter new password: ");
+            string? passwordNew = Console.ReadLine();
+            if (passwordNew is null)
+            {
+                throw new NullInputException("Null value as input");
+            }
+            ur.UpdateUserEmail(email,passwordNew);
+        }
+        Console.Clear();
+        printCommands(CRUDCommands);
+    }
+
+    public void DeleteUserPatient()
+    {
+        Console.Clear();
+        UserRepository ur = _hospital.UserRepo;
+        System.Console.Write("Enter the user mail to delete: ");
+        string? email = Console.ReadLine();
+        if (email is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        ur.DeleteUser(email);
+        Console.Clear();
+        printCommands(CRUDCommands);
+    }
+
+
+
 }
+
