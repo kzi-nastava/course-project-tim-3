@@ -24,12 +24,12 @@ public class GetOutException : System.Exception
 }
 public class PatientUI : ConsoleUI
 {
-    public List<string> MainCommands {get; private set;} = new List<string> {"ma / manage appointments","exit","help"};
-    public List<string> ManageAppointmentsCommands {get; private set;} = new List<string>
-    {"ca / create appointment",
-    "ua / update appointment",
+    public List<string> MainCommands {get; private set;} = new List<string> {"ma / manage checkups","exit","help"};
+    public List<string> ManageCheckupsCommands {get; private set;} = new List<string>
+    {"cc / create checkup",
+    "uc / update checkup",
     "va / view appointments",
-    "da / delete appointment",
+    "dc / delete checkup",
     "return",
     "exit",
     "help"};
@@ -39,7 +39,7 @@ public class PatientUI : ConsoleUI
     DateTime openingTime = new DateTime(2000, 10, 20, 9, 0, 0);
     DateTime closingTime = new DateTime(2000, 10, 20, 17, 0, 0);
     DateTime now = DateTime.Now;
-    TimeSpan appointmentDuration = new TimeSpan(0,0,15,0);
+    TimeSpan checkupDuration = new TimeSpan(0,0,15,0);
 
     
 
@@ -138,18 +138,18 @@ public class PatientUI : ConsoleUI
         
         // time selection
 
-        int appointmentIndex = 0;
+        int checkupIndex = 0;
         DateTime iterationTime = openingTime;
         
         while (iterationTime.TimeOfDay != closingTime.TimeOfDay)
         {
-            Console.WriteLine(appointmentIndex + " - " + iterationTime.ToString("HH:mm"));
-            iterationTime = iterationTime.Add(appointmentDuration);
-            appointmentIndex += 1;
+            Console.WriteLine(checkupIndex + " - " + iterationTime.ToString("HH:mm"));
+            iterationTime = iterationTime.Add(checkupDuration);
+            checkupIndex += 1;
         }
 
         //while loop will add a sufficient "1" at the end of the loop
-        appointmentIndex -= 1;
+        checkupIndex -= 1;
 
         int selectedIndex = -1;
         try
@@ -171,9 +171,9 @@ public class PatientUI : ConsoleUI
         }
 
         result = result.AddHours(openingTime.Hour);
-        if (selectedIndex >= 0 && selectedIndex <= appointmentIndex)
+        if (selectedIndex >= 0 && selectedIndex <= checkupIndex)
         {
-            result = result.Add(selectedIndex*appointmentDuration);
+            result = result.Add(selectedIndex*checkupDuration);
         }
         else
         {
@@ -190,7 +190,7 @@ public class PatientUI : ConsoleUI
         return result;
     }
 
-    public void createAppointment()
+    public void createCheckup()
     {
         DateTime? selectedDate = selectDate();
         if (selectedDate is null)
@@ -251,19 +251,20 @@ public class PatientUI : ConsoleUI
 
         if (suitableDoctors[selectedIndex].CheckIfFree((DateTime)selectedDate) is false)
         {
-            Console.WriteLine("Appointment already taken.");
+            Console.WriteLine("Checkup already taken.");
             return;
         }
 
-        //TODO: Might want to create an additional expiry check for appointment timedate
+        //TODO: Might want to create an additional expiry check for checkup timedate
         Checkup newCheckup = new Checkup(
             (DateTime)selectedDate,
             (Patient)this._user.Person,
             suitableDoctors[selectedIndex],
-            appointmentDuration,
+            checkupDuration,
             "no anamnesis");
 
-        RegisterCheckup (newCheckup);
+        //TODO: this function is temporary
+        //RegisterCheckup(newCheckup);
         
     }
     public string selectOption(string commandGroup="")
@@ -282,19 +283,19 @@ public class PatientUI : ConsoleUI
 
     }
 
-    public void manageAppointments()
+    public void manageCheckups()
     {
         Console.Clear();
         System.Console.WriteLine("");
 
-        printCommands(this.ManageAppointmentsCommands);
+        printCommands(this.ManageCheckupsCommands);
         while (true){
-            string selectedOption = selectOption("Manage appointments");
-            if (selectedOption == "ca" || selectedOption == "create appointment")
+            string selectedOption = selectOption("Manage checkups");
+            if (selectedOption == "cc" || selectedOption == "create checkup")
             {
-                createAppointment();
+                createCheckup();
             }
-            else if (selectedOption == "ua" || selectedOption == "update appointment")
+            else if (selectedOption == "uc" || selectedOption == "update checkup")
             {
                 Console.WriteLine("wip2");
             }
@@ -302,13 +303,13 @@ public class PatientUI : ConsoleUI
             {
                 Console.WriteLine("wip3");
             }
-            else if (selectedOption == "da" || selectedOption == "delete appointment")
+            else if (selectedOption == "dc" || selectedOption == "delete checkup")
             {
                 Console.WriteLine("wip4");
             }
             else if (selectedOption == "help")
             {
-                printCommands(this.ManageAppointmentsCommands);
+                printCommands(this.ManageCheckupsCommands);
             }
             else if (selectedOption == "return")
             {
@@ -345,9 +346,9 @@ public class PatientUI : ConsoleUI
         printCommands(this.MainCommands);
         while (true){
             string selectedOption = selectOption();
-            if (selectedOption == "ma" || selectedOption == "manage appointments")
+            if (selectedOption == "ma" || selectedOption == "manage checkups")
             {
-                manageAppointments();
+                manageCheckups();
             }
             else if (selectedOption == "help")
             {
