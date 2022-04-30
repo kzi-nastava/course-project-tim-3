@@ -11,6 +11,17 @@ public class NullInputException : System.Exception
         System.Runtime.Serialization.SerializationInfo info,
         System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
+
+[System.Serializable]
+public class GetOutException : System.Exception
+{
+    public GetOutException() { }
+    public GetOutException(string message) : base(message) { }
+    public GetOutException(string message, System.Exception inner) : base(message, inner) { }
+    protected GetOutException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
 public class PatientUI : ConsoleUI
 {
     public List<string> MainCommands {get; private set;} = new List<string> {"ma / manage appointments","exit","help"};
@@ -37,7 +48,62 @@ public class PatientUI : ConsoleUI
         this._user = _user;
     }
 
-    DateTime? selectDate ()
+    public int SelectIndex(string message){
+
+        Console.Write(message);
+        string? input = Console.ReadLine();
+        if (input is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+
+        int selectedIndex;
+        try
+        {
+            selectedIndex = Int32.Parse(input);
+        }
+        catch (FormatException)
+        {
+            throw;
+        }
+
+        return selectedIndex;
+    }
+
+    public Specialty SelectSpecialty()
+    {
+        Console.WriteLine("Specialities");
+        foreach (Specialty spec in Specialty.GetValues(typeof(Specialty)))
+            {
+                Console.WriteLine(spec);
+            }
+
+        Console.Write("Please enter a speciality: ");
+        string? input = Console.ReadLine();
+        if (input is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+
+        input = input.Trim().ToUpper();
+
+        switch (input)
+        {
+            case "DERMATOLOGY":
+                return Specialty.DERMATOLOGY;
+            case "RADIOLOGY":
+                return Specialty.RADIOLOGY;
+            case "STOMATOLOGY":
+                return Specialty.STOMATOLOGY;
+            case "OPHTHALMOLOGY":
+                return Specialty.OPHTHALMOLOGY;
+            case "FAMILY_MEDICINE":
+                return Specialty.FAMILY_MEDICINE;
+            default:
+                throw new GetOutException("None of the specialities selected");
+        }
+    }
+    public DateTime? selectDate ()
     {   
         DateTime result = new DateTime();
 
@@ -85,25 +151,26 @@ public class PatientUI : ConsoleUI
         //while loop will add a sufficient "1" at the end of the loop
         appointmentIndex -= 1;
 
-        Console.Write("Please enter a number from the list: ");
-        string? input = Console.ReadLine();
-        if (input is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
-
-        int selectedIndex;
+        int selectedIndex = -1;
         try
         {
-            selectedIndex = Int32.Parse(input);
+            selectedIndex = SelectIndex("Please enter a number from the list: ");
         }
-        catch (FormatException)
-        {
-            Console.WriteLine("Error - wrong input. Aborting...");
-            return null;
+        catch (Exception ex)            
+        {                
+            if (ex is NullInputException)
+            {
+                Console.WriteLine("Error - wrong input. Aborting...");
+                return null;
+            }
+            else if (ex is FormatException)
+            {
+                Console.WriteLine("Error - wrong number. Aborting...");
+                return null;
+            }
         }
 
-        result = result.AddHours(now.Hour);
+        result = result.AddHours(openingTime.Hour);
         if (selectedIndex >= 0 && selectedIndex <= appointmentIndex)
         {
             result = result.Add(selectedIndex*appointmentDuration);
@@ -112,10 +179,9 @@ public class PatientUI : ConsoleUI
         {
             Console.WriteLine("Error - wrong number. Aborting...");
         }
-
         //TODO: The listed times shouldnt be the ones that expired
 
-        if (DateTime.Compare(result, now) == 1 )
+        if (DateTime.Compare(result, now) == -1 )
         {
             Console.WriteLine("Selected time already expired. Aborting...");    
             return null;
@@ -127,7 +193,78 @@ public class PatientUI : ConsoleUI
     public void createAppointment()
     {
         DateTime? selectedDate = selectDate();
-        Console.WriteLine(selectedDate);
+        if (selectedDate is null)
+        {
+            return;
+        }
+
+        Console.WriteLine("You have selected the following date - "+ selectedDate);
+
+        Specialty selectedSpecialty;
+        try
+        {
+            selectedSpecialty = SelectSpecialty();
+        }
+        catch (GetOutException)
+        {
+           Console.WriteLine("Error - selected speciality doesnt exist. Aborting...");
+           return;
+        }
+
+        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(selectedSpecialty);
+
+        if (suitableDoctors.Count == 0)
+        {
+            Console.WriteLine("No doctors found in selected specialty.");
+            return;
+        }
+
+        for (int i=0; i<suitableDoctors.Count; i++)
+        {
+            Console.WriteLine(i+" - "+suitableDoctors[i].ToString());
+        }
+
+        int selectedIndex = -1;
+        try
+        {
+            selectedIndex = SelectIndex("Please enter a number from the list: ");
+        }
+        catch (Exception ex)            
+        {                
+            if (ex is NullInputException)
+            {
+                Console.WriteLine("Error - wrong input. Aborting...");
+                return;
+            }
+            else if (ex is FormatException)
+            {
+                Console.WriteLine("Error - wrong number. Aborting...");
+                return;
+            }
+        }
+
+        if (selectedIndex < 0 || selectedIndex >= suitableDoctors.Count)
+        {
+            Console.WriteLine("Error - wrong number. Aborting...");
+            return;
+        }
+
+        if (suitableDoctors[selectedIndex].CheckIfFree((DateTime)selectedDate) is false)
+        {
+            Console.WriteLine("Appointment already taken.");
+            return;
+        }
+
+        //TODO: Might want to create an additional expiry check for appointment timedate
+        Checkup newCheckup = new Checkup(
+            (DateTime)selectedDate,
+            (Patient)this._user.Person,
+            suitableDoctors[selectedIndex],
+            appointmentDuration,
+            "no anamnesis");
+
+        RegisterCheckup (newCheckup);
+        
     }
     public string selectOption(string commandGroup="")
     {
