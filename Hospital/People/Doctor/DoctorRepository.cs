@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace Hospital
 {
@@ -39,6 +40,13 @@ namespace Hospital
         {
             var doctors = GetDoctors();
             var foundDoctor = doctors.Find(doctor => doctor.FirstName == name).FirstOrDefault();
+            return foundDoctor;
+        }
+
+        public Doctor GetDoctorById(ObjectId id)
+        {
+            var doctors = GetDoctors();
+            var foundDoctor = doctors.Find(doctor => doctor.Id == id).FirstOrDefault();
             return foundDoctor;
         }
     }

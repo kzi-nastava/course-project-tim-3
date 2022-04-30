@@ -55,7 +55,142 @@ public class PatientUI : ConsoleUI
     }
 
     public void UpdateCheckup(){
-        ShowAppointments();
+        ShowCheckups();
+        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(current.Id);
+
+        int selectedIndex = -1;
+            try
+            {
+                selectedIndex = SelectIndex("Please enter a number from the list: ");
+            }
+            catch (Exception ex)            
+            {                
+                if (ex is NullInputException)
+                {
+                    Console.WriteLine("Error - wrong input. Aborting...");
+                    return;
+                }
+                else if (ex is FormatException)
+                {
+                    Console.WriteLine("Error - wrong number. Aborting...");
+                    return;
+                }
+            }
+
+        if (selectedIndex < 0 || selectedIndex>= checkups.Count)
+        {
+            Console.WriteLine("Error - wrong number. Aborting...");
+            return;
+        }
+
+        Checkup selectedCheckup = checkups[selectedIndex];
+        Doctor currentDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)selectedCheckup.Doctor.Id);
+        DateTime currentDate = selectedCheckup.TimeAndDate;
+        Console.WriteLine ("You have selected " + ConvertAppointmentToString(selectedCheckup));
+
+        //TODO: find a way to remove current doctor from list
+        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(currentDoctor.Specialty);
+        Doctor newDoctor = currentDoctor;
+        DateTime newDate = currentDate;
+
+        // change doctor?
+
+        Console.WriteLine("Change doctor? Enter yes or no: ");
+
+        string? changeDoctorOpinion = Console.ReadLine();
+        if (changeDoctorOpinion is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        
+        changeDoctorOpinion = changeDoctorOpinion.Trim().ToLower();
+        if (changeDoctorOpinion !="yes" && changeDoctorOpinion!="no")
+        {
+            Console.WriteLine("Error - wrong command. Aborting...");
+            return;
+        }
+
+
+        if (changeDoctorOpinion == "yes")
+        {
+            if (alternativeDoctors.Count == 0)
+            {
+                Console.WriteLine("No doctors found in the same specialty.");
+                return;
+            }
+
+            for (int i=0; i<alternativeDoctors.Count; i++)
+            {
+                Console.WriteLine(i+" - "+alternativeDoctors[i].ToString());
+            }
+
+            int selectedDoctorIndex = -1;
+            try
+            {
+                selectedDoctorIndex = SelectIndex("Please enter a number from the list: ");
+            }
+            catch (Exception ex)            
+            {                
+                if (ex is NullInputException)
+                {
+                    Console.WriteLine("Error - wrong input. Aborting...");
+                    return;
+                }
+                else if (ex is FormatException)
+                {
+                    Console.WriteLine("Error - wrong number. Aborting...");
+                    return;
+                }
+            }
+
+            if (selectedDoctorIndex < 0 || selectedDoctorIndex >= alternativeDoctors.Count)
+            {
+                Console.WriteLine("Error - wrong number. Aborting...");
+                return;
+            }
+
+            newDoctor = alternativeDoctors[selectedDoctorIndex];
+        }
+
+        //change date?
+
+        Console.WriteLine("Change date? Enter yes or no: ");
+
+        string? changeDateOpinion = Console.ReadLine();
+        if (changeDateOpinion is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+
+        changeDateOpinion = changeDateOpinion.Trim().ToLower();
+        if (changeDateOpinion !="yes" && changeDateOpinion!="no")
+        {
+            Console.WriteLine("Error - wrong command. Aborting...");
+            return;
+        }
+
+        if (changeDateOpinion == "yes")
+        {
+            DateTime? selectedDate = selectDate();
+            if (selectedDate is null)
+            {
+                return;
+            }
+
+            Console.WriteLine("You have selected the following date - "+ selectedDate);
+        }
+
+        if (newDoctor.CheckIfFree((DateTime)newDate) is false)
+        {
+            Console.WriteLine("Checkup already taken.");
+            return;
+        }
+
+        
+        selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
+        selectedCheckup.TimeAndDate = newDate;
+
+        _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
 
     }
 
@@ -69,21 +204,30 @@ public class PatientUI : ConsoleUI
 
         return output;
     }
-    
-    public void ShowAppointments()
-    {   
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(current.Id);
-        List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(current.Id);
 
+
+    public void ShowCheckups()
+    {
+        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(current.Id);
         for (int i = 0; i< checkups.Count; i++)
         {
-            Console.WriteLine("cu"+i+" - "+ConvertAppointmentToString(checkups[i]));
+            Console.WriteLine(i+" - "+ConvertAppointmentToString(checkups[i]));
         }
+    }
 
+    public void showOperations()
+    {
+        List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(current.Id);
         for (int i = 0; i< operations.Count; i++)
         {
-            Console.WriteLine("op"+i+" - "+ConvertAppointmentToString(operations[i]));
+            Console.WriteLine(i+" - "+ConvertAppointmentToString(operations[i]));
         }
+    }
+    public void ShowAppointments()
+    {   
+        ShowCheckups();
+        Console.WriteLine("Operations");
+        showOperations();
 
     }
     public void AppointmentRUD()
@@ -348,7 +492,6 @@ public class PatientUI : ConsoleUI
             new MongoDB.Driver.MongoDBRef("doctors", suitableDoctors[selectedIndex].Id),
             "no anamnesis");
         
-        //TODO: this function is temporary
         this._hospital.AppointmentRepo.AddCheckup(newCheckup);
         
         
