@@ -27,7 +27,7 @@ public class MedicalRecord {
         AnamnesisHistory = anamnesisHistory;
         Allergies = allergies;
     }
-    public string toString()
+    public override string ToString()
     {
         return "Height In Cm : " + HeightInCm + "\nWeight In Cm : " + WeightInKg + "\nAnamnesis History : " + AnamnesisHistory + "\nAllergies : " + Allergies;
     }

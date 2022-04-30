@@ -9,5 +9,10 @@ namespace Hospital
             LastName = lastName;
             MedicalRecord = medicalRecord;
         }
+
+        public override string ToString()
+        {
+            return FirstName + " " + LastName ;
+        }
     }
 }
