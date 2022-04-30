@@ -48,6 +48,11 @@ public class PatientUI : ConsoleUI
         this._user = _user;
     }
 
+    public void RegisterCheckup(Checkup c)
+    {
+
+    }
+
     public int SelectIndex(string message){
 
         Console.Write(message);
@@ -254,8 +259,10 @@ public class PatientUI : ConsoleUI
             Console.WriteLine("Checkup already taken.");
             return;
         }
-
+        
         //TODO: Might want to create an additional expiry check for checkup timedate
+
+        //public Checkup(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, string anamnesis)
         Checkup newCheckup = new Checkup(
             (DateTime)selectedDate,
             (Patient)this._user.Person,
@@ -264,7 +271,7 @@ public class PatientUI : ConsoleUI
             "no anamnesis");
 
         //TODO: this function is temporary
-        //RegisterCheckup(newCheckup);
+        RegisterCheckup(newCheckup);
         
     }
     public string selectOption(string commandGroup="")

@@ -18,15 +18,14 @@ namespace Hospital
             Specialty = specialty;
         }
 
-        public override string ToString (){
-            return FirstName + " " + LastName;
-        }
-
-        //TODO: implement this
         public bool CheckIfFree (DateTime appointmentDate)
         {
             return true;
         }
         
+        public override string ToString() 
+        {
+            return Id + " " +FirstName +" "+ LastName +" "+ Specialty;
+        }
     }
 }

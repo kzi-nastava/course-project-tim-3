@@ -29,5 +29,17 @@ namespace Hospital
             //TODO: implement this
             return null;
         }
+        public void AddDoctor(Doctor doctor)
+        {
+            var newDoctor = doctor;
+            var doctors = GetDoctors();
+            doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
+        }
+        public Doctor GetDoctorByName(string name)
+        {
+            var doctors = GetDoctors();
+            var foundDoctor = doctors.Find(doctor => doctor.FirstName == name).FirstOrDefault();
+            return foundDoctor;
+        }
     }
 }
