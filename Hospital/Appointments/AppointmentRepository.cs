@@ -34,6 +34,12 @@ namespace Hospital
             checkups.ReplaceOne(appointment => appointment.Id == apCheck.Id, apCheck, new ReplaceOptions {IsUpsert = true});
         }
 
+        public void AddCheckup(Checkup newCheckup)
+        {
+            var checkups = GetCheckups();
+            checkups.ReplaceOne(appointment => appointment.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
+        }
+
         public void AddOperation(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, TimeSpan duration, string report)
         {
             var newOperation = new Operation(timeAndDate, patient, doctor, report);
@@ -48,6 +54,20 @@ namespace Hospital
             List<Checkup> doctorsCheckups = checkups.Find(appointment => appointment.Doctor.Id == id).ToList();
             return doctorsCheckups;
         }
+
+        public List<Checkup> GetCheckupsByPatient(ObjectId id)
+        {
+            var checkups = GetCheckups();
+            List<Checkup> patientCheckups = checkups.Find(appointment => appointment.Patient.Id == id).ToList();
+            return patientCheckups;
+        }
+
+        public List<Operation> GetOperationsByPatient(ObjectId id)
+        {
+            var operations = GetOperations();
+            List<Operation> patientOperations = operations.Find(appointment => appointment.Doctor.Id == id).ToList();
+            return patientOperations;
+        }
         
         public List<Operation> GetOperationsByDoctor(ObjectId id)
         {
@@ -56,6 +76,10 @@ namespace Hospital
             return doctorsOperations;
         }
 
-        
+         public void AddOrUpdateCheckup(Checkup newCheckup)
+        {
+            var checkups = GetCheckups();
+            checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
+        }
     }
 }
