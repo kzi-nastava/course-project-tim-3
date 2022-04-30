@@ -42,7 +42,7 @@ namespace Hospital
                 --- MANAGE ROOMS ---
                 INPUT OPTION:
                     [add room|add|ar|a] Add a room
-                    [search|read|s|r] Search rooms
+                    [read|r] Room rooms
                     [quit|q] Quit to main menu
                     [exit|x] Exit program
                     [...]
@@ -74,7 +74,7 @@ namespace Hospital
                         System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
                         ReadSanitizedLine();
                     }
-                    else if (choice == "search" || choice == "read" || choice == "r" || choice == "s")
+                    else if (choice == "read" || choice == "r")
                     {
 
                     }
