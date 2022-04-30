@@ -38,9 +38,9 @@ namespace Hospital
             return null;
         }
 
-        public void AddUser(string email, string password, string firstName, string lastName, Role role)
+        public void AddUser(string email, string password, Person person, Role role)
         {
-            var newUser = new User(email, password, firstName, lastName, role);
+            var newUser = new User(email, password, person, role);
             var users = GetUsers();
             users.ReplaceOne(user => user.Email == newUser.Email, newUser, new ReplaceOptions {IsUpsert = true});
         }

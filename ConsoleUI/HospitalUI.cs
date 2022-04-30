@@ -45,8 +45,8 @@ public class HospitalUI : ConsoleUI
         }
     }
 
-    public void AddUser(string email, string password, string firstName, string lastName, Role role)
+    public void AddUser(string email, string password, Person person, Role role)
     { // TODO: DELETE
-        _hospital.UserRepo.AddUser(email, password, firstName, lastName, role);
+        _hospital.UserRepo.AddUser(email, password, person, role);
     }
 }

@@ -257,7 +257,9 @@ public class SecretaryUI : ConsoleUI
         }
         else{
             Console.Clear();
-            ur.AddUser(email, password, firstName, lastName, Role.PATIENT);
+            Patient patient = new Patient(email, lastName);
+            // FIXME: ADD PATIENT TO REPO!!!!!
+            ur.AddUser(email, password, patient, Role.PATIENT);
         }
         printCommands(CRUDCommands);
     }
