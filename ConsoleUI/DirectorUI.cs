@@ -113,7 +113,7 @@ namespace Hospital
                         }
 
                         _hospital.RoomRepo.UpdateRoom(room);
-                        System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+                        System.Console.Write("SUCCESSFULLY UPDATED ROOM. INPUT ANYTHING TO CONTINUE >> ");
                         ReadSanitizedLine();
                     }
                     else if (choice == "delete room" || choice == "delete" || choice == "dr" || choice == "d")
