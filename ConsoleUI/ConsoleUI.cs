@@ -1,50 +1,47 @@
 namespace Hospital;
-class ConsoleUI
+
+[System.Serializable]
+public class QuitToMainMenuException : System.Exception
 {
-    private Hospital _hospital = new Hospital();
-    private User? _user;
+    public QuitToMainMenuException() { }
+    public QuitToMainMenuException(string message) : base(message) { }
+    public QuitToMainMenuException(string message, System.Exception inner) : base(message, inner) { }
+    protected QuitToMainMenuException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
 
-    private bool TryLogin()
+[System.Serializable]
+public class InvalidInputException : System.Exception
+{
+    public InvalidInputException() { }
+    public InvalidInputException(string message) : base(message) { }
+    public InvalidInputException(string message, System.Exception inner) : base(message, inner) { }
+    protected InvalidInputException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
+public abstract class ConsoleUI
+{
+    protected Hospital _hospital;
+    protected User? _user;
+
+    public abstract void Start();
+
+    public ConsoleUI(Hospital hospital)
     {
-        System.Console.Write("input email >> ");
-        var email = Console.ReadLine();
-        System.Console.Write("input password >> ");
-        var password = Console.ReadLine();
-        if (email is null || password is null) throw new Exception("AAAAAA"); // TODO: make better exception
-        _user = _hospital.Login(email, password);
-        if (_user is null)
-        {
-            System.Console.WriteLine("NO SUCH USER!! PLEASE TRY AGAIN"); 
-        }
-        return _user is not null;
+        this._hospital = hospital;
     }
 
-    public void Start()
+    public string ReadSanitizedLine()
     {
-        var success = false;
-        while (!success)
-        {
-            success = TryLogin();
-        }
-        Console.Clear();
-        System.Console.WriteLine("Welcome, " + _user?.Person.FirstName + "!");
-        // TODO: spawn UIs below
-        switch (_user?.Role)
-        {
-            case Role.DIRECTOR:
-            case Role.DOCTOR:
-            case Role.PATIENT:
-            case Role.SECRETARY:
-                break;
-
-            default:
-                System.Console.WriteLine("SOMETHING WENT HORRIBLY WRONG. TERMINATING");
-                break;
-        }
-    }
-
-    public void AddUser(string email, string password, string firstName, string lastName, Role role)
-    { // TODO: DELETE
-        _hospital.UserRepo.AddUser(email, password, firstName, lastName, role);
+        var raw = System.Console.ReadLine();
+        string sanitized;
+        if (raw is null)
+            sanitized = "";
+        else
+            sanitized = raw.ToLower();
+        return sanitized;
     }
 }
