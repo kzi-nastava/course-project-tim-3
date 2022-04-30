@@ -82,7 +82,7 @@ public class SecretaryUI : ConsoleUI
         while (true){
             string selectedOption = selectOption();
             if (selectedOption == "readlist"){
-                readListUserPatients();
+                readUserPatients();
             }
             else if (selectedOption == "create"){
                 CreateUserPatient();
@@ -111,7 +111,7 @@ public class SecretaryUI : ConsoleUI
         }
     }
 
-    public void readListUserPatients()
+    public void readUserPatients()
     {   
         Console.Clear();
         List<User> usersList = new List<User>();
@@ -208,7 +208,8 @@ public class SecretaryUI : ConsoleUI
     }
 
     public void CreateUserPatient()
-    {   Console.Clear();
+    {   
+        Console.Clear();
         UserRepository ur = _hospital.UserRepo;
         System.Console.WriteLine("Enter the following data: ");
         System.Console.Write("email >> ");
@@ -310,7 +311,6 @@ public class SecretaryUI : ConsoleUI
                 throw new NullInputException("Null value as input");
             }
             ur.UpdateUserEmail(email,emailNew);
-
         }
         else if(enter == "password"){
             System.Console.Write("Enter users password : ");
@@ -345,8 +345,5 @@ public class SecretaryUI : ConsoleUI
         Console.Clear();
         printCommands(CRUDCommands);
     }
-
-
-
 }
 
