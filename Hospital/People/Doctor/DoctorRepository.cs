@@ -23,7 +23,7 @@ namespace Hospital
             doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
         }
 
-        public void AddDoctor(Doctor doctor)
+        public void AddOrUpdateDoctor(Doctor doctor)
         {
             var newDoctor = doctor;
             var doctors = GetDoctors();
@@ -35,5 +35,7 @@ namespace Hospital
             var foundDoctor = doctors.Find(doctor => doctor.FirstName == name).FirstOrDefault();
             return foundDoctor;
         }
+
+        
     }
 }
