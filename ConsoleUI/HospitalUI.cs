@@ -20,6 +20,7 @@ public class HospitalUI : ConsoleUI
 
     public override void Start()
     {
+        // _hospital.UserRepo.AddUser("email1", "password", "firstName", "firstName", Role.PATIENT); //TEST      
         var success = false;
         while (!success)
         {
@@ -34,6 +35,8 @@ public class HospitalUI : ConsoleUI
             case Role.DOCTOR:
             case Role.PATIENT:
             case Role.SECRETARY:
+            var ui = new SecretaryUI(this._hospital, this._user);
+                ui.Start();
                 break;
 
             default:
