@@ -1,4 +1,5 @@
 namespace Hospital;
+using MongoDB.Driver;
 [System.Serializable]
 public class NullInputException : System.Exception
 {
@@ -78,7 +79,9 @@ public class SecretaryUI : ConsoleUI
         printCommands(CRUDCommands);
         while (true){
             string selectedOption = selectOption();
-            if (selectedOption == "readList"){}
+            if (selectedOption == "readlist"){
+                readList();
+            }
             else if (selectedOption == "create"){}
             else if (selectedOption == "read"){}
             else if (selectedOption == "update"){}
@@ -100,5 +103,102 @@ public class SecretaryUI : ConsoleUI
                 Console.WriteLine("Unrecognized command, please try again");
             }
         }
+    }
+
+    public void readList()
+    {   
+        Console.Clear();
+        List<User> usersList = new List<User>();
+        MongoClient _dbClient = new MongoClient("mongodb://root:root@localhost:27017");
+        UserRepository ur = new UserRepository(_dbClient);
+        var users = ur.GetUsers();
+        var matchingUsers = from user in users.AsQueryable() select user;
+
+        foreach(var p in matchingUsers){
+            usersList.Add(p);
+        }
+
+        int usersListSize = usersList.Count();
+        int startIndex = 0;
+        int endIndex = 10;
+
+        header();
+        userPages(usersList, startIndex, endIndex);   
+
+        while(true){
+            string selectedOption = selectOption();
+            Console.Clear();
+            if (selectedOption == "left")
+            {
+                startIndex = startIndex-10;
+                endIndex = endIndex-10;
+                if(startIndex >= 0)
+                { 
+                    header();
+                    userPages(usersList, startIndex, endIndex);
+                }
+                else{
+                    startIndex = startIndex+10;
+                    endIndex = endIndex+10;
+                    header();
+                    userPages(usersList, startIndex, endIndex);
+                    System.Console.WriteLine("There are no more previous pages");
+                }
+            }
+            else if(selectedOption == "right")
+            {   
+                startIndex = startIndex+10;
+                endIndex = endIndex+10;
+                if(endIndex <= usersListSize)
+                {   
+                    header();
+                    userPages(usersList, startIndex, endIndex);
+                }
+                else if((10 - (endIndex-usersListSize)) >= 0){
+                    int newEndIndex = 10 - (endIndex-usersListSize);
+                    System.Console.WriteLine(newEndIndex.ToString());
+                    header();
+                    userPages(usersList, startIndex, usersListSize);
+                }
+                else{
+                    header();
+                    userPages(usersList, startIndex-10, usersListSize);
+                    startIndex = startIndex-10;
+                    endIndex = endIndex-10;
+                    System.Console.WriteLine("There are no more next pages");
+                }
+            }
+            else if(selectedOption == "back"){
+                printCommands(CRUDCommands);
+                break;
+            }
+        }
+    }
+
+    public void header()
+    {
+        System.Console.WriteLine("__________________________________________________________________________________________");
+        System.Console.WriteLine("|                       |                      |                                          |");
+        System.Console.WriteLine("|       First Name      |      Last Name       |                   Email                  |");
+        System.Console.WriteLine("|_______________________|______________________|__________________________________________|");
+        System.Console.WriteLine("|                       |                      |                                          |");
+
+    }
+
+    public void userPages(List<User> usersList, int startIndex, int endIndex)
+    {   
+        int i;
+        for(i = startIndex; i < endIndex; i++ ){
+            var user = usersList.ElementAt(i);
+            System.Console.WriteLine(String.Format("| {0,-21} | {1,-20} | {2, -40} |", user.Person.FirstName, user.Person.LastName, user.Email));
+        }
+
+        System.Console.WriteLine("|_______________________|______________________|__________________________________________|");
+        System.Console.WriteLine("Choose:");
+        System.Console.WriteLine("       <Left> (previous 10 users)");
+        System.Console.WriteLine("       <Right> (next 10 users)");
+        System.Console.WriteLine("       <Back>");
+        System.Console.WriteLine("");
+
     }
 }
