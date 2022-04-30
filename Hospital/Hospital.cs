@@ -12,6 +12,7 @@
         public AppointmentRepository AppointmentRepo {get;}
         public DirectorRepository DirectorRepo {get;}
         public SecretaryRepository SecretaryRepo {get;}
+        public RoomRepository RoomRepo {get;}
 
         public Hospital()
         {
@@ -21,6 +22,7 @@
             AppointmentRepo = new AppointmentRepository(_dbClient);
             DirectorRepo = new DirectorRepository(_dbClient);
             SecretaryRepo = new SecretaryRepository(_dbClient);
+            RoomRepo = new RoomRepository(_dbClient);
         }
 
         public User? Login(string email, string password)

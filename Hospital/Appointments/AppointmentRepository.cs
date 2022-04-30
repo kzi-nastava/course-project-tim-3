@@ -10,11 +10,6 @@ namespace Hospital
         {
             this._dbClient = _dbClient;
         }
-        
-        // public IMongoCollection<Appointment> GetAppointments()
-        // {
-        //     return _dbClient.GetDatabase("hospital").GetCollection<Appointment>("appointments");
-        // }
 
         public IMongoCollection<Checkup> GetCheckups()
         {
@@ -34,7 +29,7 @@ namespace Hospital
         }
 
         public void AddOrUpdateCheckup(Checkup newCheckup)
-        {;
+        {
             var checkups = GetCheckups();
             checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
         }
@@ -58,6 +53,20 @@ namespace Hospital
             List<Checkup> doctorsCheckups = checkups.Find(appointment => appointment.Doctor.Id == id).ToList();
             return doctorsCheckups;
         }
+
+        public List<Checkup> GetCheckupsByPatient(ObjectId id)
+        {
+            var checkups = GetCheckups();
+            List<Checkup> patientCheckups = checkups.Find(appointment => appointment.Patient.Id == id).ToList();
+            return patientCheckups;
+        }
+
+        public List<Operation> GetOperationsByPatient(ObjectId id)
+        {
+            var operations = GetOperations();
+            List<Operation> patientOperations = operations.Find(appointment => appointment.Doctor.Id == id).ToList();
+            return patientOperations;
+        }
         
         public List<Operation> GetOperationsByDoctor(ObjectId id)
         {
@@ -73,11 +82,6 @@ namespace Hospital
             return checkupsByDay;
         }
 
-        // public bool UpdateCheckup(Checkup updatedCheckup)
-        // {
-        //     var checkups = GetCheckups();
-        //     List<Checkup> checkupsByDay = checkups.UpdateOne(checkup => checkup.Id == updatedCheckup.Id, updatedCheckup, new ReplaceOptions {IsUpsert = true})
-        // }
 
         public Checkup GetCheckupById(ObjectId id)
         {

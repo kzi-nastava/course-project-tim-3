@@ -15,7 +15,6 @@ namespace Hospital
             // //generate tests TODO: move this to dedicated teting interface
 
             // //generate users
-
             // for (int i = 0; i < 100; i++)
             // {
             //     User user;
