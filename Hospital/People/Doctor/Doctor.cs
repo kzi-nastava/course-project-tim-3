@@ -1,3 +1,4 @@
+using MongoDB.Bson.Serialization.Attributes;
 namespace Hospital
 {
 
@@ -11,16 +12,12 @@ namespace Hospital
     }
     public class Doctor : Person
     {
+        [BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public Specialty Specialty {get; set;}
         
         public Doctor(string firstName, string lastName, Specialty specialty) : base(firstName, lastName)
         {
             Specialty = specialty;
-        }
-
-        public bool CheckIfFree (DateTime appointmentDate)
-        {
-            return true;
         }
         
         public override string ToString() 

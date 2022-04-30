@@ -24,14 +24,21 @@ namespace Hospital
             doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
         }
 
+        public void AddDoctor(Doctor newDoctor)
+        {
+            var doctors = GetDoctors();
+            doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
+        }
+
         // this should return an empty list if there are no doctors in selected specialty
         public List<Doctor> GetDoctorBySpecialty(Specialty specialty)
         {
             var doctors = GetDoctors();
             var specizedDoctors =
-                from doctor in doctors.AsQueryable()
+                from doctor in doctors.AsQueryable<Doctor>()
                 where doctor.Specialty == specialty
                 select doctor;
+
             return specizedDoctors.ToList();
         }
 

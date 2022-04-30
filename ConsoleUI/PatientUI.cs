@@ -91,7 +91,7 @@ public class PatientUI : ConsoleUI
         //TODO: find a way to remove current doctor from list
         List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(currentDoctor.Specialty);
         Doctor newDoctor = currentDoctor;
-        DateTime newDate = currentDate;
+        DateTime? newDate = currentDate;
 
         // change doctor?
 
@@ -171,27 +171,31 @@ public class PatientUI : ConsoleUI
 
         if (changeDateOpinion == "yes")
         {
-            DateTime? selectedDate = selectDate();
-            if (selectedDate is null)
+            newDate = selectDate();
+            if (newDate is null)
             {
                 return;
             }
 
-            Console.WriteLine("You have selected the following date - "+ selectedDate);
+            Console.WriteLine("You have selected the following date - "+ newDate);
         }
 
-        if (newDoctor.CheckIfFree((DateTime)newDate) is false)
+        selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
+        selectedCheckup.TimeAndDate = (DateTime)newDate;
+        
+        if (_hospital.AppointmentRepo.IsDoctorBusy((DateTime)newDate,newDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
         }
-
-        
-        selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
-        selectedCheckup.TimeAndDate = newDate;
+        else
+        {
+            Console.WriteLine("Checkup time is free to schedule.");
+        }
 
         _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
 
+        Console.WriteLine("Checkup created.");
     }
 
     public string ConvertAppointmentToString(Appointment a)
@@ -225,6 +229,7 @@ public class PatientUI : ConsoleUI
     }
     public void ShowAppointments()
     {   
+        Console.WriteLine("Checkups");
         ShowCheckups();
         Console.WriteLine("Operations");
         showOperations();
@@ -477,11 +482,16 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        if (suitableDoctors[selectedIndex].CheckIfFree((DateTime)selectedDate) is false)
+        if (_hospital.AppointmentRepo.IsDoctorBusy((DateTime)selectedDate,suitableDoctors[selectedIndex]))
         {
             Console.WriteLine("Checkup already taken.");
             return;
         }
+        else
+        {
+            Console.WriteLine("Checkup is free to schedule");
+        }
+
         
         //TODO: Might want to create an additional expiry check for checkup timedate
 
@@ -492,7 +502,8 @@ public class PatientUI : ConsoleUI
             new MongoDB.Driver.MongoDBRef("doctors", suitableDoctors[selectedIndex].Id),
             "no anamnesis");
         
-        this._hospital.AppointmentRepo.AddCheckup(newCheckup);
+        this._hospital.AppointmentRepo.AddOrUpdateCheckup(newCheckup);
+        Console.WriteLine("Checkup created");
         
         
     }
@@ -519,7 +530,7 @@ public class PatientUI : ConsoleUI
 
         printCommands(this.ManageAppointmentsCommands);
         while (true){
-            string selectedOption = selectOption("Manage checkups");
+            string selectedOption = selectOption("Manage appointments");
             if (selectedOption == "cc" || selectedOption == "create checkup")
             {
                 createCheckup();

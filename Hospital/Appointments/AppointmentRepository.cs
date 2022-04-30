@@ -29,7 +29,7 @@ namespace Hospital
         }
 
         public void AddOrUpdateCheckup(Checkup newCheckup)
-        {;
+        {
             var checkups = GetCheckups();
             checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
         }
