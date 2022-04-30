@@ -3,17 +3,6 @@ using System.Globalization;
 using MongoDB.Bson;
 
 [System.Serializable]
-public class NullInputException : System.Exception
-{
-    public NullInputException() { }
-    public NullInputException(string message) : base(message) { }
-    public NullInputException(string message, System.Exception inner) : base(message, inner) { }
-    protected NullInputException(
-        System.Runtime.Serialization.SerializationInfo info,
-        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-}
-
-[System.Serializable]
 public class GetOutException : System.Exception
 {
     public GetOutException() { }
