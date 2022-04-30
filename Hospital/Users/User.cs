@@ -15,6 +15,7 @@ namespace Hospital
     public class User
     {
         // todo: might want to add objectId here
+        
         public string Email {get;}
         public string Password {get;}
         [BsonRepresentation(BsonType.String)]
@@ -27,7 +28,7 @@ namespace Hospital
             this.Password = password;
             this.Role = role;
             // TODO: everyone is patient. add a switch case here
-            Person = new Patient(firstName, lastName);
+            //Person = new Person(firstName, lastName);
         }
 
         [BsonConstructor]

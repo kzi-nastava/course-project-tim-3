@@ -16,7 +16,7 @@ namespace Hospital
             return _dbClient.GetDatabase("hospital").GetCollection<Doctor>("doctors");
         }
 
-        public void AddDoctor(string firstName, string lastName, string specialty)
+        public void AddDoctor(string firstName, string lastName, Specialty specialty)
         {
             var newDoctor = new Doctor(firstName, lastName, specialty);
             var doctors = GetDoctors();
