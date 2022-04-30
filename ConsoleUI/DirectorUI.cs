@@ -132,6 +132,12 @@ namespace Hospital
                         throw new QuitToMainMenuException("From StartManageRooms");
                     else if (choice == "x" || choice == "exit")
                         System.Environment.Exit(0);
+                    else
+                    {
+                        System.Console.WriteLine("INVALID INPUT - READ THE AVAILABLE COMMANDS!");
+                        System.Console.Write("INPUT ANYTHING TO CONTINUE >> ");
+                        ReadSanitizedLine();
+                    }
                 }
                 catch (InvalidInputException e)
                 {
