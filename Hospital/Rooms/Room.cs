@@ -5,6 +5,7 @@ namespace Hospital
 {
     public class Room
     {
+        // todo: naming
         public enum RoomType
         {
             REST,
@@ -15,12 +16,12 @@ namespace Hospital
         }
 
         [BsonId]
-        public ObjectId Id {get;}
+        public ObjectId Id {get; set;}
 
         [BsonRepresentation(BsonType.String)]
-        public RoomType Type {get;}
-        public string Location {get;}
-        public string Name {get;}
+        public RoomType Type {get; set;}
+        public string Location {get; set;}
+        public string Name {get; set;}
 
         public Room(string location, string name, RoomType type)
         {

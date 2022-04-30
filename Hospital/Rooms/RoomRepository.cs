@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Hospital
 {
@@ -16,6 +17,11 @@ namespace Hospital
             return _dbClient.GetDatabase("hospital").GetCollection<Room>("rooms");
         }
 
+        public IMongoQueryable<Room> GetQueryableRooms()
+        {
+            return _dbClient.GetDatabase("hospital").GetCollection<Room>("rooms").AsQueryable();
+        }
+
         public bool DeleteRoom(string location)
         {
             var rooms = GetRooms();
@@ -26,6 +32,12 @@ namespace Hospital
         {
             var rooms = GetRooms();
             rooms.ReplaceOne(room => room.Location == newRoom.Location, newRoom, new ReplaceOptions {IsUpsert = true});
+        }
+
+        public void UpdateRoom(Room changingRoom)
+        {
+            var rooms = GetRooms();
+            rooms.ReplaceOne(room => room.Id == changingRoom.Id, changingRoom, new ReplaceOptions {IsUpsert = true});
         }
 
         public Room? GetRoom(string location)

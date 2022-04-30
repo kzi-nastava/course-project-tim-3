@@ -35,13 +35,16 @@ namespace Hospital
 
         public void StartManageRooms()
         {
+            List<Room> rooms = _hospital.RoomRepo.GetQueryableRooms().ToList();
             while (true)
             {
                 System.Console.Clear();
-                DisplayRooms(_hospital.RoomRepo);
+                System.Console.WriteLine("--- ROOMS ---");
+                DisplayRooms(rooms);
                 System.Console.WriteLine(@"
                 INPUT OPTION:
                     [add room|add|ar|a] Add a room
+                    [update room|update|ur|u] Update a room
                     [quit|q] Quit to main menu
                     [exit|x] Exit program
                     [...]
@@ -53,7 +56,7 @@ namespace Hospital
                     // todo: unhardcode choices so they match menu display always
                     if (choice == "a" || choice == "ar" || choice == "add" || choice == "add rooms")
                     {
-                        // todo: move to function
+                        // todo: move to function everything...
                         System.Console.Write("ENTER ROOM LOCATION >> ");
                         var location = ReadSanitizedLine();
                         if (location == "")
@@ -75,6 +78,42 @@ namespace Hospital
                         System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
                         ReadSanitizedLine();
                     }
+                    else if (choice == "u" || choice == "ur" || choice == "update" || choice == "update room")
+                    {
+                        System.Console.Write("INPUT NUMBER >> ");
+                        var rawNumber = ReadSanitizedLine();
+                        bool success = Int32.TryParse(rawNumber, out int number);
+                        if (number < 0 || number >= rooms.Count)
+                            throw new InvalidInputException("NUMBER OUT OF BOUNDS!");
+                        var room = rooms[number];
+
+                        System.Console.WriteLine("INPUT NOTHING TO KEEP AS IS");
+
+                        System.Console.Write("ENTER ROOM LOCATION >> ");
+                        var location = ReadSanitizedLine();
+                        if (location != "")
+                            room.Location = location;
+
+                        System.Console.Write("ENTER ROOM NAME >> ");
+                        var name = ReadSanitizedLine();
+                        if (name != "")
+                            room.Name = name;
+
+                        System.Console.Write("ENTER ROOM TYPE [rest|operation|examination|other] >> ");
+                        var rawType = ReadSanitizedLine();
+                        Room.RoomType type;
+                        if (rawType != "")
+                        {
+                            success = Enum.TryParse(rawType, true, out type);
+                            if (!success)
+                                throw new InvalidInputException("NOT A VALID TYPE!");
+                            room.Type = type;
+                        }
+
+                        _hospital.RoomRepo.UpdateRoom(room);
+                        System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+                        ReadSanitizedLine();
+                    }
                     else if (choice == "q" || choice == "quit")
                         throw new QuitToMainMenuException("From StartManageRooms");
                     else if (choice == "x" || choice == "exit")
@@ -88,9 +127,15 @@ namespace Hospital
             }
         }
 
-        public void DisplayRooms(RoomRepository roomRepo)
+        public void DisplayRooms(List<Room> rooms)
         {
-            
+            System.Console.WriteLine("No. | Location | Name | Type");
+            // TODO: paginate and make prettier
+            for (int i = 0; i < rooms.Count; i++)
+            {
+                var room = rooms[i];
+                System.Console.WriteLine(i + " | " + room.Location + " | " + room.Name + " | " + room.Type);
+            }
         }
     }
 }
