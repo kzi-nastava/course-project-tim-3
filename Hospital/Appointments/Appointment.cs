@@ -22,7 +22,7 @@ namespace Hospital
         }
         public string toString()
         {
-            return Id + " " + TimeAndDate + " " + Patient + " " + Doctor + " " + Duration;
+            return TimeAndDate + " " + Patient.Id + " " + Doctor.Id + " " + Duration;
         }
     
     }
