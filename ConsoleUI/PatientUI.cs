@@ -1,5 +1,6 @@
 namespace Hospital;
 using System.Globalization;
+using MongoDB.Bson;
 
 [System.Serializable]
 public class NullInputException : System.Exception
@@ -31,6 +32,13 @@ public class PatientUI : ConsoleUI
     "return",
     "exit",
     "help"};
+    public List<string> AppointmentRUDCommands {get; private set;} = new List<string>
+    {"sa / show appointments",
+    "uc / update checkups",
+    "dc / delete checkups",
+    "return",
+    "exit",
+    "help"};
 
     //there might be a better way to set opening time, only time will be used
     //those times should be stored somewhere else
@@ -38,19 +46,91 @@ public class PatientUI : ConsoleUI
     DateTime closingTime = new DateTime(2000, 10, 20, 17, 0, 0);
     DateTime now = DateTime.Now;
     TimeSpan checkupDuration = new TimeSpan(0,0,15,0);
-
-    
+    Patient current;
 
     public PatientUI(Hospital _hospital, User? _user) : base(_hospital) 
     {
         this._user = _user;
+        current = _hospital.PatientRepo.GetPatientByName(_user.Person.FirstName);
     }
 
-    //TODO: Implement this
-    public void RegisterCheckup(Checkup c)
+    public void UpdateCheckup(){
+        ShowAppointments();
+
+    }
+
+    public string ConvertAppointmentToString(Appointment a)
     {
+        string output = "";
+
+        output += a.TimeAndDate +" ";
+        Doctor doctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)a.Doctor.Id);
+        output += doctor.FirstName+" "+doctor.LastName;
+
+        return output;
+    }
+    
+    public void ShowAppointments()
+    {   
+        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(current.Id);
+        List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(current.Id);
+
+        for (int i = 0; i< checkups.Count; i++)
+        {
+            Console.WriteLine("cu"+i+" - "+ConvertAppointmentToString(checkups[i]));
+        }
+
+        for (int i = 0; i< operations.Count; i++)
+        {
+            Console.WriteLine("op"+i+" - "+ConvertAppointmentToString(operations[i]));
+        }
 
     }
+    public void AppointmentRUD()
+    {
+        Console.Clear();
+        System.Console.WriteLine("");
+
+        printCommands(this.AppointmentRUDCommands);
+        while (true)
+        {
+            string selectedOption = selectOption("Manage checkups");
+            if (selectedOption == "sa" || selectedOption == "show appointments")
+            {
+                
+                ShowAppointments();
+                
+            }
+            else if (selectedOption == "uc" || selectedOption == "update checkups")
+            {
+                UpdateCheckup();
+            }
+            else if (selectedOption == "dc" || selectedOption == "delete checkups")
+            {
+                //DeleteCheckup();
+            }
+            else if (selectedOption == "help")
+            {
+                printCommands(this.AppointmentRUDCommands);
+            }
+            else if (selectedOption == "return")
+            {
+                Console.WriteLine("Returning...");
+                Console.WriteLine("");
+                break;
+            }
+            else if (selectedOption == "exit")
+            {
+                Console.WriteLine("Exiting...");
+                Environment.Exit(0);
+            }
+            else
+            {
+                Console.WriteLine("Unrecognized command, please try again");
+            }
+        }
+    }
+
 
     public int SelectIndex(string message){
 
@@ -269,7 +349,7 @@ public class PatientUI : ConsoleUI
             "no anamnesis");
         
         //TODO: this function is temporary
-        RegisterCheckup(newCheckup);
+        this._hospital.AppointmentRepo.AddCheckup(newCheckup);
         
         
     }
@@ -303,7 +383,7 @@ public class PatientUI : ConsoleUI
             }
             else if (selectedOption == "va" || selectedOption == "view and manage appointments")
             {
-                Console.WriteLine("wip3");
+                AppointmentRUD();
             }
             else if (selectedOption == "help")
             {
