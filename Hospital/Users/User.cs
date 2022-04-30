@@ -28,7 +28,7 @@ namespace Hospital
             this.Password = password;
             this.Role = role;
             // TODO: everyone is patient. add a switch case here
-            Person = new Patient(firstName, lastName);
+            //Person = new Patient(firstName, lastName);
         }
 
         [BsonConstructor]
