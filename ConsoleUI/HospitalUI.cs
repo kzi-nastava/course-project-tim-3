@@ -37,14 +37,17 @@ public class HospitalUI : ConsoleUI
                 doctorUI.Start();
                 break;
             case Role.PATIENT:
+            {
                 var ui = new PatientUI(this._hospital, this._user);
                 ui.Start();
                 break;
+            }
             case Role.SECRETARY:
-            var ui = new SecretaryUI(this._hospital, this._user);
+            {
+                var ui = new SecretaryUI(this._hospital, this._user);
                 ui.Start();
                 break;
-
+            }   
             default:
                 System.Console.WriteLine("SOMETHING WENT HORRIBLY WRONG. TERMINATING");
                 break;
