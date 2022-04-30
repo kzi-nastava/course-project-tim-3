@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Hospital
 {
-    public abstract class Room
+    public class Room
     {
         public enum RoomType
         {
@@ -20,11 +20,13 @@ namespace Hospital
         [BsonRepresentation(BsonType.String)]
         public RoomType Type {get;}
         public string Location {get;}
+        public string Name {get;}
 
-        public Room(string location, RoomType type)
+        public Room(string location, string name, RoomType type)
         {
             Id = ObjectId.GenerateNewId();
             Location = location;
+            Name = name;
             Type = type;
         }
     }
