@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using MongoDB.Bson;
 
 namespace Hospital
 {
@@ -26,6 +27,12 @@ namespace Hospital
         {
             var rooms = GetRooms();
             return rooms.DeleteOne(room => room.Location == location).DeletedCount == 1;
+        }
+
+        public bool DeleteRoom(ObjectId id)
+        {
+            var rooms = GetRooms();
+            return rooms.DeleteOne(room => room.Id == id).DeletedCount == 1;
         }
 
         public void AddRoom(Room newRoom)

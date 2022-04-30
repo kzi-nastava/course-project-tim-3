@@ -45,6 +45,7 @@ namespace Hospital
                 INPUT OPTION:
                     [add room|add|ar|a] Add a room
                     [update room|update|ur|u] Update a room
+                    [delete room|delete|dr|d] Delete a room
                     [quit|q] Quit to main menu
                     [exit|x] Exit program
                     [...]
@@ -80,6 +81,7 @@ namespace Hospital
                     }
                     else if (choice == "u" || choice == "ur" || choice == "update" || choice == "update room")
                     {
+                        // todo: move to a special function number bounds input
                         System.Console.Write("INPUT NUMBER >> ");
                         var rawNumber = ReadSanitizedLine();
                         bool success = Int32.TryParse(rawNumber, out int number);
@@ -112,6 +114,18 @@ namespace Hospital
 
                         _hospital.RoomRepo.UpdateRoom(room);
                         System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+                        ReadSanitizedLine();
+                    }
+                    else if (choice == "delete room" || choice == "delete" || choice == "dr" || choice == "d")
+                    {
+                        System.Console.Write("INPUT NUMBER >> ");
+                        var rawNumber = ReadSanitizedLine();
+                        bool success = Int32.TryParse(rawNumber, out int number);
+                        if (number < 0 || number >= rooms.Count)
+                            throw new InvalidInputException("NUMBER OUT OF BOUNDS!");
+                        
+                        _hospital.RoomRepo.DeleteRoom(rooms[number].Id);
+                        System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
                         ReadSanitizedLine();
                     }
                     else if (choice == "q" || choice == "quit")
