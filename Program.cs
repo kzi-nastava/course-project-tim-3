@@ -68,7 +68,7 @@ namespace Hospital
             // }
             // DateTime date = new DateTime(2022, 5, 2, 13, 10, 0);
             // Console.Write(hospital.AppointmentRepo.IsDoctorBusy(date,hospital.DoctorRepo.GetDoctorByName("imenko1")));
-            // var ui = new DoctorUI(hospital);
+            // var ui = new HospitalUI(hospital);
             // ui.Start();
         }
     }

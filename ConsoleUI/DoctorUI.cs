@@ -1,10 +1,10 @@
 using MongoDB.Bson;
-
+using MongoDB.Driver;
 namespace Hospital;
 
 public class DoctorUI : ConsoleUI
 {
-    public DoctorUI(Hospital _hospital) : base(_hospital) {}
+    public DoctorUI(Hospital _hospital, User _user) : base(_hospital) {}
 
      public override void Start()
     {
@@ -53,7 +53,7 @@ public class DoctorUI : ConsoleUI
         bool exit = false;
         while (!exit)
         {
-            Console.Write("\nOptions:\n\n1. See patient info for checkup\n2. Start checkup\n3. Update checkup\n4. Delete checkup\n5. Back\n");
+            Console.Write("\nOptions:\n\n1. See patient info for checkup\n2. Start checkup\n3. Update checkup\n4. Delete checkup\n5. Add checkup\n6. Back\n");
             Console.Write(">>");
             var input = Console.ReadLine().Trim();
             switch (input)
@@ -137,6 +137,23 @@ public class DoctorUI : ConsoleUI
                     break;
                 }
                 case "5":
+                {
+                    Console.WriteLine("Creating new Checkup appointment...");
+                    Console.Write("\nEnter date >>");
+                    string? date = Console.ReadLine();
+                    Console.Write("\nEnter time >>");
+                    string? time = Console.ReadLine();
+                    DateTime dateTime = DateTime.Parse(date + " " + time);
+                    Console.Write("\nEnter patient name >>");
+                    string? name = Console.ReadLine();
+                    Console.Write("\nEnter patient surname >>");
+                    string? surname = Console.ReadLine();
+                    Patient patient = _hospital.PatientRepo.GetPatientByFullName(name,surname);
+                    Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
+                    _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+                    break;
+                }
+                case "6":
                 {
                     exit = true;
                     break;
