@@ -4,13 +4,13 @@ namespace Hospital;
 [BsonIgnoreExtraElements]
 public class MedicalRecord {
     [BsonElement]
-    double HeightInCm {get; set;}
+    public double HeightInCm {get; set;}
     [BsonElement]
-    double WeightInKg {get; set;}
+    public double WeightInKg {get; set;}
     [BsonElement]
-    List<string> AnamnesisHistory {get;} 
+    public List<string> AnamnesisHistory {get;} 
     [BsonElement]
-    List<string> Allergies {get;} 
+    public List<string> Allergies {get;} 
     [BsonConstructor]
     public MedicalRecord() 
     {
@@ -29,6 +29,7 @@ public class MedicalRecord {
     }
     public override string ToString()
     {
-        return "Height In Cm : " + HeightInCm + "\nWeight In Cm : " + WeightInKg + "\nAnamnesis History : " + AnamnesisHistory + "\nAllergies : " + Allergies;
+        return "Height In Cm : " + HeightInCm + "\nWeight In Cm : " + WeightInKg + "\nAnamnesis History : " 
+        + string.Join( ",", AnamnesisHistory) + "\nAllergies : " + string.Join( ",", Allergies);
     }
 }

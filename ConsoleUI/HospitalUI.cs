@@ -27,12 +27,15 @@ public class HospitalUI : ConsoleUI
             success = TryLogin();
         }
         Console.Clear();
-        System.Console.WriteLine("Welcome, " + _user?.Person.FirstName + "!");
+        System.Console.WriteLine("Welcome, " + _user?.Email + "!");
         // TODO: spawn UIs below
         switch (_user?.Role)
         {
             case Role.DIRECTOR:
             case Role.DOCTOR:
+                DoctorUI doctorUI = new DoctorUI(_hospital, _user);
+                doctorUI.Start();
+                break;
             case Role.PATIENT:
                 var ui = new PatientUI(this._hospital, this._user);
                 ui.Start();

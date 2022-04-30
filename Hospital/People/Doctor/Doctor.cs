@@ -1,7 +1,6 @@
 using MongoDB.Bson.Serialization.Attributes;
 namespace Hospital
 {
-
     public enum Specialty
     {
         DERMATOLOGY,

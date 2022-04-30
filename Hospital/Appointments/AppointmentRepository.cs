@@ -89,6 +89,14 @@ namespace Hospital
             Checkup checkup = checkups.Find(appointment => appointment.Doctor.Id == id).FirstOrDefault();
             return checkup;
         }
+
+        public void DeleteCheckup(Checkup checkup)
+        {
+         var checkups = GetCheckups();
+         var filter = Builders<Checkup>.Filter.Eq(deletedCheckup => deletedCheckup.Id, checkup.Id);
+         checkups.DeleteOne(filter);
+        }
+
         public bool IsDoctorBusy(DateTime date, Doctor doctor)
         {
             List<Checkup> checkups = GetCheckupsByDoctor(doctor.Id);

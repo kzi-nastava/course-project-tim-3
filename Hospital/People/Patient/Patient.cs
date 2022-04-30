@@ -1,7 +1,9 @@
+using MongoDB.Bson.Serialization.Attributes;
 namespace Hospital
 {
     public class Patient : Person
     {
+        [BsonElement]
         public MedicalRecord MedicalRecord {get; set;}
         public Patient(string firstName, string lastName, MedicalRecord medicalRecord) : base(firstName, lastName)
         {
