@@ -82,7 +82,7 @@ public class SecretaryUI : ConsoleUI
         while (true){
             string selectedOption = selectOption();
             if (selectedOption == "readlist"){
-                readUserPatients();
+                readListUserPatients();
             }
             else if (selectedOption == "create"){
                 CreateUserPatient();
@@ -111,24 +111,24 @@ public class SecretaryUI : ConsoleUI
         }
     }
 
-    public void readUserPatients()
+    public void readListUserPatients()
     {   
         Console.Clear();
-        List<User> usersList = new List<User>();
+        List<User> users = new List<User>();
         UserRepository ur = _hospital.UserRepo;
-        var users = ur.GetUsers();
-        var matchingUsers = from user in users.AsQueryable() select user;
+        var usersGet = ur.GetUsers();
+        var matchingUsers = from user in usersGet.AsQueryable() select user;
 
         foreach(var p in matchingUsers){
-            usersList.Add(p);
+            users.Add(p);
         }
 
-        int usersListSize = usersList.Count();
+        int usersListSize = users.Count();
         int startIndex = 0;
         int endIndex = 10;
 
         header();
-        userPages(usersList, startIndex, endIndex);   
+        userPages(users, startIndex, endIndex);   
 
         while(true){
             string selectedOption = selectOption();
@@ -140,13 +140,13 @@ public class SecretaryUI : ConsoleUI
                 if(startIndex >= 0)
                 { 
                     header();
-                    userPages(usersList, startIndex, endIndex);
+                    userPages(users, startIndex, endIndex);
                 }
                 else{
                     startIndex = startIndex+10;
                     endIndex = endIndex+10;
                     header();
-                    userPages(usersList, startIndex, endIndex);
+                    userPages(users, startIndex, endIndex);
                     System.Console.WriteLine("There are no more previous pages");
                 }
             }
@@ -157,17 +157,17 @@ public class SecretaryUI : ConsoleUI
                 if(endIndex <= usersListSize)
                 {   
                     header();
-                    userPages(usersList, startIndex, endIndex);
+                    userPages(users, startIndex, endIndex);
                 }
                 else if((10 - (endIndex-usersListSize)) >= 0){
                     int newEndIndex = 10 - (endIndex-usersListSize);
                     System.Console.WriteLine(newEndIndex.ToString());
                     header();
-                    userPages(usersList, startIndex, usersListSize);
+                    userPages(users, startIndex, usersListSize);
                 }
                 else{
                     header();
-                    userPages(usersList, startIndex-10, usersListSize);
+                    userPages(users, startIndex-10, usersListSize);
                     startIndex = startIndex-10;
                     endIndex = endIndex-10;
                     System.Console.WriteLine("There are no more next pages");
