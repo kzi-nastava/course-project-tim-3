@@ -81,12 +81,7 @@ namespace Hospital
                     }
                     else if (choice == "u" || choice == "ur" || choice == "update" || choice == "update room")
                     {
-                        // todo: move to a special function number bounds input
-                        System.Console.Write("INPUT NUMBER >> ");
-                        var rawNumber = ReadSanitizedLine();
-                        bool success = Int32.TryParse(rawNumber, out int number);
-                        if (number < 0 || number >= rooms.Count)
-                            throw new InvalidInputException("NUMBER OUT OF BOUNDS!");
+                        var number = ReadInt(0, rooms.Count - 1);
                         var room = rooms[number];
 
                         System.Console.WriteLine("INPUT NOTHING TO KEEP AS IS");
@@ -106,7 +101,7 @@ namespace Hospital
                         Room.RoomType type;
                         if (rawType != "")
                         {
-                            success = Enum.TryParse(rawType, true, out type);
+                            var success = Enum.TryParse(rawType, true, out type);
                             if (!success || type == Room.RoomType.STOCK)
                                 throw new InvalidInputException("NOT A VALID TYPE!");
                             room.Type = type;
@@ -118,12 +113,7 @@ namespace Hospital
                     }
                     else if (choice == "delete room" || choice == "delete" || choice == "dr" || choice == "d")
                     {
-                        System.Console.Write("INPUT NUMBER >> ");
-                        var rawNumber = ReadSanitizedLine();
-                        bool success = Int32.TryParse(rawNumber, out int number);
-                        if (number < 0 || number >= rooms.Count)
-                            throw new InvalidInputException("NUMBER OUT OF BOUNDS!");
-                        
+                        var number = ReadInt(0, rooms.Count - 1);
                         _hospital.RoomRepo.DeleteRoom(rooms[number].Id);
                         System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
                         ReadSanitizedLine();
