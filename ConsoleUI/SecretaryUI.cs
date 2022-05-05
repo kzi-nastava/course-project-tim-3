@@ -260,7 +260,7 @@ public class SecretaryUI : ConsoleUI
         else{
             Console.Clear();
             Patient patient = new Patient(email, lastName, new MedicalRecord());
-            // FIXME: ADD PATIENT TO REPO!!!!!
+            _hospital.PatientRepo.AddOrUpdatePatient(patient);
             ur.AddOrUpdateUser(new User(email, password,patient,Role.PATIENT));
         }
         printCommands(CRUDCommands);
