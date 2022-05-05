@@ -11,7 +11,7 @@ public class DoctorUI : ConsoleUI
         bool exit = false;
         while (!exit)
         {
-            Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Exit");
+            Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Logout");
             Console.Write("\n>>");
             var option = Console.ReadLine().Trim();
             switch (option)

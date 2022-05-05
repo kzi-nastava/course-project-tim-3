@@ -12,41 +12,56 @@ namespace Hospital
             var hospital = new Hospital();
             var hospitalUsers = new {Users = new List<User>()};
 
-            // //generate tests TODO: move this to dedicated teting interface
+            //generate tests TODO: move this to dedicated teting interface
 
-            // //generate users
+            //generate users
             // for (int i = 0; i < 100; i++)
             // {
             //     User user;
             //     if (i % 4 == 0)
-            //         user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.DIRECTOR);
+            //     {
+            //         // user = new User("a" + i, "a" + i, "name" + i, "surname" + i, Role.DIRECTOR);
+            //         Director director = new Director("name" + i, "surname" + i);
+            //         user = new User("a" + i, "a" + i, director, Role.DIRECTOR);
+            //         hospital.DirectorRepo.AddOrUpdateDirector(director);
+            //         hospital.UserRepo.AddOrUpdateUser(user);
+            //     }
             //     else if (i % 4 == 1)
             //     {
-            //         user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.DOCTOR);
+            //         //user = new User("a" + i, "a" + i, "name" + i, "surname" + i, Role.DOCTOR);
             //         Doctor doctor;
-            //         doctor = new Doctor("imenko" + i,"prezimenic" + i, Specialty.FAMILY_MEDICINE);
+            //         doctor = new Doctor("name" + i,"surname" + i, Specialty.FAMILY_MEDICINE);
+            //         user = new User("a" + i, "a" + i, doctor, Role.DOCTOR);
             //         hospital.DoctorRepo.AddOrUpdateDoctor(doctor);
+            //         hospital.UserRepo.AddOrUpdateUser(user);                
             //     }
             //     else if (i % 4 == 2) 
             //     {
             //         Patient patient;
-            //         patient = new Patient("imenko" + i, "prezimenic" + i, new MedicalRecord());
+            //         patient = new Patient("name" + i, "surname" + i, new MedicalRecord());
             //         hospital.PatientRepo.AddOrUpdatePatient(patient);
-            //         user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.PATIENT);
+            //         user = new User("a" + i, "a" + i, patient, Role.PATIENT);
+            //         hospital.UserRepo.AddOrUpdateUser(user);                
             //     }  
             //     else
-            //         user = new User("a" + i, "a" + i, "imenko" + i, "prezimenic" + i, Role.SECRETARY);
-            // hospital.UserRepo.AddUser(user.Email, user.Password, user.Person.FirstName, user.Person.LastName, user.Role);
+            //     {
+            //         Secretary secretary = new Secretary("name" + i, "surname" + i);
+            //         user = new User("a" + i, "a" + i, secretary, Role.SECRETARY);
+            //         hospital.SecretaryRepo.AddOrUpdateSecretary(secretary);
+            //         hospital.UserRepo.AddOrUpdateUser(user);
+            //     }
+                    
+            
             // hospitalUsers.Users.Add(user);
             // File.WriteAllText("db/hospital.json", hospitalUsers.ToBsonDocument().ToJson(
             //    new JsonWriterSettings {Indent = true}));
             // }
             // //generate checkups and operations
-            // DateTime dateTime = new DateTime(2022, 5, 1, 4, 15, 0);
+            // DateTime dateTime = new DateTime(2022, 5, 6, 4, 15, 0);
             // for (int i = 0; i < 100; i++)
             // {
-            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByName("imenko1");
-            //     Patient patient = hospital.PatientRepo.GetPatientByName("imenko2");
+            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByName("name1");
+            //     Patient patient = hospital.PatientRepo.GetPatientByName("name2");
             //     dateTime = dateTime.AddHours(1);
 
             //     if (i % 2 == 0)
@@ -60,15 +75,8 @@ namespace Hospital
             //     }    
             // }
 
-            // List<Checkup> doctorCheckups = hospital.AppointmentRepo.GetCheckupsByDoctor(hospital.DoctorRepo.GetDoctorByName("imenko1").Id);
-            // foreach (Checkup c in doctorCheckups)
-            // {
-            //     Console.WriteLine(c.toString());
-            // }
-            // DateTime date = new DateTime(2022, 5, 2, 13, 10, 0);
-            // Console.Write(hospital.AppointmentRepo.IsDoctorBusy(date,hospital.DoctorRepo.GetDoctorByName("imenko1")));
-            // var ui = new HospitalUI(hospital);
-            // ui.Start();
+            var ui = new HospitalUI(hospital);
+            ui.Start();
         }
     }
 }

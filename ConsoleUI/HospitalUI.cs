@@ -20,6 +20,9 @@ public class HospitalUI : ConsoleUI
 
     public override void Start()
     {
+        bool exit = false;
+        while (!exit)
+        {
         // _hospital.UserRepo.AddUser("email1", "password", "firstName", "firstName", Role.PATIENT); //TEST      
         var success = false;
         while (!success)
@@ -32,6 +35,9 @@ public class HospitalUI : ConsoleUI
         switch (_user?.Role)
         {
             case Role.DIRECTOR:
+                DirectorUI dirUI = new DirectorUI(_hospital);
+                dirUI.Start();
+                break;
             case Role.DOCTOR:
                 DoctorUI doctorUI = new DoctorUI(_hospital, _user);
                 doctorUI.Start();
@@ -44,18 +50,19 @@ public class HospitalUI : ConsoleUI
             }
             case Role.SECRETARY:
             {
-                var ui = new SecretaryUI(this._hospital, this._user);
-                ui.Start();
+                var secUI = new SecretaryUI(this._hospital, this._user);
+                secUI.Start();
                 break;
             }   
             default:
                 System.Console.WriteLine("SOMETHING WENT HORRIBLY WRONG. TERMINATING");
                 break;
         }
+        }
     }
 
     public void AddUser(string email, string password, Person person, Role role)
     { // TODO: DELETE
-        _hospital.UserRepo.AddUser(email, password, person, role);
+        _hospital.UserRepo.AddOrUpdateUser(new User(email, password, person, role));
     }
 }

@@ -102,7 +102,7 @@ namespace Hospital
             List<Checkup> checkups = GetCheckupsByDoctor(doctor.Id);
             foreach (Checkup checkup in checkups)
             {
-                Console.WriteLine(checkup.TimeAndDate.ToString(), checkup.TimeAndDate.Add(checkup.Duration).ToString());
+                //Console.WriteLine(checkup.TimeAndDate.ToString(), checkup.TimeAndDate.Add(checkup.Duration).ToString());
                 if (checkup.TimeAndDate <= date && checkup.TimeAndDate.Add(checkup.Duration) > date)
                 {
                     return true;

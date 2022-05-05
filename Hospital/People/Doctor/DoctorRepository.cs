@@ -43,7 +43,6 @@ namespace Hospital
         }
 
         public void AddOrUpdateDoctor(Doctor doctor)
-
         {
             var newDoctor = doctor;
             var doctors = GetDoctors();

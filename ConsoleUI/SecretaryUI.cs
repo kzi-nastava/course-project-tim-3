@@ -1,5 +1,6 @@
 namespace Hospital;
 using MongoDB.Driver;
+using MongoDB.Bson;
 [System.Serializable]
 public class NullInputException : System.Exception
 {
@@ -195,7 +196,8 @@ public class SecretaryUI : ConsoleUI
         int i;
         for(i = startIndex; i < endIndex; i++ ){
             var user = usersList.ElementAt(i);
-            System.Console.WriteLine(String.Format("| {0,-21} | {1,-20} | {2, -40} |", user.Person.FirstName, user.Person.LastName, user.Email));
+            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) user.Person.Id);
+            System.Console.WriteLine(String.Format("| {0,-21} | {1,-20} | {2, -40} |", pat.FirstName, pat.LastName, user.Email));
         }
 
         System.Console.WriteLine("|_______________________|______________________|__________________________________________|");
@@ -257,9 +259,9 @@ public class SecretaryUI : ConsoleUI
         }
         else{
             Console.Clear();
-            Patient patient = new Patient(email, lastName);
+            Patient patient = new Patient(email, lastName, new MedicalRecord());
             // FIXME: ADD PATIENT TO REPO!!!!!
-            ur.AddUser(email, password, patient, Role.PATIENT);
+            ur.AddOrUpdateUser(new User(email, password,patient,Role.PATIENT));
         }
         printCommands(CRUDCommands);
     }
@@ -274,10 +276,11 @@ public class SecretaryUI : ConsoleUI
             throw new NullInputException("Null value as input");
         }
         var user = ur.GetUser(email);
+        Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) user.Person.Id);
         System.Console.WriteLine("Email : " + user.Email.ToString());
         System.Console.WriteLine("Password : " + user.Password.ToString());
-        System.Console.WriteLine("First Name : " + user.Person.FirstName.ToString());
-        System.Console.WriteLine("Last Name : " + user.Person.LastName.ToString());
+        System.Console.WriteLine("First Name : " + pat.FirstName);
+        System.Console.WriteLine("Last Name : " + pat.LastName);
         System.Console.WriteLine("");
         System.Console.Write("Type back to get to menu: ");
         string? back = Console.ReadLine();

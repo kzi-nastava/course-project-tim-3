@@ -1,3 +1,903 @@
 {
-  "Appointments" : []
+  "Users" : [{
+      "_id" : ObjectId("62741ef3656c897e7b41ada7"),
+      "Email" : "a0",
+      "Password" : "a0",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef3656c897e7b41ada6")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ada9"),
+      "Email" : "a1",
+      "Password" : "a1",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ada8")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adab"),
+      "Email" : "a2",
+      "Password" : "a2",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41adaa")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adad"),
+      "Email" : "a3",
+      "Password" : "a3",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41adac")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adaf"),
+      "Email" : "a4",
+      "Password" : "a4",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41adae")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adb1"),
+      "Email" : "a5",
+      "Password" : "a5",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41adb0")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adb3"),
+      "Email" : "a6",
+      "Password" : "a6",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41adb2")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adb5"),
+      "Email" : "a7",
+      "Password" : "a7",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41adb4")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adb7"),
+      "Email" : "a8",
+      "Password" : "a8",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41adb6")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adb9"),
+      "Email" : "a9",
+      "Password" : "a9",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41adb8")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adbb"),
+      "Email" : "a10",
+      "Password" : "a10",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41adba")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adbd"),
+      "Email" : "a11",
+      "Password" : "a11",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41adbc")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adbf"),
+      "Email" : "a12",
+      "Password" : "a12",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41adbe")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adc1"),
+      "Email" : "a13",
+      "Password" : "a13",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41adc0")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adc3"),
+      "Email" : "a14",
+      "Password" : "a14",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41adc2")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adc5"),
+      "Email" : "a15",
+      "Password" : "a15",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41adc4")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adc7"),
+      "Email" : "a16",
+      "Password" : "a16",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41adc6")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adc9"),
+      "Email" : "a17",
+      "Password" : "a17",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41adc8")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adcb"),
+      "Email" : "a18",
+      "Password" : "a18",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41adca")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adcd"),
+      "Email" : "a19",
+      "Password" : "a19",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41adcc")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adcf"),
+      "Email" : "a20",
+      "Password" : "a20",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41adce")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41add1"),
+      "Email" : "a21",
+      "Password" : "a21",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41add0")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41add3"),
+      "Email" : "a22",
+      "Password" : "a22",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41add2")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41add5"),
+      "Email" : "a23",
+      "Password" : "a23",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41add4")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41add7"),
+      "Email" : "a24",
+      "Password" : "a24",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41add6")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41add9"),
+      "Email" : "a25",
+      "Password" : "a25",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41add8")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41addb"),
+      "Email" : "a26",
+      "Password" : "a26",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41adda")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41addd"),
+      "Email" : "a27",
+      "Password" : "a27",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41addc")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41addf"),
+      "Email" : "a28",
+      "Password" : "a28",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41adde")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ade1"),
+      "Email" : "a29",
+      "Password" : "a29",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ade0")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ade3"),
+      "Email" : "a30",
+      "Password" : "a30",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ade2")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ade5"),
+      "Email" : "a31",
+      "Password" : "a31",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ade4")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ade7"),
+      "Email" : "a32",
+      "Password" : "a32",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ade6")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ade9"),
+      "Email" : "a33",
+      "Password" : "a33",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ade8")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adeb"),
+      "Email" : "a34",
+      "Password" : "a34",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41adea")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41aded"),
+      "Email" : "a35",
+      "Password" : "a35",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41adec")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adef"),
+      "Email" : "a36",
+      "Password" : "a36",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41adee")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adf1"),
+      "Email" : "a37",
+      "Password" : "a37",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41adf0")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adf3"),
+      "Email" : "a38",
+      "Password" : "a38",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41adf2")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adf5"),
+      "Email" : "a39",
+      "Password" : "a39",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41adf4")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adf7"),
+      "Email" : "a40",
+      "Password" : "a40",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41adf6")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adf9"),
+      "Email" : "a41",
+      "Password" : "a41",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41adf8")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adfb"),
+      "Email" : "a42",
+      "Password" : "a42",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41adfa")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adfd"),
+      "Email" : "a43",
+      "Password" : "a43",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41adfc")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41adff"),
+      "Email" : "a44",
+      "Password" : "a44",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41adfe")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae01"),
+      "Email" : "a45",
+      "Password" : "a45",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae00")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae03"),
+      "Email" : "a46",
+      "Password" : "a46",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae02")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae05"),
+      "Email" : "a47",
+      "Password" : "a47",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae04")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae07"),
+      "Email" : "a48",
+      "Password" : "a48",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae06")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae09"),
+      "Email" : "a49",
+      "Password" : "a49",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae08")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae0b"),
+      "Email" : "a50",
+      "Password" : "a50",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae0a")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae0d"),
+      "Email" : "a51",
+      "Password" : "a51",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae0c")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae0f"),
+      "Email" : "a52",
+      "Password" : "a52",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae0e")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae11"),
+      "Email" : "a53",
+      "Password" : "a53",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae10")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae13"),
+      "Email" : "a54",
+      "Password" : "a54",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae12")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae15"),
+      "Email" : "a55",
+      "Password" : "a55",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae14")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae17"),
+      "Email" : "a56",
+      "Password" : "a56",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae16")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae19"),
+      "Email" : "a57",
+      "Password" : "a57",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae18")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae1b"),
+      "Email" : "a58",
+      "Password" : "a58",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae1a")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae1d"),
+      "Email" : "a59",
+      "Password" : "a59",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae1c")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae1f"),
+      "Email" : "a60",
+      "Password" : "a60",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae1e")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae21"),
+      "Email" : "a61",
+      "Password" : "a61",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae20")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae23"),
+      "Email" : "a62",
+      "Password" : "a62",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae22")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae25"),
+      "Email" : "a63",
+      "Password" : "a63",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae24")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae27"),
+      "Email" : "a64",
+      "Password" : "a64",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae26")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae29"),
+      "Email" : "a65",
+      "Password" : "a65",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae28")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae2b"),
+      "Email" : "a66",
+      "Password" : "a66",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae2a")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae2d"),
+      "Email" : "a67",
+      "Password" : "a67",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae2c")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae2f"),
+      "Email" : "a68",
+      "Password" : "a68",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae2e")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae31"),
+      "Email" : "a69",
+      "Password" : "a69",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae30")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae33"),
+      "Email" : "a70",
+      "Password" : "a70",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae32")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae35"),
+      "Email" : "a71",
+      "Password" : "a71",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae34")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae37"),
+      "Email" : "a72",
+      "Password" : "a72",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae36")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae39"),
+      "Email" : "a73",
+      "Password" : "a73",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae38")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae3b"),
+      "Email" : "a74",
+      "Password" : "a74",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae3a")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae3d"),
+      "Email" : "a75",
+      "Password" : "a75",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae3c")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae3f"),
+      "Email" : "a76",
+      "Password" : "a76",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae3e")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae41"),
+      "Email" : "a77",
+      "Password" : "a77",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae40")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae43"),
+      "Email" : "a78",
+      "Password" : "a78",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae42")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae45"),
+      "Email" : "a79",
+      "Password" : "a79",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae44")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae47"),
+      "Email" : "a80",
+      "Password" : "a80",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae46")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae49"),
+      "Email" : "a81",
+      "Password" : "a81",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae48")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae4b"),
+      "Email" : "a82",
+      "Password" : "a82",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae4a")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae4d"),
+      "Email" : "a83",
+      "Password" : "a83",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae4c")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae4f"),
+      "Email" : "a84",
+      "Password" : "a84",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae4e")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae51"),
+      "Email" : "a85",
+      "Password" : "a85",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae50")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae53"),
+      "Email" : "a86",
+      "Password" : "a86",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae52")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae55"),
+      "Email" : "a87",
+      "Password" : "a87",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae54")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae57"),
+      "Email" : "a88",
+      "Password" : "a88",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae56")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae59"),
+      "Email" : "a89",
+      "Password" : "a89",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae58")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae5b"),
+      "Email" : "a90",
+      "Password" : "a90",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae5a")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae5d"),
+      "Email" : "a91",
+      "Password" : "a91",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae5c")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae5f"),
+      "Email" : "a92",
+      "Password" : "a92",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae5e")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae61"),
+      "Email" : "a93",
+      "Password" : "a93",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae60")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae63"),
+      "Email" : "a94",
+      "Password" : "a94",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae62")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae65"),
+      "Email" : "a95",
+      "Password" : "a95",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae64")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae67"),
+      "Email" : "a96",
+      "Password" : "a96",
+      "Role" : "DIRECTOR",
+      "Person" : {
+        "$ref" : "directors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae66")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae69"),
+      "Email" : "a97",
+      "Password" : "a97",
+      "Role" : "DOCTOR",
+      "Person" : {
+        "$ref" : "doctors",
+        "$id" : ObjectId("62741ef4656c897e7b41ae68")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae6b"),
+      "Email" : "a98",
+      "Password" : "a98",
+      "Role" : "PATIENT",
+      "Person" : {
+        "$ref" : "patients",
+        "$id" : ObjectId("62741ef4656c897e7b41ae6a")
+      }
+    }, {
+      "_id" : ObjectId("62741ef4656c897e7b41ae6d"),
+      "Email" : "a99",
+      "Password" : "a99",
+      "Role" : "SECRETARY",
+      "Person" : {
+        "$ref" : "secretaries",
+        "$id" : ObjectId("62741ef4656c897e7b41ae6c")
+      }
+    }]
 }

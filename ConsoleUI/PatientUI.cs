@@ -3,7 +3,6 @@ using System.Globalization;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-
 [System.Serializable]
 public class GetOutException : System.Exception
 {

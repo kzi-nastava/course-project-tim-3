@@ -16,5 +16,12 @@ namespace Hospital
             return _dbClient.GetDatabase("hospital").GetCollection<Director>("directors");
         }
 
+        public void AddOrUpdateDirector(Director director)
+        {
+            var newDirector = director;
+            var directors = GetDirectors();
+            directors.ReplaceOne(director => director.Id == newDirector.Id, newDirector, new ReplaceOptions {IsUpsert = true});
+        }
+
     }
 } 
