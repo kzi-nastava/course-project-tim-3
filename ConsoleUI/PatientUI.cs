@@ -18,13 +18,13 @@ public class PatientUI : ConsoleUI
         LoggedPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
     }
 
-    public void UpdateCheckup(){
+    public Checkup SelectCheckup ()
+    {
         ShowCheckups();
         List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(LoggedPatient.Id);
         if (checkups.Count == 0)
         {
-            Console.WriteLine("No checkups found.");
-            return;
+            throw new QuitToMainMenuException("No checkups.");
         }
 
         int selectedIndex = -1;
@@ -35,10 +35,39 @@ public class PatientUI : ConsoleUI
             catch (InvalidInputException e)
             {
                 System.Console.Write(e.Message + " Aborting...");
-                return;
+                throw new QuitToMainMenuException("Wrong input");
             }
 
-        Checkup selectedCheckup = checkups[selectedIndex];
+        return checkups[selectedIndex];
+    }
+
+    public void DeleteCheckup ()
+    {
+        Checkup selectedCheckup;
+        try
+        {
+            selectedCheckup = SelectCheckup();
+        }
+        catch (QuitToMainMenuException)
+        {
+            return;
+        }
+
+        _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
+        Console.WriteLine("Checkup deleted.");
+
+    }
+
+    public void UpdateCheckup(){
+        Checkup selectedCheckup;
+        try
+        {
+            selectedCheckup = SelectCheckup();
+        }
+        catch (QuitToMainMenuException)
+        {
+            return;
+        }
         Console.WriteLine ("You have selected " + ConvertAppointmentToString(selectedCheckup));
 
         Doctor currentDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)selectedCheckup.Doctor.Id);
@@ -183,31 +212,40 @@ public class PatientUI : ConsoleUI
             ");
 
             string selectedOption = ReadSanitizedLine().Trim();
-            if (selectedOption == "sa")
+            try
             {
-                ShowAppointments();
+            
+                if (selectedOption == "sa")
+                {
+                    ShowAppointments();
+                }
+                else if (selectedOption == "uc")
+                {
+                    UpdateCheckup();
+                }
+                else if (selectedOption == "dc")
+                {
+                    DeleteCheckup();
+                }
+                else if (selectedOption == "return")
+                {
+                    Console.WriteLine("Returning...\n");
+                    break;
+                }
+                else if (selectedOption == "exit")
+                {
+                    Console.WriteLine("Exiting...");
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Console.WriteLine("Unrecognized command, please try again");
+                }
+                
             }
-            else if (selectedOption == "uc")
+            catch (Exception e)
             {
-                UpdateCheckup();
-            }
-            else if (selectedOption == "dc")
-            {
-                //DeleteCheckup();
-            }
-            else if (selectedOption == "return")
-            {
-                Console.WriteLine("Returning...\n");
-                break;
-            }
-            else if (selectedOption == "exit")
-            {
-                Console.WriteLine("Exiting...");
-                Environment.Exit(0);
-            }
-            else
-            {
-                Console.WriteLine("Unrecognized command, please try again");
+                Console.WriteLine(e.Message);
             }
         }
     }
@@ -370,7 +408,6 @@ public class PatientUI : ConsoleUI
     public void ManageAppointments()
     {
         while (true){
-            //Console.Clear();
             System.Console.WriteLine(@"
             Commands:
             cc - create checkup
@@ -381,27 +418,35 @@ public class PatientUI : ConsoleUI
             ");
 
             string selectedOption = ReadSanitizedLine().Trim();
-            if (selectedOption == "cc")
+
+            try
             {
-                CreateCheckup();
+                if (selectedOption == "cc")
+                {
+                    CreateCheckup();
+                }
+                else if (selectedOption == "va")
+                {
+                    StartAppointmentRUD();
+                }
+                else if (selectedOption == "return")
+                {
+                    Console.WriteLine("Returning...\n");
+                    break;
+                }
+                else if (selectedOption == "exit")
+                {
+                    Console.WriteLine("Exiting...\n");
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Console.WriteLine("Unrecognized command, please try again");
+                }
             }
-            else if (selectedOption == "va")
+            catch (Exception e)
             {
-                StartAppointmentRUD();
-            }
-            else if (selectedOption == "return")
-            {
-                Console.WriteLine("Returning...\n");
-                break;
-            }
-            else if (selectedOption == "exit")
-            {
-                Console.WriteLine("Exiting...\n");
-                Environment.Exit(0);
-            }
-            else
-            {
-                Console.WriteLine("Unrecognized command, please try again");
+                System.Console.Write(e.Message);
             }
         }
     }
@@ -410,7 +455,6 @@ public class PatientUI : ConsoleUI
     {
 
         while (true){
-            //Console.Clear();
             System.Console.WriteLine(@"
             Commands:
             ma - manage appointments
@@ -418,18 +462,26 @@ public class PatientUI : ConsoleUI
 
             ");
             string selectedOption = ReadSanitizedLine().Trim();
-            if (selectedOption == "ma")
+            
+            try
             {
-                ManageAppointments();
+                if (selectedOption == "ma")
+                {
+                    ManageAppointments();
+                }
+                else if (selectedOption == "exit")
+                {
+                    Console.WriteLine("Exiting...");
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Console.WriteLine("Unrecognized command, please try again");
+                }
             }
-            else if (selectedOption == "exit")
+            catch (Exception e)
             {
-                Console.WriteLine("Exiting...");
-                Environment.Exit(0);
-            }
-            else
-            {//TODO: Make while wait so this message could be shown
-                Console.WriteLine("Unrecognized command, please try again");
+                Console.WriteLine(e.Message);
             }
         }
     }
