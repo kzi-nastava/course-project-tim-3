@@ -1,105 +1,65 @@
 namespace Hospital;
 using System.Globalization;
 using MongoDB.Bson;
-using MongoDB.Driver;
 
-[System.Serializable]
-public class GetOutException : System.Exception
-{
-    public GetOutException() { }
-    public GetOutException(string message) : base(message) { }
-    public GetOutException(string message, System.Exception inner) : base(message, inner) { }
-    protected GetOutException(
-        System.Runtime.Serialization.SerializationInfo info,
-        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-}
 public class PatientUI : ConsoleUI
 {
-    public List<string> MainCommands {get; private set;} = new List<string> {"ma / manage appointments","exit","help"};
-    public List<string> ManageAppointmentsCommands {get; private set;} = new List<string>
-    {"cc / create checkup",
-    "va / view and manage appointments",
-    "return",
-    "exit",
-    "help"};
-    public List<string> AppointmentRUDCommands {get; private set;} = new List<string>
-    {"sa / show appointments",
-    "uc / update checkups",
-    "dc / delete checkups",
-    "return",
-    "exit",
-    "help"};
-
     //there might be a better way to set opening time, only time will be used
     //those times should be stored somewhere else
     DateTime openingTime = new DateTime(2000, 10, 20, 9, 0, 0);
     DateTime closingTime = new DateTime(2000, 10, 20, 17, 0, 0);
     DateTime now = DateTime.Now;
     TimeSpan checkupDuration = new TimeSpan(0,0,15,0);
-    Patient current;
+    Patient LoggedPatient;
 
     public PatientUI(Hospital _hospital, User? _user) : base(_hospital) 
     {
         this._user = _user;
-        current = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
+        LoggedPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
     }
 
     public void UpdateCheckup(){
         ShowCheckups();
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(current.Id);
+        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(LoggedPatient.Id);
+        if (checkups.Count == 0)
+        {
+            Console.WriteLine("No checkups found.");
+            return;
+        }
 
         int selectedIndex = -1;
             try
             {
-                selectedIndex = SelectIndex("Please enter a number from the list: ");
+                selectedIndex = ReadInt(0, checkups.Count-1, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
             }
-            catch (Exception ex)            
-            {                
-                if (ex is NullInputException)
-                {
-                    Console.WriteLine("Error - wrong input. Aborting...");
-                    return;
-                }
-                else if (ex is FormatException)
-                {
-                    Console.WriteLine("Error - wrong number. Aborting...");
-                    return;
-                }
+            catch (InvalidInputException e)
+            {
+                System.Console.Write(e.Message + " Aborting...");
+                return;
             }
-
-        if (selectedIndex < 0 || selectedIndex>= checkups.Count)
-        {
-            Console.WriteLine("Error - wrong number. Aborting...");
-            return;
-        }
 
         Checkup selectedCheckup = checkups[selectedIndex];
-        Doctor currentDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)selectedCheckup.Doctor.Id);
-        DateTime currentDate = selectedCheckup.TimeAndDate;
         Console.WriteLine ("You have selected " + ConvertAppointmentToString(selectedCheckup));
 
-        //TODO: find a way to remove current doctor from list
+        Doctor currentDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)selectedCheckup.Doctor.Id);
+        DateTime existingDate = selectedCheckup.TimeAndDate;
+        
         List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(currentDoctor.Specialty);
+        alternativeDoctors.Remove(currentDoctor);
         Doctor newDoctor = currentDoctor;
-        DateTime? newDate = currentDate;
+        DateTime newDate = existingDate;
 
         // change doctor?
 
         Console.WriteLine("Change doctor? Enter yes or no: ");
 
-        string? changeDoctorOpinion = Console.ReadLine();
-        if (changeDoctorOpinion is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
-        
-        changeDoctorOpinion = changeDoctorOpinion.Trim().ToLower();
+        string changeDoctorOpinion = ReadSanitizedLine().Trim().ToLower();
+
         if (changeDoctorOpinion !="yes" && changeDoctorOpinion!="no")
         {
-            Console.WriteLine("Error - wrong command. Aborting...");
+            Console.WriteLine("Wrong command. Aborting...");
             return;
         }
-
 
         if (changeDoctorOpinion == "yes")
         {
@@ -117,25 +77,11 @@ public class PatientUI : ConsoleUI
             int selectedDoctorIndex = -1;
             try
             {
-                selectedDoctorIndex = SelectIndex("Please enter a number from the list: ");
+                selectedDoctorIndex = ReadInt(0, alternativeDoctors.Count-1, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
             }
-            catch (Exception ex)            
-            {                
-                if (ex is NullInputException)
-                {
-                    Console.WriteLine("Error - wrong input. Aborting...");
-                    return;
-                }
-                else if (ex is FormatException)
-                {
-                    Console.WriteLine("Error - wrong number. Aborting...");
-                    return;
-                }
-            }
-
-            if (selectedDoctorIndex < 0 || selectedDoctorIndex >= alternativeDoctors.Count)
+            catch (InvalidInputException e)
             {
-                Console.WriteLine("Error - wrong number. Aborting...");
+                System.Console.Write(e.Message + " Aborting...");
                 return;
             }
 
@@ -146,46 +92,32 @@ public class PatientUI : ConsoleUI
 
         Console.WriteLine("Change date? Enter yes or no: ");
 
-        string? changeDateOpinion = Console.ReadLine();
-        if (changeDateOpinion is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
+        string changeDateOpinion =ReadSanitizedLine().Trim().ToLower();
 
-        changeDateOpinion = changeDateOpinion.Trim().ToLower();
         if (changeDateOpinion !="yes" && changeDateOpinion!="no")
         {
-            Console.WriteLine("Error - wrong command. Aborting...");
+            Console.WriteLine("Wrong command. Aborting...");
             return;
         }
 
         if (changeDateOpinion == "yes")
         {
-            newDate = selectDate();
-            if (newDate is null)
-            {
-                return;
-            }
-
+            newDate = SelectDateAndTime();
             Console.WriteLine("You have selected the following date - "+ newDate);
         }
 
+        //create checkup
         selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
-        selectedCheckup.TimeAndDate = (DateTime)newDate;
+        selectedCheckup.TimeAndDate = newDate;
         
         if (_hospital.AppointmentRepo.IsDoctorBusy((DateTime)newDate,newDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
         }
-        else
-        {
-            Console.WriteLine("Checkup time is free to schedule.");
-        }
 
         _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
-
-        Console.WriteLine("Checkup created.");
+        Console.WriteLine("Checkup updated.");
     }
 
     public string ConvertAppointmentToString(Appointment a)
@@ -202,7 +134,12 @@ public class PatientUI : ConsoleUI
 
     public void ShowCheckups()
     {
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(current.Id);
+        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(LoggedPatient.Id);
+        if (checkups.Count == 0)
+        {
+            Console.WriteLine("No checkups.");
+            return;
+        }
         for (int i = 0; i< checkups.Count; i++)
         {
             Console.WriteLine(i+" - "+ConvertAppointmentToString(checkups[i]));
@@ -211,7 +148,12 @@ public class PatientUI : ConsoleUI
 
     public void showOperations()
     {
-        List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(current.Id);
+        List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(LoggedPatient.Id);
+        if (operations.Count == 0)
+        {
+            Console.WriteLine("No operations.");
+            return;
+        }
         for (int i = 0; i< operations.Count; i++)
         {
             Console.WriteLine(i+" - "+ConvertAppointmentToString(operations[i]));
@@ -219,43 +161,43 @@ public class PatientUI : ConsoleUI
     }
     public void ShowAppointments()
     {   
-        Console.WriteLine("Checkups");
+        Console.WriteLine("### Checkups ###");
         ShowCheckups();
-        Console.WriteLine("Operations");
+        Console.WriteLine("### Operations ###");
         showOperations();
 
     }
-    public void AppointmentRUD()
+    public void StartAppointmentRUD()
     {
-        Console.Clear();
-        System.Console.WriteLine("");
-
-        printCommands(this.AppointmentRUDCommands);
         while (true)
         {
-            string selectedOption = selectOption("Manage checkups");
-            if (selectedOption == "sa" || selectedOption == "show appointments")
+            //Console.Clear();
+            System.Console.WriteLine(@"
+            Commands:
+            sa - show appointments
+            uc - update checkup
+            dc - delete checkup
+            return - go to the previous menu
+            exit - quit the program
+
+            ");
+
+            string selectedOption = ReadSanitizedLine().Trim();
+            if (selectedOption == "sa")
             {
-                
                 ShowAppointments();
-                
             }
-            else if (selectedOption == "uc" || selectedOption == "update checkups")
+            else if (selectedOption == "uc")
             {
                 UpdateCheckup();
             }
-            else if (selectedOption == "dc" || selectedOption == "delete checkups")
+            else if (selectedOption == "dc")
             {
                 //DeleteCheckup();
             }
-            else if (selectedOption == "help")
-            {
-                printCommands(this.AppointmentRUDCommands);
-            }
             else if (selectedOption == "return")
             {
-                Console.WriteLine("Returning...");
-                Console.WriteLine("");
+                Console.WriteLine("Returning...\n");
                 break;
             }
             else if (selectedOption == "exit")
@@ -270,45 +212,16 @@ public class PatientUI : ConsoleUI
         }
     }
 
-
-    public int SelectIndex(string message){
-
-        Console.Write(message);
-        string? input = Console.ReadLine();
-        if (input is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
-
-        int selectedIndex;
-        try
-        {
-            selectedIndex = Int32.Parse(input);
-        }
-        catch (FormatException)
-        {
-            throw;
-        }
-
-        return selectedIndex;
-    }
-
     public Specialty SelectSpecialty()
     {
         Console.WriteLine("Specialities");
         foreach (Specialty spec in Specialty.GetValues(typeof(Specialty)))
-            {
-                Console.WriteLine(spec);
-            }
-
-        Console.Write("Please enter a speciality: ");
-        string? input = Console.ReadLine();
-        if (input is null)
         {
-            throw new NullInputException("Null value as input");
+            Console.WriteLine(spec);
         }
 
-        input = input.Trim().ToUpper();
+        Console.Write("Please enter a speciality: ");
+        string input = ReadSanitizedLine().Trim().ToUpper();
 
         switch (input)
         {
@@ -323,23 +236,16 @@ public class PatientUI : ConsoleUI
             case "FAMILY_MEDICINE":
                 return Specialty.FAMILY_MEDICINE;
             default:
-                throw new GetOutException("None of the specialities selected");
+                throw new QuitToMainMenuException("Speciality not recognized.");
         }
     }
-    public DateTime? selectDate ()
+    public DateTime SelectDateAndTime ()
     {   
-        DateTime result = new DateTime();
+        DateTime result;
 
         // date selection
-
         Console.Write("Please enter a date in dd-MM-yyyy format: ");
-        string? inputDate = Console.ReadLine();
-        if (inputDate is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
-
-        inputDate = inputDate.Trim();
+        string inputDate = ReadSanitizedLine().Trim();
 
         bool success = DateTime.TryParseExact(inputDate, 
                        "dd-MM-yyyy", 
@@ -349,75 +255,56 @@ public class PatientUI : ConsoleUI
 
         if (!success) 
         {
-            Console.WriteLine("Error - wrong date. Aborting...");    
-            return null;
+            throw new InvalidInputException("Wrong date entered.");  
         }
 
         if (DateTime.Compare(result.Date, now.Date) == -1 )
         {
-            Console.WriteLine("Error - date is in past. Aborting...");    
-            return null;
+            throw new InvalidInputException("The date entered is in past.");
         }
         
         // time selection
 
-        int checkupIndex = 0;
+        int highestCheckupIndex = 0;
         DateTime iterationTime = openingTime;
         
         while (iterationTime.TimeOfDay != closingTime.TimeOfDay)
         {
-            Console.WriteLine(checkupIndex + " - " + iterationTime.ToString("HH:mm"));
+            Console.WriteLine(highestCheckupIndex + " - " + iterationTime.ToString("HH:mm"));
             iterationTime = iterationTime.Add(checkupDuration);
-            checkupIndex += 1;
+            highestCheckupIndex += 1;
         }
 
-        //while loop will add a sufficient "1" at the end of the loop
-        checkupIndex -= 1;
+        //while loop will add an extra "1" at the end of the loop, we will remove that
+        highestCheckupIndex -= 1;
 
         int selectedIndex = -1;
-        try
-        {
-            selectedIndex = SelectIndex("Please enter a number from the list: ");
-        }
-        catch (Exception ex)            
-        {                
-            if (ex is NullInputException)
-            {
-                Console.WriteLine("Error - wrong input. Aborting...");
-                return null;
-            }
-            else if (ex is FormatException)
-            {
-                Console.WriteLine("Error - wrong number. Aborting...");
-                return null;
-            }
-        }
+
+        selectedIndex = ReadInt(0, highestCheckupIndex, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
 
         result = result.AddHours(openingTime.Hour);
-        if (selectedIndex >= 0 && selectedIndex <= checkupIndex)
-        {
-            result = result.Add(selectedIndex*checkupDuration);
-        }
-        else
-        {
-            Console.WriteLine("Error - wrong number. Aborting...");
-        }
+        result = result.Add(selectedIndex*checkupDuration);
+       
         //TODO: The listed times shouldnt be the ones that expired
 
         if (DateTime.Compare(result, now) == -1 )
         {
-            Console.WriteLine("Selected time already expired. Aborting...");    
-            return null;
+             throw new InvalidInputException("Selected date and time expired.");
         } 
 
         return result;
     }
 
-    public void createCheckup()
+    public void CreateCheckup()
     {
-        DateTime? selectedDate = selectDate();
-        if (selectedDate is null)
+        DateTime selectedDate;
+        try
         {
+            selectedDate = SelectDateAndTime();
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
             return;
         }
 
@@ -428,10 +315,10 @@ public class PatientUI : ConsoleUI
         {
             selectedSpecialty = SelectSpecialty();
         }
-        catch (GetOutException)
+        catch (QuitToMainMenuException e)
         {
-           Console.WriteLine("Error - selected speciality doesnt exist. Aborting...");
-           return;
+            System.Console.Write(e.Message + " Aborting...");
+            return;
         }
 
         List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(selectedSpecialty);
@@ -439,6 +326,7 @@ public class PatientUI : ConsoleUI
         if (suitableDoctors.Count == 0)
         {
             Console.WriteLine("No doctors found in selected specialty.");
+            ReadSanitizedLine();
             return;
         }
 
@@ -450,98 +338,65 @@ public class PatientUI : ConsoleUI
         int selectedIndex = -1;
         try
         {
-            selectedIndex = SelectIndex("Please enter a number from the list: ");
+            selectedIndex = ReadInt(0, suitableDoctors.Count-1, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
         }
-        catch (Exception ex)            
-        {                
-            if (ex is NullInputException)
-            {
-                Console.WriteLine("Error - wrong input. Aborting...");
-                return;
-            }
-            else if (ex is FormatException)
-            {
-                Console.WriteLine("Error - wrong number. Aborting...");
-                return;
-            }
-        }
-
-        if (selectedIndex < 0 || selectedIndex >= suitableDoctors.Count)
+        catch (InvalidInputException e)
         {
-            Console.WriteLine("Error - wrong number. Aborting...");
+            System.Console.Write(e.Message + " Aborting...");
             return;
         }
 
-        if (_hospital.AppointmentRepo.IsDoctorBusy((DateTime)selectedDate,suitableDoctors[selectedIndex]))
+        Doctor selectedSuitableDoctor = suitableDoctors[selectedIndex];
+
+        if (_hospital.AppointmentRepo.IsDoctorBusy(selectedDate,selectedSuitableDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
         }
-        else
-        {
-            Console.WriteLine("Checkup is free to schedule");
-        }
-
+        Console.WriteLine("Checkup is free to schedule");
         
         //TODO: Might want to create an additional expiry check for checkup timedate
-
-        //public Checkup(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, string anamnesis)
         Checkup newCheckup = new Checkup(
-            (DateTime)selectedDate,
+            selectedDate,
             new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
-            new MongoDB.Driver.MongoDBRef("doctors", suitableDoctors[selectedIndex].Id),
+            new MongoDB.Driver.MongoDBRef("doctors", selectedSuitableDoctor.Id),
             "no anamnesis");
         
         this._hospital.AppointmentRepo.AddOrUpdateCheckup(newCheckup);
         Console.WriteLine("Checkup created");
         
-        
-    }
-    public string selectOption(string commandGroup="")
-    {
-        if (commandGroup != "")
-        {
-            Console.Write("["+commandGroup+"] ");
-        }
-        Console.Write("Please enter a command: ");
-        string? input = Console.ReadLine();
-        if (input is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
-        return input.ToLower().Trim();
-
     }
 
-    public void manageAppointments()
+    public void ManageAppointments()
     {
-        Console.Clear();
-        System.Console.WriteLine("");
-
-        printCommands(this.ManageAppointmentsCommands);
         while (true){
-            string selectedOption = selectOption("Manage appointments");
-            if (selectedOption == "cc" || selectedOption == "create checkup")
+            //Console.Clear();
+            System.Console.WriteLine(@"
+            Commands:
+            cc - create checkup
+            va - view and manage appointments
+            return - go to the previous menu
+            exit - quit the program
+
+            ");
+
+            string selectedOption = ReadSanitizedLine().Trim();
+            if (selectedOption == "cc")
             {
-                createCheckup();
+                CreateCheckup();
             }
-            else if (selectedOption == "va" || selectedOption == "view and manage appointments")
+            else if (selectedOption == "va")
             {
-                AppointmentRUD();
-            }
-            else if (selectedOption == "help")
-            {
-                printCommands(this.ManageAppointmentsCommands);
+                StartAppointmentRUD();
             }
             else if (selectedOption == "return")
             {
-                Console.WriteLine("Returning...");
-                Console.WriteLine("");
+                Console.WriteLine("Returning...\n");
                 break;
             }
             else if (selectedOption == "exit")
             {
-                Console.WriteLine("Exiting...");
+                Console.WriteLine("Exiting...\n");
                 Environment.Exit(0);
             }
             else
@@ -551,30 +406,21 @@ public class PatientUI : ConsoleUI
         }
     }
 
-    public void printCommands(List<string> commands)
-    {
-        Console.WriteLine("Available commands: ");
-        foreach (string command in commands)
-        {
-            Console.WriteLine(command);
-        }
-    }
-
     public override void Start()
     {
-        Console.Clear();
-        System.Console.WriteLine("");
 
-        printCommands(this.MainCommands);
         while (true){
-            string selectedOption = selectOption();
-            if (selectedOption == "ma" || selectedOption == "manage appointments")
+            //Console.Clear();
+            System.Console.WriteLine(@"
+            Commands:
+            ma - manage appointments
+            exit - quit the program
+
+            ");
+            string selectedOption = ReadSanitizedLine().Trim();
+            if (selectedOption == "ma")
             {
-                manageAppointments();
-            }
-            else if (selectedOption == "help")
-            {
-                printCommands(this.MainCommands);
+                ManageAppointments();
             }
             else if (selectedOption == "exit")
             {
@@ -582,7 +428,7 @@ public class PatientUI : ConsoleUI
                 Environment.Exit(0);
             }
             else
-            {
+            {//TODO: Make while wait so this message could be shown
                 Console.WriteLine("Unrecognized command, please try again");
             }
         }
