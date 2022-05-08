@@ -37,7 +37,7 @@ namespace Hospital
             }
         }
 
-        public void UpdateEquipment(Equipment newEquipment) // EXPECTS EXISTING EQUIPMENT!
+        private void UpdateEquipment(Equipment newEquipment) // EXPECTS EXISTING EQUIPMENT!
         {
             var equipments = GetEquipments();
             equipments.ReplaceOne(equipment => equipment.Id == newEquipment.Id, newEquipment);
