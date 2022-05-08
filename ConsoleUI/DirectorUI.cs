@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using MongoDB.Bson;
 
 namespace Hospital
@@ -82,10 +83,10 @@ namespace Hospital
                         var newRoom = new Room(location, name, type);
                         _hospital.RoomRepo.AddRoom(newRoom);
                         System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
-                        ReadSanitizedLine();
                     }
                     else if (choice == "u" || choice == "ur" || choice == "update" || choice == "update room")
                     {
+                        System.Console.Write("INPUT NUMBER >> ");
                         var number = ReadInt(0, rooms.Count - 1);
                         var room = rooms[number];
 
@@ -114,14 +115,13 @@ namespace Hospital
 
                         _hospital.RoomRepo.UpdateRoom(room);
                         System.Console.Write("SUCCESSFULLY UPDATED ROOM. INPUT ANYTHING TO CONTINUE >> ");
-                        ReadSanitizedLine();
                     }
                     else if (choice == "delete room" || choice == "delete" || choice == "dr" || choice == "d")
                     {
+                        System.Console.Write("INPUT NUMBER >> ");
                         var number = ReadInt(0, rooms.Count - 1);
                         _hospital.RoomRepo.DeleteRoom(rooms[number].Id);
                         System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
-                        ReadSanitizedLine();
                     }
                     else if (choice == "q" || choice == "quit")
                         throw new QuitToMainMenuException("From StartManageRooms");
@@ -131,14 +131,13 @@ namespace Hospital
                     {
                         System.Console.WriteLine("INVALID INPUT - READ THE AVAILABLE COMMANDS!");
                         System.Console.Write("INPUT ANYTHING TO CONTINUE >> ");
-                        ReadSanitizedLine();
                     }
                 }
                 catch (InvalidInputException e)
                 {
                     System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
-                    ReadSanitizedLine();
                 }
+                ReadSanitizedLine();
             }
         }
 
@@ -152,7 +151,7 @@ namespace Hospital
                 DisplayEquipment(equipments);
                 System.Console.WriteLine(@"
                 INPUT OPTION:
-                    [search|s] Search equipments
+                    [search|se] Search equipments
                     [quit|q] Quit to main menu
                     [exit|x] Exit program
                     [...]
@@ -164,7 +163,25 @@ namespace Hospital
                     // todo: unhardcode choices so they match menu display always
                     if (choice == "se" || choice == "search")
                     {
+                        equipments = _hospital.EquipmentRepo.GetQueryableEquipments().ToList();
+                        System.Console.WriteLine("Example filters: min:3 max:100 type:checkup");
+                        System.Console.WriteLine("You can leave out any that you want to keep at any value. Range is inclusive");
+                        System.Console.WriteLine("Available types: checkup, operation, furniture, hallway");
+                        System.Console.Write("INPUT YOUR FILTERS >> ");
+                        var filters = ReadSanitizedLine().Trim();
+                        var query = new Query(filters);
 
+                        System.Console.Write("INPUT YOUR SEARCH TERM >> ");
+                        var search = ReadSanitizedLine();
+                        query.NameContains = new Regex(search);
+                        var matches = 
+                            from equipment in equipments
+                            where (query.MinCount is null || query.MinCount <= equipment.Count)
+                                && (query.MaxCount is null || query.MaxCount >= equipment.Count)
+                                && (query.Type is null || query.Type == equipment.Type)
+                                && (query.NameContains is null || query.NameContains.IsMatch(equipment.Name))
+                            select equipment;
+                        equipments = matches.ToList();
                     }
                     else if (choice == "q" || choice == "quit")
                         throw new QuitToMainMenuException("From StartManageEquipments");
@@ -207,6 +224,56 @@ namespace Hospital
                 // TODO: exception if room is null
                 System.Console.WriteLine(i + " | " + room?.Location + " | " + equipment.Type + 
                                          " | " + equipment.Name + " | " + equipment.Count);
+            }
+        }
+
+        private struct Query
+        {
+            public int? MinCount { get; set; }
+            public int? MaxCount { get; set; }
+            public EquipmentType? Type { get; set; }
+            public Regex? NameContains { get; set; }
+
+            public Query(string query)
+            {
+                // TODO: make it so repeated same will throw error
+                MinCount = null;
+                MaxCount = null;
+                Type = null;
+                NameContains = null;
+                var tokens = query.Split();
+                foreach (var token in tokens)
+                {
+                    if (token.StartsWith("min:"))
+                    {
+                        int number;
+                        bool success = Int32.TryParse(token.Substring(4), out number);
+                        if (!success)
+                            throw new InvalidInputException("GIVEN MIN IS NOT A NUMBER.");
+                        MinCount = number;
+                    } 
+                    else if (token.StartsWith("max:"))
+                    {
+                        int number;
+                        bool success = Int32.TryParse(token.Substring(4), out number);
+                        if (!success)
+                            throw new InvalidInputException("GIVEN MAX IS NOT A NUMBER.");
+                        MaxCount = number;
+
+                    }
+                    else if (token.StartsWith("type:"))
+                    {
+                        EquipmentType type;
+                        var success = Enum.TryParse(token.Substring(5), true, out type);
+                        if (!success)
+                            throw new InvalidInputException("NOT A VALID TYPE!");
+                        Type = type;
+                    }
+                    else
+                    {
+                        throw new InvalidInputException("UNRECOGNIZED TOKEN: " + token);
+                    }
+                }
             }
         }
     }

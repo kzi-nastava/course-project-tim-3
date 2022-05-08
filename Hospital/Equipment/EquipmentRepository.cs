@@ -37,6 +37,8 @@ namespace Hospital
             }
         }
 
+        // TODO: remove Equipment when deleting room?
+
         private void UpdateEquipment(Equipment newEquipment) // EXPECTS EXISTING EQUIPMENT!
         {
             var equipments = GetEquipments();
