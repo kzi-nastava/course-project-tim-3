@@ -1,3 +1,5 @@
+using MongoDB.Bson;
+
 namespace Hospital
 {
     public class DirectorUI : ConsoleUI
@@ -150,6 +152,7 @@ namespace Hospital
                 DisplayEquipment(equipments);
                 System.Console.WriteLine(@"
                 INPUT OPTION:
+                    [search|s] Search equipments
                     [quit|q] Quit to main menu
                     [exit|x] Exit program
                     [...]
@@ -159,7 +162,11 @@ namespace Hospital
                 try
                 {
                     // todo: unhardcode choices so they match menu display always
-                    if (choice == "q" || choice == "quit")
+                    if (choice == "se" || choice == "search")
+                    {
+
+                    }
+                    else if (choice == "q" || choice == "quit")
                         throw new QuitToMainMenuException("From StartManageEquipments");
                     else if (choice == "x" || choice == "exit")
                         System.Environment.Exit(0);
@@ -196,6 +203,10 @@ namespace Hospital
             for (int i = 0; i < equipments.Count; i++)
             {
                 var equipment = equipments[i];
+                var room = _hospital.RoomRepo.GetRoom((ObjectId) equipment.Room.Id);
+                // TODO: exception if room is null
+                System.Console.WriteLine(i + " | " + room?.Location + " | " + equipment.Type + 
+                                         " | " + equipment.Name + " | " + equipment.Count);
             }
         }
     }
