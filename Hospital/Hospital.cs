@@ -13,7 +13,7 @@
         public DirectorRepository DirectorRepo {get;}
         public SecretaryRepository SecretaryRepo {get;}
         public RoomRepository RoomRepo {get;}
-        public EquipmentRepository EquipmentRepo { get; }
+        public EquipmentBatchRepository EquipmentRepo { get; }
 
         public Hospital()
         {
@@ -24,7 +24,7 @@
             DirectorRepo = new DirectorRepository(_dbClient);
             SecretaryRepo = new SecretaryRepository(_dbClient);
             RoomRepo = new RoomRepository(_dbClient);
-            EquipmentRepo = new EquipmentRepository(_dbClient);
+            EquipmentRepo = new EquipmentBatchRepository(_dbClient);
         }
 
         public User? Login(string email, string password)

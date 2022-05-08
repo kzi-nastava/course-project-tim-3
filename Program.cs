@@ -88,8 +88,8 @@ namespace Hospital
             //         hospital.RoomRepo.AddRoom(newRoom);
             //         for (int j = 0; j < 4; j++)
             //         {
-            //             var newEquipment = new Equipment(newRoom, "scalpel", 3, EquipmentType.OPERATION);
-            //             hospital.EquipmentRepo.AddEquipment(newEquipment);
+            //             var newEquipmentBatch = new EquipmentBatch(newRoom, "scalpel", 3, EquipmentType.OPERATION);
+            //             hospital.EquipmentRepo.AddEquipmentBatch(newEquipmentBatch);
             //         }
             //     } 
             //     else if (i % 3 == 1)

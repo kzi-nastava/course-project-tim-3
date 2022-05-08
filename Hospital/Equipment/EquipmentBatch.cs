@@ -12,7 +12,7 @@ public enum EquipmentType
     HALLWAY
 }
 
-public class Equipment
+public class EquipmentBatch
 {
     [BsonId]
     public ObjectId Id { get; set; }
@@ -22,7 +22,7 @@ public class Equipment
     [BsonRepresentation(BsonType.String)]
     public EquipmentType Type { get; set; }
     
-    public Equipment(Room room, string name, int count, EquipmentType type)
+    public EquipmentBatch(Room room, string name, int count, EquipmentType type)
     {
         Id = ObjectId.GenerateNewId();
         Name = name;
@@ -31,7 +31,7 @@ public class Equipment
         Room = new MongoDBRef("rooms", room.Id);
     }
 
-    public void MergeWith(Equipment other)
+    public void MergeWith(EquipmentBatch other)
     {
         if (other.Name != Name || other.Room.Id != Room.Id)
             throw new Exception("NOPE, NOT THE SAME EQUIP");  // TODO: change this

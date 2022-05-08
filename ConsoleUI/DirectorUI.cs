@@ -150,15 +150,15 @@ public class DirectorUI : ConsoleUI
 
     public void StartManageEquipment()
     {
-        List<Equipment> equipments = _hospital.EquipmentRepo.GetQueryableEquipments().ToList();
+        List<EquipmentBatch> equipmentBatches = _hospital.EquipmentRepo.GetQueryableEquipmentBatches().ToList();
         while (true)
         {
             System.Console.Clear();
             System.Console.WriteLine("--- EQUIPMENTS ---");
-            DisplayEquipment(equipments);
+            DisplayEquipmentBatches(equipmentBatches);
             System.Console.WriteLine(@"
             INPUT OPTION:
-                [search|se] Search equipments
+                [search|se] Search equipment batches
                 [quit|q] Quit to main menu
                 [exit|x] Exit program
             ");
@@ -181,7 +181,7 @@ public class DirectorUI : ConsoleUI
                     var search = ReadSanitizedLine();
                     query.NameContains = new Regex(search);
 
-                    equipments = SearchEquipments(query).ToList();
+                    equipmentBatches = SearchEquipmentBatches(query).ToList();
                 }
                 else if (choice == "q" || choice == "quit")
                     throw new QuitToMainMenuException("From StartManageEquipments");
@@ -202,16 +202,16 @@ public class DirectorUI : ConsoleUI
         }
     }
 
-    private IQueryable<Equipment> SearchEquipments(EquipmentQuery query)  // TODO: probably have to move this
+    private IQueryable<EquipmentBatch> SearchEquipmentBatches(EquipmentQuery query)  // TODO: probably have to move this
     {
-        var equipments = _hospital.EquipmentRepo.GetQueryableEquipments();
+        var equipmentBatches = _hospital.EquipmentRepo.GetQueryableEquipmentBatches();
         var matches = 
-            from equipment in equipments
-            where (query.MinCount == null || query.MinCount <= equipment.Count)
-                && (query.MaxCount == null || query.MaxCount >= equipment.Count)
-                && (query.Type == null || query.Type == equipment.Type)
-                && (query.NameContains == null || query.NameContains.IsMatch(equipment.Name))
-            select equipment;
+            from equipmentBatch in equipmentBatches
+            where (query.MinCount == null || query.MinCount <= equipmentBatch.Count)
+                && (query.MaxCount == null || query.MaxCount >= equipmentBatch.Count)
+                && (query.Type == null || query.Type == equipmentBatch.Type)
+                && (query.NameContains == null || query.NameContains.IsMatch(equipmentBatch.Name))
+            select equipmentBatch;
         return matches;
     }
 
@@ -226,17 +226,17 @@ public class DirectorUI : ConsoleUI
         }
     }
 
-    public void DisplayEquipment(List<Equipment> equipments)
+    public void DisplayEquipmentBatches(List<EquipmentBatch> equipmentBatches)
     {
         System.Console.WriteLine("No. | Room Location | Type | Name | Count");
         // TODO: paginate and make prettier
-        for (int i = 0; i < equipments.Count; i++)
+        for (int i = 0; i < equipmentBatches.Count; i++)
         {
-            var equipment = equipments[i];
-            var room = _hospital.RoomRepo.GetRoom((ObjectId) equipment.Room.Id);
+            var equipmentBatch = equipmentBatches[i];
+            var room = _hospital.RoomRepo.GetRoom((ObjectId) equipmentBatch.Room.Id);
             // TODO: exception if room is null
-            System.Console.WriteLine(i + " | " + room?.Location + " | " + equipment.Type + 
-                                        " | " + equipment.Name + " | " + equipment.Count);
+            System.Console.WriteLine(i + " | " + room?.Location + " | " + equipmentBatch.Type + 
+                                        " | " + equipmentBatch.Name + " | " + equipmentBatch.Count);
         }
     }
 
