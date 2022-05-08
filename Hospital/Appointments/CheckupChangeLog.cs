@@ -15,6 +15,7 @@ namespace Hospital
     [BsonIgnoreExtraElements]
     public class CheckupChangeLog {
         public DateTime TimeAndDate {get; set;}
+        [BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public CRUDOperation CRUDOperation {get; set;}
 
         public CheckupChangeLog(DateTime timeAndDate, CRUDOperation crudOperation) 

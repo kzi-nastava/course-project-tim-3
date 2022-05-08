@@ -18,6 +18,13 @@ public class PatientUI : ConsoleUI
         _loggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
     }
 
+    public void LogChange(CRUDOperation crudOperation)
+    {
+        CheckupChangeLog log = new CheckupChangeLog(DateTime.Now,crudOperation);
+        _loggedInPatient.CheckupChangeLogs.Add(log);
+        _hospital.PatientRepo.AddOrUpdatePatient(_loggedInPatient);
+    }
+
     public Checkup SelectCheckup ()
     {
         ShowCheckups();
@@ -55,6 +62,8 @@ public class PatientUI : ConsoleUI
 
         _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
         Console.WriteLine("Checkup deleted.");
+
+        LogChange(CRUDOperation.DELETE);
 
     }
 
@@ -147,6 +156,9 @@ public class PatientUI : ConsoleUI
 
         _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
         Console.WriteLine("Checkup updated.");
+
+        LogChange(CRUDOperation.UPDATE);
+
     }
 
     public string ConvertAppointmentToString(Appointment a)
@@ -401,6 +413,7 @@ public class PatientUI : ConsoleUI
         this._hospital.AppointmentRepo.AddOrUpdateCheckup(newCheckup);
         Console.WriteLine("Checkup created");
         
+        LogChange(CRUDOperation.CREATE);
     }
 
     public void ManageAppointments()
