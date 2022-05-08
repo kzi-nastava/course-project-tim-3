@@ -241,6 +241,8 @@ namespace Hospital
                 MaxCount = null;
                 Type = null;
                 NameContains = null;
+                if (query == "")
+                    return;
                 var tokens = query.Split();
                 foreach (var token in tokens)
                 {
