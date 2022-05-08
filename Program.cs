@@ -12,9 +12,15 @@ namespace Hospital
             var hospital = new Hospital();
             var hospitalUsers = new {Users = new List<User>()};
 
+            DateTime xd = DateTime.Now;
+            DateTime posle = new DateTime(2030,12,10);
+            DateTime pre = new DateTime(2010,12,10);
+            System.Console.WriteLine("posle > xd" + ( posle > xd));
+
             //generate tests TODO: move this to dedicated teting interface
 
             //generate users
+            // int doctorSpecialtynumber = 0;
             // for (int i = 0; i < 100; i++)
             // {
             //     User user;
@@ -30,10 +36,14 @@ namespace Hospital
             //     {
             //         //user = new User("a" + i, "a" + i, "name" + i, "surname" + i, Role.DOCTOR);
             //         Doctor doctor;
-            //         doctor = new Doctor("name" + i,"surname" + i, Specialty.FAMILY_MEDICINE);
+            //         int namesCount = Enum.GetNames(typeof(Specialty)).Length;
+            //         Specialty doctorsSpecialty = (Specialty)(doctorSpecialtynumber%namesCount);
+            //         doctorSpecialtynumber++; 
+            //         doctor = new Doctor("name" + i,"surname" + i, doctorsSpecialty);
             //         user = new User("a" + i, "a" + i, doctor, Role.DOCTOR);
             //         hospital.DoctorRepo.AddOrUpdateDoctor(doctor);
-            //         hospital.UserRepo.AddOrUpdateUser(user);                
+            //         hospital.UserRepo.AddOrUpdateUser(user);
+                                   
             //     }
             //     else if (i % 4 == 2) 
             //     {
