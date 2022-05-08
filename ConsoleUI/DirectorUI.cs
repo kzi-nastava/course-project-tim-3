@@ -17,12 +17,15 @@ namespace Hospital
                     System.Console.WriteLine(@"
                     INPUT OPTION:
                         [manage rooms|mr] Manage rooms and stockrooms
+                        [manage equipment|me] Manage equipment
                         [exit|x] Exit program
                     ");  // TODO: add the rest of the features
                     System.Console.Write(">> ");
                     var choice = ReadSanitizedLine();
                     if (choice == "mr" || choice == "manage rooms")
                         StartManageRooms();
+                    else if (choice == "me" || choice == "manage equipment")
+                        StartManageEquipment();
                     else if (choice == "x" || choice == "exit")
                         System.Environment.Exit(0);
                 }
@@ -135,6 +138,11 @@ namespace Hospital
                     ReadSanitizedLine();
                 }
             }
+        }
+
+        public void StartManageEquipment()
+        {
+
         }
 
         public void DisplayRooms(List<Room> rooms)

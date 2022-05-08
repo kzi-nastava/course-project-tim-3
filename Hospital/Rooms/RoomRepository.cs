@@ -20,7 +20,7 @@ namespace Hospital
 
         public IMongoQueryable<Room> GetQueryableRooms()
         {
-            return _dbClient.GetDatabase("hospital").GetCollection<Room>("rooms").AsQueryable();
+            return GetRooms().AsQueryable();
         }
 
         public bool DeleteRoom(string location)
