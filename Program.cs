@@ -12,11 +12,6 @@ namespace Hospital
             var hospital = new Hospital();
             var hospitalUsers = new {Users = new List<User>()};
 
-            DateTime xd = DateTime.Now;
-            DateTime posle = new DateTime(2030,12,10);
-            DateTime pre = new DateTime(2010,12,10);
-            System.Console.WriteLine("posle > xd" + ( posle > xd));
-
             //generate tests TODO: move this to dedicated teting interface
 
             //generate users

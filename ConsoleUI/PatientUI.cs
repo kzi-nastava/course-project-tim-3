@@ -6,37 +6,37 @@ public class PatientUI : ConsoleUI
 {
     //there might be a better way to set opening time, only time will be used
     //those times should be stored somewhere else
-    DateTime openingTime = new DateTime(2000, 10, 20, 9, 0, 0);
-    DateTime closingTime = new DateTime(2000, 10, 20, 17, 0, 0);
-    DateTime now = DateTime.Now;
-    TimeSpan checkupDuration = new TimeSpan(0,0,15,0);
-    Patient LoggedPatient;
+    public DateTime OpeningTime = new DateTime(2000, 10, 20, 9, 0, 0);
+    public DateTime ClosingTime = new DateTime(2000, 10, 20, 17, 0, 0);
+    public DateTime Now = DateTime.Now;
+    public TimeSpan CheckupDuration = new TimeSpan(0,0,15,0);
+    public Patient LoggedInPatient;
 
     public PatientUI(Hospital _hospital, User? _user) : base(_hospital) 
     {
         this._user = _user;
-        LoggedPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
+        LoggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
     }
 
     public Checkup SelectCheckup ()
     {
         ShowCheckups();
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(LoggedPatient.Id);
+        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(LoggedInPatient.Id);
         if (checkups.Count == 0)
         {
             throw new QuitToMainMenuException("No checkups.");
         }
 
         int selectedIndex = -1;
-            try
-            {
-                selectedIndex = ReadInt(0, checkups.Count-1, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
-            }
-            catch (InvalidInputException e)
-            {
-                System.Console.Write(e.Message + " Aborting...");
-                throw new QuitToMainMenuException("Wrong input");
-            }
+        try
+        {
+            selectedIndex = ReadInt(0, checkups.Count-1, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
+            throw new QuitToMainMenuException("Wrong input");
+        }
 
         return checkups[selectedIndex];
     }
@@ -82,7 +82,7 @@ public class PatientUI : ConsoleUI
 
         Console.WriteLine("Change doctor? Enter yes or no: ");
 
-        string changeDoctorOpinion = ReadSanitizedLine().Trim().ToLower();
+        string changeDoctorOpinion = ReadSanitizedLine().Trim();
 
         if (changeDoctorOpinion !="yes" && changeDoctorOpinion!="no")
         {
@@ -163,7 +163,7 @@ public class PatientUI : ConsoleUI
 
     public void ShowCheckups()
     {
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(LoggedPatient.Id);
+        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(LoggedInPatient.Id);
         if (checkups.Count == 0)
         {
             Console.WriteLine("No checkups.");
@@ -177,7 +177,7 @@ public class PatientUI : ConsoleUI
 
     public void showOperations()
     {
-        List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(LoggedPatient.Id);
+        List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(LoggedInPatient.Id);
         if (operations.Count == 0)
         {
             Console.WriteLine("No operations.");
@@ -274,7 +274,7 @@ public class PatientUI : ConsoleUI
             case "FAMILY_MEDICINE":
                 return Specialty.FAMILY_MEDICINE;
             default:
-                throw new QuitToMainMenuException("Speciality not recognized.");
+                throw new InvalidInputException("Speciality not recognized.");
         }
     }
     public DateTime SelectDateAndTime ()
@@ -296,7 +296,7 @@ public class PatientUI : ConsoleUI
             throw new InvalidInputException("Wrong date entered.");  
         }
 
-        if (DateTime.Compare(result.Date, now.Date) == -1 )
+        if (DateTime.Compare(result.Date, Now.Date) == -1 )
         {
             throw new InvalidInputException("The date entered is in past.");
         }
@@ -304,28 +304,26 @@ public class PatientUI : ConsoleUI
         // time selection
 
         int highestCheckupIndex = 0;
-        DateTime iterationTime = openingTime;
+        DateTime iterationTime = OpeningTime;
         
-        while (iterationTime.TimeOfDay != closingTime.TimeOfDay)
+        while (iterationTime.TimeOfDay != ClosingTime.TimeOfDay)
         {
             Console.WriteLine(highestCheckupIndex + " - " + iterationTime.ToString("HH:mm"));
-            iterationTime = iterationTime.Add(checkupDuration);
+            iterationTime = iterationTime.Add(CheckupDuration);
             highestCheckupIndex += 1;
         }
 
         //while loop will add an extra "1" at the end of the loop, we will remove that
         highestCheckupIndex -= 1;
 
-        int selectedIndex = -1;
+        int selectedIndex = ReadInt(0, highestCheckupIndex, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
 
-        selectedIndex = ReadInt(0, highestCheckupIndex, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
-
-        result = result.AddHours(openingTime.Hour);
-        result = result.Add(selectedIndex*checkupDuration);
+        result = result.AddHours(OpeningTime.Hour);
+        result = result.Add(selectedIndex*CheckupDuration);
        
         //TODO: The listed times shouldnt be the ones that expired
 
-        if (DateTime.Compare(result, now) == -1 )
+        if (DateTime.Compare(result, Now) == -1 )
         {
              throw new InvalidInputException("Selected date and time expired.");
         } 
@@ -353,7 +351,7 @@ public class PatientUI : ConsoleUI
         {
             selectedSpecialty = SelectSpecialty();
         }
-        catch (QuitToMainMenuException e)
+        catch (InvalidInputException e)
         {
             System.Console.Write(e.Message + " Aborting...");
             return;
