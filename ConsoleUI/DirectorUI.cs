@@ -142,7 +142,40 @@ namespace Hospital
 
         public void StartManageEquipment()
         {
-
+            List<Equipment> equipments = _hospital.EquipmentRepo.GetQueryableEquipments().ToList();
+            while (true)
+            {
+                System.Console.Clear();
+                System.Console.WriteLine("--- EQUIPMENTS ---");
+                DisplayEquipment(equipments);
+                System.Console.WriteLine(@"
+                INPUT OPTION:
+                    [quit|q] Quit to main menu
+                    [exit|x] Exit program
+                    [...]
+                ");
+                System.Console.Write(">> ");
+                var choice = ReadSanitizedLine();
+                try
+                {
+                    // todo: unhardcode choices so they match menu display always
+                    if (choice == "q" || choice == "quit")
+                        throw new QuitToMainMenuException("From StartManageEquipments");
+                    else if (choice == "x" || choice == "exit")
+                        System.Environment.Exit(0);
+                    else
+                    {
+                        System.Console.WriteLine("INVALID INPUT - READ THE AVAILABLE COMMANDS!");
+                        System.Console.Write("INPUT ANYTHING TO CONTINUE >> ");
+                        ReadSanitizedLine();
+                    }
+                }
+                catch (InvalidInputException e)
+                {
+                    System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+                    ReadSanitizedLine();
+                }
+            }
         }
 
         public void DisplayRooms(List<Room> rooms)
@@ -153,6 +186,16 @@ namespace Hospital
             {
                 var room = rooms[i];
                 System.Console.WriteLine(i + " | " + room.Location + " | " + room.Name + " | " + room.Type);
+            }
+        }
+
+        public void DisplayEquipment(List<Equipment> equipments)
+        {
+            System.Console.WriteLine("No. | Room Location | Type | Name | Count");
+            // TODO: paginate and make prettier
+            for (int i = 0; i < equipments.Count; i++)
+            {
+                var equipment = equipments[i];
             }
         }
     }
