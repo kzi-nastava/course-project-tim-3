@@ -2,6 +2,17 @@ namespace Hospital;
 using System.Globalization;
 using MongoDB.Bson;
 
+[System.Serializable]
+public class UserBlockedException : System.Exception
+{
+    public UserBlockedException() { }
+    public UserBlockedException(string message) : base(message) { }
+    public UserBlockedException(string message, System.Exception inner) : base(message, inner) { }
+    protected UserBlockedException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
 public class PatientUI : ConsoleUI
 {
     //there might be a better way to set opening time, only time will be used
@@ -16,6 +27,46 @@ public class PatientUI : ConsoleUI
     {
         this._user = _user;
         _loggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
+    }
+
+    public bool WillNextCreationBlock ()
+    {
+        //TODO: unhardcode limit
+        int limit = 8;
+        int count = 0;
+        foreach (CheckupChangeLog log in _loggedInPatient.CheckupChangeLogs)
+        {
+            if (log.TimeAndDate > _now.AddDays(-30) &&  log.CRUDOperation == CRUDOperation.CREATE)
+            {
+                count++;
+            }
+        }
+
+        if (count+1 > limit)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool WillNextDUBlock ()
+    {
+        //TODO: unhardcode limit
+        int limit = 5;
+        int count = 0;
+        foreach (CheckupChangeLog log in _loggedInPatient.CheckupChangeLogs)
+        {
+            if (log.TimeAndDate > _now.AddDays(-30) && ( log.CRUDOperation == CRUDOperation.UPDATE || log.CRUDOperation == CRUDOperation.DELETE))
+            {
+                count++;
+            }
+        }
+
+        if (count+1 > limit)
+        {
+            return true;
+        }
+        return false;
     }
 
     public void LogChange(CRUDOperation crudOperation)
@@ -50,6 +101,11 @@ public class PatientUI : ConsoleUI
 
     public void DeleteCheckup ()
     {
+        bool nextWillBlock = WillNextDUBlock();
+        if (nextWillBlock)
+        {
+            Console.WriteLine("Warning! Any additional checkup deletion will result in account block!");
+        }
         Checkup selectedCheckup;
         try
         {
@@ -64,10 +120,22 @@ public class PatientUI : ConsoleUI
         Console.WriteLine("Checkup deleted.");
 
         LogChange(CRUDOperation.DELETE);
+        if (nextWillBlock)
+        {
+            _user.Block = Block.BY_SYSTEM;
+            _hospital.UserRepo.AddOrUpdateUser(_user);
+            throw new UserBlockedException("Deleting too many checkups.");
+        }
 
     }
 
     public void UpdateCheckup(){
+
+        bool nextWillBlock = WillNextDUBlock();
+        if (nextWillBlock)
+        {
+            Console.WriteLine("Warning! Any additional checkup updating will result in account block!");
+        }
         Checkup selectedCheckup;
         try
         {
@@ -158,6 +226,12 @@ public class PatientUI : ConsoleUI
         Console.WriteLine("Checkup updated.");
 
         LogChange(CRUDOperation.UPDATE);
+        if (nextWillBlock)
+        {
+            _user.Block = Block.BY_SYSTEM;
+            _hospital.UserRepo.AddOrUpdateUser(_user);
+            throw new UserBlockedException("Updating too many checkups.");
+        }
 
     }
 
@@ -255,6 +329,10 @@ public class PatientUI : ConsoleUI
                 }
                 
             }
+            catch(UserBlockedException e)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -345,6 +423,13 @@ public class PatientUI : ConsoleUI
 
     public void CreateCheckup()
     {
+        //TODO: change this
+        bool nextWillBlock = WillNextCreationBlock();
+        if (nextWillBlock)
+        {
+            Console.WriteLine("Warning! Any additional checkup creation will result in account block!");
+        }
+
         DateTime selectedDate;
         try
         {
@@ -414,6 +499,12 @@ public class PatientUI : ConsoleUI
         Console.WriteLine("Checkup created");
         
         LogChange(CRUDOperation.CREATE);
+        if (nextWillBlock)
+        {
+            _user.Block = Block.BY_SYSTEM;
+            _hospital.UserRepo.AddOrUpdateUser(_user);
+            throw new UserBlockedException("Creating too many checkups.");
+        }
     }
 
     public void ManageAppointments()
@@ -455,7 +546,12 @@ public class PatientUI : ConsoleUI
                     Console.WriteLine("Unrecognized command, please try again");
                 }
             }
-            catch (Exception e)
+            catch(UserBlockedException e)
+            {
+                throw;
+            }
+            //this might create problems, used to be generic exception
+            catch (InvalidInputException e)
             {
                 System.Console.Write(e.Message);
             }
@@ -464,6 +560,15 @@ public class PatientUI : ConsoleUI
 
     public override void Start()
     {
+        if (_user.Block != Block.UNBLOCK)
+        {
+            Console.WriteLine(@"
+            Account blocked.
+            Please contact secretary to unblock it.
+            Press enter to continue ");
+            ReadSanitizedLine();
+            return;
+        }
 
         while (true){
             System.Console.WriteLine(@"
@@ -490,7 +595,12 @@ public class PatientUI : ConsoleUI
                     Console.WriteLine("Unrecognized command, please try again");
                 }
             }
-            catch (Exception e)
+            catch(UserBlockedException e)
+            {
+                System.Console.WriteLine("Account blocked. Reason: "+ e.Message);
+                return;
+            }
+            catch (InvalidInputException e)
             {
                 Console.WriteLine(e.Message);
             }
