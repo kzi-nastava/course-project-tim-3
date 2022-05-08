@@ -34,6 +34,11 @@ public class DirectorUI : ConsoleUI
                     return;
                 else if (choice == "x" || choice == "exit")
                     System.Environment.Exit(0);
+                else
+                {
+                    System.Console.Write("UNRECOGNIZED OPTION. INPUT ANYTHING TO CONTINUE >> ");
+                    ReadSanitizedLine();
+                }
             }
             catch (QuitToMainMenuException)
             {
@@ -57,7 +62,6 @@ public class DirectorUI : ConsoleUI
                 [delete room|delete|dr|d] Delete a room
                 [quit|q] Quit to main menu
                 [exit|x] Exit program
-                [...]
             ");
             System.Console.Write(">> ");
             var choice = ReadSanitizedLine();
@@ -157,7 +161,6 @@ public class DirectorUI : ConsoleUI
                 [search|se] Search equipments
                 [quit|q] Quit to main menu
                 [exit|x] Exit program
-                [...]
             ");
             System.Console.Write(">> ");
             var choice = ReadSanitizedLine();
