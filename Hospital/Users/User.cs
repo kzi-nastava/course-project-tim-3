@@ -12,6 +12,13 @@ namespace Hospital
         DIRECTOR
     }
 
+    public enum Block
+    {
+        UNBLOCK,
+        BY_SYSTEM,
+        BY_SECRETARY,
+    }
+
     [BsonIgnoreExtraElements]
     public class User
     {
@@ -22,6 +29,8 @@ namespace Hospital
         public string Password {get;set;}
         [BsonRepresentation(BsonType.String)]
         public Role Role {get;set;}
+        [BsonRepresentation(BsonType.String)]
+        public Block Block {get;set;}
         public MongoDBRef Person {get;set;}
 
         // public User(string email, string password, string firstName, string lastName, Role role)
@@ -32,12 +41,13 @@ namespace Hospital
         // }
 
         // [BsonConstructor]
-        public User(string email, string password, Person person, Role role)
+        public User(string email, string password, Person person, Role role, Block block = Block.UNBLOCK)
         {
             Id = ObjectId.GenerateNewId();
             Email = email;
             Password = password;
             Role = role;
+            Block = block;
             switch (role)
             {
                 case Role.DOCTOR:
