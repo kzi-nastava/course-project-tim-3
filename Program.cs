@@ -94,7 +94,7 @@ namespace Hospital
             //     } 
             //     else
             //     {
-            //         var newRoom = new Room("55" + i, "NA" + i, RoomType.EXAMINATION);
+            //         var newRoom = new Room("55" + i, "NA" + i, RoomType.CHECKUP);
             //         hospital.RoomRepo.AddRoom(newRoom);
             //     }
             // }

@@ -81,7 +81,7 @@ public class DirectorUI : ConsoleUI
                     if (name == "")
                         throw new InvalidInputException("INVALID NAME!");
 
-                    System.Console.Write("ENTER ROOM TYPE [rest|operation|examination|other] >> ");
+                    System.Console.Write("ENTER ROOM TYPE [rest|operation|checkup|other] >> ");
                     var rawType = ReadSanitizedLine();
                     bool success = Enum.TryParse(rawType, true, out RoomType type);
                     if (!success || type == RoomType.STOCK)
@@ -109,7 +109,7 @@ public class DirectorUI : ConsoleUI
                     if (name != "")
                         room.Name = name;
 
-                    System.Console.Write("ENTER ROOM TYPE [rest|operation|examination|other] >> ");
+                    System.Console.Write("ENTER ROOM TYPE [rest|operation|checkup|other] >> ");
                     var rawType = ReadSanitizedLine();
                     RoomType type;
                     if (rawType != "")
@@ -202,7 +202,7 @@ public class DirectorUI : ConsoleUI
         }
     }
 
-    private IQueryable<Equipment> SearchEquipments(EquipmentQuery query)
+    private IQueryable<Equipment> SearchEquipments(EquipmentQuery query)  // TODO: probably have to move this
     {
         var equipments = _hospital.EquipmentRepo.GetQueryableEquipments();
         var matches = 
@@ -261,20 +261,17 @@ public class DirectorUI : ConsoleUI
             {
                 if (token.StartsWith("min:"))
                 {
-                    int number;
-                    bool success = Int32.TryParse(token.Substring(4), out number);
+                    bool success = Int32.TryParse(token.Substring(4), out int number);
                     if (!success)
                         throw new InvalidInputException("GIVEN MIN IS NOT A NUMBER.");
                     MinCount = number;
                 } 
                 else if (token.StartsWith("max:"))
                 {
-                    int number;
-                    bool success = Int32.TryParse(token.Substring(4), out number);
+                    bool success = Int32.TryParse(token.Substring(4), out int number);
                     if (!success)
                         throw new InvalidInputException("GIVEN MAX IS NOT A NUMBER.");
                     MaxCount = number;
-
                 }
                 else if (token.StartsWith("type:"))
                 {

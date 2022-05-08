@@ -7,7 +7,7 @@ public enum RoomType
 {
     REST,
     OPERATION,
-    EXAMINATION,
+    CHECKUP,
     OTHER,
     STOCK
 }
