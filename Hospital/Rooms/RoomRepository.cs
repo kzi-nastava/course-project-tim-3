@@ -53,6 +53,12 @@ namespace Hospital
             return rooms.Find(room => room.Location == location).FirstOrDefault();
         }
 
+        public Room? GetRoom(ObjectId id)
+        {
+            var rooms = GetRooms();
+            return rooms.Find(room => room.Id == id).FirstOrDefault();
+        }
+
         // todo: update
     }
 }
