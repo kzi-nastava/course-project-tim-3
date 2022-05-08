@@ -6,22 +6,22 @@ public class PatientUI : ConsoleUI
 {
     //there might be a better way to set opening time, only time will be used
     //those times should be stored somewhere else
-    public DateTime OpeningTime = new DateTime(2000, 10, 20, 9, 0, 0);
-    public DateTime ClosingTime = new DateTime(2000, 10, 20, 17, 0, 0);
-    public DateTime Now = DateTime.Now;
-    public TimeSpan CheckupDuration = new TimeSpan(0,0,15,0);
-    public Patient LoggedInPatient;
+    private DateTime openingTime = new DateTime(2000, 10, 20, 9, 0, 0);
+    private DateTime closingTime = new DateTime(2000, 10, 20, 17, 0, 0);
+    private DateTime now = DateTime.Now;
+    private TimeSpan checkupDuration = new TimeSpan(0,0,15,0);
+    private Patient loggedInPatient;
 
     public PatientUI(Hospital _hospital, User? _user) : base(_hospital) 
     {
         this._user = _user;
-        LoggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
+        loggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
     }
 
     public Checkup SelectCheckup ()
     {
         ShowCheckups();
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(LoggedInPatient.Id);
+        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(loggedInPatient.Id);
         if (checkups.Count == 0)
         {
             throw new QuitToMainMenuException("No checkups.");
@@ -163,7 +163,7 @@ public class PatientUI : ConsoleUI
 
     public void ShowCheckups()
     {
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(LoggedInPatient.Id);
+        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(loggedInPatient.Id);
         if (checkups.Count == 0)
         {
             Console.WriteLine("No checkups.");
@@ -177,7 +177,7 @@ public class PatientUI : ConsoleUI
 
     public void showOperations()
     {
-        List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(LoggedInPatient.Id);
+        List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(loggedInPatient.Id);
         if (operations.Count == 0)
         {
             Console.WriteLine("No operations.");
@@ -296,7 +296,7 @@ public class PatientUI : ConsoleUI
             throw new InvalidInputException("Wrong date entered.");  
         }
 
-        if (DateTime.Compare(result.Date, Now.Date) == -1 )
+        if (DateTime.Compare(result.Date, now.Date) == -1 )
         {
             throw new InvalidInputException("The date entered is in past.");
         }
@@ -304,12 +304,12 @@ public class PatientUI : ConsoleUI
         // time selection
 
         int highestCheckupIndex = 0;
-        DateTime iterationTime = OpeningTime;
+        DateTime iterationTime = openingTime;
         
-        while (iterationTime.TimeOfDay != ClosingTime.TimeOfDay)
+        while (iterationTime.TimeOfDay != closingTime.TimeOfDay)
         {
             Console.WriteLine(highestCheckupIndex + " - " + iterationTime.ToString("HH:mm"));
-            iterationTime = iterationTime.Add(CheckupDuration);
+            iterationTime = iterationTime.Add(checkupDuration);
             highestCheckupIndex += 1;
         }
 
@@ -318,12 +318,12 @@ public class PatientUI : ConsoleUI
 
         int selectedIndex = ReadInt(0, highestCheckupIndex, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
 
-        result = result.AddHours(OpeningTime.Hour);
-        result = result.Add(selectedIndex*CheckupDuration);
+        result = result.AddHours(openingTime.Hour);
+        result = result.Add(selectedIndex*checkupDuration);
        
         //TODO: The listed times shouldnt be the ones that expired
 
-        if (DateTime.Compare(result, Now) == -1 )
+        if (DateTime.Compare(result, now) == -1 )
         {
              throw new InvalidInputException("Selected date and time expired.");
         } 
