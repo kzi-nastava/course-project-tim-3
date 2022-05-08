@@ -74,6 +74,30 @@ namespace Hospital
             //         hospital.AppointmentRepo.AddOrUpdateOperation(op.TimeAndDate, op.Patient, op.Doctor, op.Duration, op.Report);
             //     }    
             // }
+            // //generate rooms and equipments
+            // for (int i = 0; i < 10; i++)
+            // {
+            //     if (i % 3 == 0)
+            //     {   
+            //         var newRoom = new Room("90" + i, "NA" + i, RoomType.STOCK);
+            //         hospital.RoomRepo.AddRoom(newRoom);
+            //         for (int j = 0; j < 4; j++)
+            //         {
+            //             var newEquipment = new Equipment(newRoom, "scalpel", 3, EquipmentType.OPERATION);
+            //             hospital.EquipmentRepo.AddEquipment(newEquipment);
+            //         }
+            //     } 
+            //     else if (i % 3 == 1)
+            //     {
+            //         var newRoom = new Room("10" + i, "NA" + i, RoomType.OPERATION);
+            //         hospital.RoomRepo.AddRoom(newRoom);
+            //     } 
+            //     else
+            //     {
+            //         var newRoom = new Room("55" + i, "NA" + i, RoomType.EXAMINATION);
+            //         hospital.RoomRepo.AddRoom(newRoom);
+            //     }
+            // }
 
             var ui = new HospitalUI(hospital);
             ui.Start();
