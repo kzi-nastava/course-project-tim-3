@@ -163,25 +163,19 @@ public class DirectorUI : ConsoleUI
                 // todo: unhardcode choices so they match menu display always
                 if (choice == "se" || choice == "search")
                 {
-                    equipments = _hospital.EquipmentRepo.GetQueryableEquipments().ToList();
                     System.Console.WriteLine("Example filters: min:3 max:100 type:checkup");
                     System.Console.WriteLine("You can leave out any that you want to keep at any value. Range is inclusive");
                     System.Console.WriteLine("Available types: checkup, operation, furniture, hallway");
+
                     System.Console.Write("INPUT YOUR FILTERS >> ");
                     var filters = ReadSanitizedLine().Trim();
-                    var query = new Query(filters);
+                    var query = new EquipmentQuery(filters);
 
                     System.Console.Write("INPUT YOUR SEARCH TERM >> ");
                     var search = ReadSanitizedLine();
                     query.NameContains = new Regex(search);
-                    var matches = 
-                        from equipment in equipments
-                        where (query.MinCount is null || query.MinCount <= equipment.Count)
-                            && (query.MaxCount is null || query.MaxCount >= equipment.Count)
-                            && (query.Type is null || query.Type == equipment.Type)
-                            && (query.NameContains is null || query.NameContains.IsMatch(equipment.Name))
-                        select equipment;
-                    equipments = matches.ToList();
+
+                    equipments = SearchEquipments(query).ToList();
                 }
                 else if (choice == "q" || choice == "quit")
                     throw new QuitToMainMenuException("From StartManageEquipments");
@@ -200,6 +194,19 @@ public class DirectorUI : ConsoleUI
                 ReadSanitizedLine();
             }
         }
+    }
+
+    private IQueryable<Equipment> SearchEquipments(EquipmentQuery query)
+    {
+        var equipments = _hospital.EquipmentRepo.GetQueryableEquipments();
+        var matches = 
+            from equipment in equipments
+            where (query.MinCount == null || query.MinCount <= equipment.Count)
+                && (query.MaxCount == null || query.MaxCount >= equipment.Count)
+                && (query.Type == null || query.Type == equipment.Type)
+                && (query.NameContains == null || query.NameContains.IsMatch(equipment.Name))
+            select equipment;
+        return matches;
     }
 
     public void DisplayRooms(List<Room> rooms)
@@ -227,14 +234,14 @@ public class DirectorUI : ConsoleUI
         }
     }
 
-    private struct Query
+    private struct EquipmentQuery
     {
         public int? MinCount { get; set; }
         public int? MaxCount { get; set; }
         public EquipmentType? Type { get; set; }
         public Regex? NameContains { get; set; }
 
-        public Query(string query)
+        public EquipmentQuery(string query)
         {
             // TODO: make it so repeated same will throw error
             MinCount = null;
