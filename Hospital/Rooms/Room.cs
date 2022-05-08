@@ -3,18 +3,18 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Hospital
 {
+    public enum RoomType
+    {
+        REST,
+        OPERATION,
+        EXAMINATION,
+        OTHER,
+        STOCK
+    }
+
     public class Room
     {
         // todo: naming
-        public enum RoomType
-        {
-            REST,
-            OPERATION,
-            EXAMINATION,
-            OTHER,
-            STOCK
-        }
-
         [BsonId]
         public ObjectId Id {get; set;}
 

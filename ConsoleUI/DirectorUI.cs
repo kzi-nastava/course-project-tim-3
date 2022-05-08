@@ -76,8 +76,8 @@ namespace Hospital
 
                         System.Console.Write("ENTER ROOM TYPE [rest|operation|examination|other] >> ");
                         var rawType = ReadSanitizedLine();
-                        bool success = Enum.TryParse(rawType, true, out Room.RoomType type);
-                        if (!success || type == Room.RoomType.STOCK)
+                        bool success = Enum.TryParse(rawType, true, out RoomType type);
+                        if (!success || type == RoomType.STOCK)
                             throw new InvalidInputException("NOT A VALID TYPE!");
 
                         var newRoom = new Room(location, name, type);
@@ -104,11 +104,11 @@ namespace Hospital
 
                         System.Console.Write("ENTER ROOM TYPE [rest|operation|examination|other] >> ");
                         var rawType = ReadSanitizedLine();
-                        Room.RoomType type;
+                        RoomType type;
                         if (rawType != "")
                         {
                             var success = Enum.TryParse(rawType, true, out type);
-                            if (!success || type == Room.RoomType.STOCK)
+                            if (!success || type == RoomType.STOCK)
                                 throw new InvalidInputException("NOT A VALID TYPE!");
                             room.Type = type;
                         }
