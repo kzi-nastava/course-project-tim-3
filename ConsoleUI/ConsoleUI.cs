@@ -46,10 +46,8 @@ public abstract class ConsoleUI
     }
 
     // the bounds are both inclusive
-    public int ReadInt(int lowerBound = Int32.MinValue, int upperBound = Int32.MaxValue,
-                       string message = "INPUT NUMBER >> ", string errorMessage = "NUMBER OUT OF BOUNDS!")
+    public int ReadInt(int lowerBound = Int32.MinValue, int upperBound = Int32.MaxValue, string errorMessage = "NUMBER OUT OF BOUNDS!")
     {
-        System.Console.Write(message);
         var rawNumber = ReadSanitizedLine();
         bool success = Int32.TryParse(rawNumber, out int number);
         if (number < lowerBound || number > upperBound)
