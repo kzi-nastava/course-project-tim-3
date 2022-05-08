@@ -22,6 +22,17 @@ public class InvalidInputException : System.Exception
         System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
 
+[System.Serializable]
+public class AbortException : System.Exception
+{
+    public AbortException() { }
+    public AbortException(string message) : base(message) { }
+    public AbortException(string message, System.Exception inner) : base(message, inner) { }
+    protected AbortException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
 public abstract class ConsoleUI
 {
     protected Hospital _hospital;
@@ -47,10 +58,9 @@ public abstract class ConsoleUI
 
     // the bounds are both inclusive
     public int ReadInt(int lowerBound = Int32.MinValue, int upperBound = Int32.MaxValue,
-                       string message = "INPUT NUMBER >> ", string errorMessageBounds = "NUMBER OUT OF BOUNDS!",
+                       string errorMessageBounds = "NUMBER OUT OF BOUNDS!",
                        string errorMessageWrongInput = "NUMBER NOT RECOGNIZED!")
     {
-        System.Console.Write(message);
         var rawNumber = ReadSanitizedLine();
         bool success = Int32.TryParse(rawNumber, out int number);
         
