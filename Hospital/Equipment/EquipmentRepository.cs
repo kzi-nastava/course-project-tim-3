@@ -25,16 +25,13 @@ namespace Hospital
 
         public void AddEquipment(Equipment newEquipment)
         {
-            var equipments = GetEquipments();
-            var existingEquipment = equipments.Find(equipment => equipment.Room.Id == newEquipment.Room.Id 
-                                                                 && equipment.Name == newEquipment.Name);
-            if (!existingEquipment.Any())
+            var equipment = GetEquipment((ObjectId) newEquipment.Room.Id, newEquipment.Name);
+            if (equipment is null)
             {
-                equipments.InsertOne(newEquipment);
+                GetEquipments().InsertOne(newEquipment);
             }
             else
             {
-                var equipment = existingEquipment.First();
                 equipment.MergeWith(newEquipment);
                 UpdateEquipment(equipment);
             }
@@ -44,6 +41,14 @@ namespace Hospital
         {
             var equipments = GetEquipments();
             equipments.ReplaceOne(equipment => equipment.Id == newEquipment.Id, newEquipment);
+        }
+
+        public Equipment? GetEquipment(ObjectId roomId, string name)
+        {
+            var equipments = GetEquipments();
+            var existingEquipment = equipments.Find(equipment => equipment.Room.Id == roomId 
+                                                                 && equipment.Name == name);
+            return existingEquipment.FirstOrDefault();
         }
     }
 }
