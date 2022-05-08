@@ -127,6 +127,15 @@ public class DirectorUI : ConsoleUI
                 {
                     System.Console.Write("INPUT NUMBER >> ");
                     var number = ReadInt(0, rooms.Count - 1);
+                    if (_hospital.EquipmentRepo.GetEquipmentBatchesInRoom(rooms[number]).Any())
+                    {
+                        // TODO: make into a moving equipment submenu
+                        System.Console.Write("THIS ROOM HAS EQUIPMENT IN IT. THIS OPERATION WILL DELETE IT ALL. ARE YOU SURE? [y/N] >> ");
+                        var answer = ReadSanitizedLine();
+                        if (answer != "y")
+                            throw new AbortException("NOT A YES. ABORTING.");
+                        _hospital.EquipmentRepo.DeleteEquipmentBatchesInRoom(rooms[number]);
+                    }
                     _hospital.RoomRepo.DeleteRoom(rooms[number].Id);
                     System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
                 }
@@ -142,6 +151,10 @@ public class DirectorUI : ConsoleUI
             }
             catch (InvalidInputException e)
             {
+                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+            }
+            catch (AbortException e)
+            {  // TODO: make hierarchy extension same with above
                 System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
             }
             ReadSanitizedLine();

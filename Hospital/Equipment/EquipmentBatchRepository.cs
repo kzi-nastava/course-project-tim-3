@@ -23,6 +23,16 @@ public class EquipmentBatchRepository
         return GetEquipmentBatches().AsQueryable();
     }
 
+    public IMongoQueryable<EquipmentBatch> GetEquipmentBatchesInRoom(Room room)
+    {
+        var equipmentBatches = GetQueryableEquipmentBatches();
+        var matches = 
+            from equipmentBatch in equipmentBatches
+            where equipmentBatch.Room.Id == room.Id
+            select equipmentBatch;
+        return matches;
+    }
+
     public void AddEquipmentBatch(EquipmentBatch newEquipmentBatch)
     {
         var equipmentBatch = GetEquipmentBatch((ObjectId) newEquipmentBatch.Room.Id, newEquipmentBatch.Name);
@@ -35,6 +45,11 @@ public class EquipmentBatchRepository
             equipmentBatch.MergeWith(newEquipmentBatch);
             UpdateEquipmentBatch(equipmentBatch);
         }
+    }
+
+    public void DeleteEquipmentBatchesInRoom(Room room)
+    {
+        GetEquipmentBatches().DeleteMany(batch => batch.Room.Id == room.Id);
     }
 
     private void UpdateEquipmentBatch(EquipmentBatch newEquipmentBatch) // EXPECTS EXISTING EQUIPMENTBATCH!

@@ -22,6 +22,17 @@ public class InvalidInputException : System.Exception
         System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
 
+[System.Serializable]
+public class AbortException : System.Exception
+{
+    public AbortException() { }
+    public AbortException(string message) : base(message) { }
+    public AbortException(string message, System.Exception inner) : base(message, inner) { }
+    protected AbortException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
 public abstract class ConsoleUI
 {
     protected Hospital _hospital;
