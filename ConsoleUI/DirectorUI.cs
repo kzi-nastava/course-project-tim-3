@@ -49,9 +49,9 @@ public class DirectorUI : ConsoleUI
 
     public void StartManageRooms()
     {
-        List<Room> rooms = _hospital.RoomRepo.GetQueryableRooms().ToList();
         while (true)
         {
+            List<Room> rooms = _hospital.RoomRepo.GetQueryableRooms().ToList();
             System.Console.Clear();
             System.Console.WriteLine("--- ROOMS ---");
             DisplayRooms(rooms);
