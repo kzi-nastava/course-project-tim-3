@@ -85,7 +85,8 @@ public class PatientUI : ConsoleUI
         int selectedIndex = -1;
         try
         {
-            selectedIndex = ReadInt(0, checkups.Count-1, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
+            System.Console.Write("Please enter a number from the list: ");
+            selectedIndex = ReadInt(0, checkups.Count-1, "Number out of bounds!", "Number not recognized!");
         }
         catch (InvalidInputException e)
         {
@@ -180,7 +181,8 @@ public class PatientUI : ConsoleUI
             int selectedDoctorIndex = -1;
             try
             {
-                selectedDoctorIndex = ReadInt(0, alternativeDoctors.Count-1, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
+                System.Console.Write("Please enter a number from the list: ");
+                selectedDoctorIndex = ReadInt(0, alternativeDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
             }
             catch (InvalidInputException e)
             {
@@ -403,7 +405,8 @@ public class PatientUI : ConsoleUI
         //while loop will add an extra "1" at the end of the loop, we will remove that
         highestCheckupIndex -= 1;
 
-        int selectedIndex = ReadInt(0, highestCheckupIndex, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
+        System.Console.Write("Please enter a number from the list: ");
+        int selectedIndex = ReadInt(0, highestCheckupIndex, "Number out of bounds!", "Number not recognized!");
 
         result = result.AddHours(_openingTime.Hour);
         result = result.Add(selectedIndex*_checkupDuration);
@@ -468,7 +471,8 @@ public class PatientUI : ConsoleUI
         int selectedIndex = -1;
         try
         {
-            selectedIndex = ReadInt(0, suitableDoctors.Count-1, "Please enter a number from the list: ","Number out of bounds!","Number not recognized!");
+            System.Console.Write("Please enter a number from the list: ");
+            selectedIndex = ReadInt(0, suitableDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
         }
         catch (InvalidInputException e)
         {
