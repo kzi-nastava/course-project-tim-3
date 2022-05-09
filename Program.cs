@@ -103,6 +103,27 @@ namespace Hospital
             //         hospital.RoomRepo.AddRoom(newRoom);
             //     }
             // }
+            // //generate checkup change requests
+            // for (int i = 0; i < 20; i++)
+            // {
+            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByName("name1");
+            //     List<Checkup> checkups = hospital.AppointmentRepo.GetCheckupsByDoctor(doctor.Id);
+            //     dateTime = dateTime.AddHours(1);
+
+            //     if (i % 2 == 0)
+            //     {   
+            //         Checkup alteredCheckup = checkups[i];
+            //         DateTime newDateAndTime =  new DateTime (2077,10,10);
+            //         alteredCheckup.TimeAndDate = newDateAndTime;
+            //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],alteredCheckup,CRUDOperation.UPDATE);
+            //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
+            //     } else if (i % 2 == 1) 
+            //     {
+            //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],checkups[i],CRUDOperation.DELETE);
+            //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
+            //     }    
+            // }
+            
 
             var ui = new HospitalUI(hospital);
             ui.Start();

@@ -12,9 +12,10 @@ namespace Hospital
         public MongoDBRef CheckupToChange { get; set; }
 
         public Checkup UpdatedCheckup { get; set; }
-
+        
+        [BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public CRUDOperation CRUDOperation { get; set; }
-
+        
         public CheckupChangeRequest(Checkup checkupToChange, Checkup updatedCheckup, CRUDOperation crudOperation)
         {
             Id = ObjectId.GenerateNewId();
