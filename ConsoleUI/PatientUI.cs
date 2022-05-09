@@ -39,10 +39,10 @@ public class PatientUI : ConsoleUI
                 limit = 8;
                 break;
             case CRUDOperation.UPDATE:
-                limit = 5;
+                limit = 4;
                 break;
             case CRUDOperation.DELETE:
-                limit = 5;
+                limit = 4;
                 break;
             default:
                 //this is dummy value, as of now there are no read restrictions
@@ -571,7 +571,8 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        while (true){
+        while (true)
+        {
             System.Console.WriteLine(@"
             Commands:
             ma - manage appointments

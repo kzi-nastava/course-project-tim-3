@@ -14,14 +14,6 @@ namespace Hospital
             CheckupChangeLogs = new List<CheckupChangeLog>();
         }
 
-        public Patient(string firstName, string lastName, MedicalRecord medicalRecord, List<CheckupChangeLog> checkupChangeLogs) : base(firstName, lastName)
-        {
-            FirstName = firstName;
-            LastName = lastName;
-            MedicalRecord = medicalRecord;
-            CheckupChangeLogs = checkupChangeLogs;
-        }
-
         public override string ToString()
         {
             return FirstName + " " + LastName ;

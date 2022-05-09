@@ -23,7 +23,7 @@ namespace Hospital
             TimeAndDate = timeAndDate;
             CRUDOperation = crudOperation;
         }
-        public string toString()
+        public override string ToString()
         {
             return TimeAndDate + " " + CRUDOperation.ToString();
         }
