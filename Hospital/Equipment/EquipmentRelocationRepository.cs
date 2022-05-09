@@ -25,6 +25,18 @@ public class EquipmentRelocationRepository
         return GetEquipmentRelocations().AsQueryable();
     }
 
+    public void AddRelocation(EquipmentRelocation relocation)
+    // todo: load these on start in scheduler
+    {
+        GetEquipmentRelocations().InsertOne(relocation);
+    }
+
+    // NOTE: expects existing!!
+    public void DeleteRelocation(ObjectId deletingId)
+    {
+        GetEquipmentRelocations().DeleteOne(relocation => relocation.Id == deletingId);
+    }
+
     public void Schedule(EquipmentRelocation relocation)
     {
         Scheduler.Schedule(relocation.WhenDone, () => 
@@ -41,5 +53,6 @@ public class EquipmentRelocationRepository
         var toBatch = _equipmentRepo.GetEquipmentBatch((ObjectId) relocation.ToRoom.Id, relocation.Name);
         _equipmentRepo.RemoveEquipmentBatch(removingBatch);
         _equipmentRepo.AddEquipmentBatch(addingBatch);
+        DeleteRelocation(relocation.Id);
     }
 }

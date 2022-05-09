@@ -14,6 +14,7 @@
         public SecretaryRepository SecretaryRepo {get;}
         public RoomRepository RoomRepo {get;}
         public EquipmentBatchRepository EquipmentRepo { get; }
+        public EquipmentRelocationRepository RelocationRepo { get; }
 
         public Hospital()
         {
@@ -25,6 +26,7 @@
             SecretaryRepo = new SecretaryRepository(_dbClient);
             RoomRepo = new RoomRepository(_dbClient);
             EquipmentRepo = new EquipmentBatchRepository(_dbClient);
+            RelocationRepo = new EquipmentRelocationRepository(_dbClient, EquipmentRepo);
         }
 
         public User? Login(string email, string password)

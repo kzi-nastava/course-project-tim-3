@@ -163,6 +163,7 @@ public class DirectorUI : ConsoleUI
 
     public void StartManageEquipment()
     {
+        // TODO: load schedules
         List<EquipmentBatch> equipmentBatches = _hospital.EquipmentRepo.GetQueryableEquipmentBatches().ToList();
         while (true)
         {
@@ -171,7 +172,8 @@ public class DirectorUI : ConsoleUI
             DisplayEquipmentBatches(equipmentBatches);
             System.Console.WriteLine(@"
             INPUT OPTION:
-                [search|se] Search equipment batches
+                [search equipment|search|se] Search equipment batches
+                [move equipment|move|me]
                 [quit|q] Quit to main menu
                 [exit|x] Exit program
             ");
@@ -180,7 +182,7 @@ public class DirectorUI : ConsoleUI
             try
             {
                 // todo: unhardcode choices so they match menu display always
-                if (choice == "se" || choice == "search")
+                if (choice == "se" || choice == "search" || choice == "search equipment")
                 {
                     System.Console.WriteLine("Example filters: min:3 max:100 type:checkup");
                     System.Console.WriteLine("You can leave out any that you want to keep at any value. Range is inclusive");
@@ -196,6 +198,32 @@ public class DirectorUI : ConsoleUI
 
                     equipmentBatches = SearchEquipmentBatches(query).ToList();
                 }
+                else if (choice == "me" || choice == "move" || choice == "move equipment")
+                {
+                    // TODO: functionalize
+                    System.Console.Write("SELECT EQUIP TO MOVE >> ");
+                    int index = ReadInt(0, equipmentBatches.Count - 1);
+                    var equipmentBatch = equipmentBatches[index];
+
+                    System.Console.Write("SELECT AMOUNT TO MOVE (MINIMUM 1. AVAILABLE: " + equipmentBatch.Count + ") >> ");
+                    int amount = ReadInt(1, equipmentBatch.Count);
+
+                    System.Console.WriteLine("INPUT DATE-TIME WHEN IT IS DONE >> ");
+                    var rawDate = ReadSanitizedLine();
+                    var whenDone = DateTime.Parse(rawDate);
+
+                    List<Room> rooms = _hospital.RoomRepo.GetQueryableRooms().ToList();
+                    DisplayRooms(rooms);
+                    System.Console.Write("INPUT ROOM NUMBER >> ");
+                    var number = ReadInt(0, rooms.Count - 1);
+                    
+                    var relocation = new EquipmentRelocation(equipmentBatch.Name, amount, 
+                        equipmentBatch.Type, whenDone, (ObjectId) equipmentBatch.Room.Id, rooms[number].Id);
+                    _hospital.RelocationRepo.AddRelocation(relocation);
+                    _hospital.RelocationRepo.Schedule(relocation);
+                    System.Console.Write("RELOCATION SCHEDULED SUCCESSFULLY. INPUT ANYTHING TO CONTINUE >> ");
+                    ReadSanitizedLine();
+                }
                 else if (choice == "q" || choice == "quit")
                     throw new QuitToMainMenuException("From StartManageEquipments");
                 else if (choice == "x" || choice == "exit")
@@ -208,6 +236,11 @@ public class DirectorUI : ConsoleUI
                 }
             }
             catch (InvalidInputException e)
+            {
+                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+                ReadSanitizedLine();
+            }
+            catch (FormatException e)
             {
                 System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
                 ReadSanitizedLine();
