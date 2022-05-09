@@ -58,7 +58,10 @@ public class EquipmentBatchRepository
         else
         {
             existingBatch.Remove(removingBatch);
-            UpdateEquipmentBatch(existingBatch);
+            if (existingBatch.Count != 0)
+                UpdateEquipmentBatch(existingBatch);
+            else
+                GetEquipmentBatches().DeleteOne(batch => batch.Id == existingBatch.Id);
         }
     }
 

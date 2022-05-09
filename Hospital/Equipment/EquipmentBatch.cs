@@ -22,6 +22,7 @@ public class EquipmentBatch
     [BsonRepresentation(BsonType.String)]
     public EquipmentType Type { get; set; }
     
+    // TODO: add min count 1
     public EquipmentBatch(Room room, string name, int count, EquipmentType type)
     {
         Id = ObjectId.GenerateNewId();

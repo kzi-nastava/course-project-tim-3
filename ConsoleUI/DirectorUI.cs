@@ -208,7 +208,7 @@ public class DirectorUI : ConsoleUI
                     System.Console.Write("SELECT AMOUNT TO MOVE (MINIMUM 1. AVAILABLE: " + equipmentBatch.Count + ") >> ");
                     int amount = ReadInt(1, equipmentBatch.Count);
 
-                    System.Console.WriteLine("INPUT DATE-TIME WHEN IT IS DONE >> ");
+                    System.Console.Write("INPUT DATE-TIME WHEN IT IS DONE >> ");
                     var rawDate = ReadSanitizedLine();
                     var whenDone = DateTime.Parse(rawDate);
 
