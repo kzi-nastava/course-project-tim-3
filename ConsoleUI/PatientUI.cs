@@ -29,34 +29,31 @@ public class PatientUI : ConsoleUI
         _loggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
     }
 
-    public bool WillNextCreationBlock ()
+    public bool WillNextCRUDOperationBlock(CRUDOperation crudOperation)
     {
-        //TODO: unhardcode limit
-        int limit = 8;
+        int limit;
+        //TODO: unhardcode this
+        switch (crudOperation)
+        {
+            case CRUDOperation.CREATE:
+                limit = 8;
+                break;
+            case CRUDOperation.UPDATE:
+                limit = 5;
+                break;
+            case CRUDOperation.DELETE:
+                limit = 5;
+                break;
+            default:
+                //this is dummy value, as of now there are no read restrictions
+                limit = 999;
+                break;
+        }
+
         int count = 0;
         foreach (CheckupChangeLog log in _loggedInPatient.CheckupChangeLogs)
         {
-            if (log.TimeAndDate > _now.AddDays(-30) &&  log.CRUDOperation == CRUDOperation.CREATE)
-            {
-                count++;
-            }
-        }
-
-        if (count+1 > limit)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    public bool WillNextDUBlock ()
-    {
-        //TODO: unhardcode limit
-        int limit = 5;
-        int count = 0;
-        foreach (CheckupChangeLog log in _loggedInPatient.CheckupChangeLogs)
-        {
-            if (log.TimeAndDate > _now.AddDays(-30) && ( log.CRUDOperation == CRUDOperation.UPDATE || log.CRUDOperation == CRUDOperation.DELETE))
+            if (log.TimeAndDate > _now.AddDays(-30) &&  log.CRUDOperation == crudOperation)
             {
                 count++;
             }
@@ -101,7 +98,7 @@ public class PatientUI : ConsoleUI
 
     public void DeleteCheckup ()
     {
-        bool nextWillBlock = WillNextDUBlock();
+        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.DELETE);
         if (nextWillBlock)
         {
             Console.WriteLine("Warning! Any additional checkup deletion will result in account block!");
@@ -131,7 +128,7 @@ public class PatientUI : ConsoleUI
 
     public void UpdateCheckup(){
 
-        bool nextWillBlock = WillNextDUBlock();
+        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.UPDATE);
         if (nextWillBlock)
         {
             Console.WriteLine("Warning! Any additional checkup updating will result in account block!");
@@ -424,7 +421,7 @@ public class PatientUI : ConsoleUI
     public void CreateCheckup()
     {
         //TODO: change this
-        bool nextWillBlock = WillNextCreationBlock();
+        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.CREATE);
         if (nextWillBlock)
         {
             Console.WriteLine("Warning! Any additional checkup creation will result in account block!");
