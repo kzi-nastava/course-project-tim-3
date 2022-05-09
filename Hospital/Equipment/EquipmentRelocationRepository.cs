@@ -32,9 +32,9 @@ public class EquipmentRelocationRepository
     }
 
     // NOTE: expects existing!!
-    public void DeleteRelocation(ObjectId deletingId)
+    public void UpdateRelocation(EquipmentRelocation replacing)
     {
-        GetEquipmentRelocations().DeleteOne(relocation => relocation.Id == deletingId);
+        GetEquipmentRelocations().ReplaceOne(relocation => relocation.Id == replacing.Id, replacing);
     }
 
     public void Schedule(EquipmentRelocation relocation)
@@ -53,6 +53,7 @@ public class EquipmentRelocationRepository
         var toBatch = _equipmentRepo.GetEquipmentBatch((ObjectId) relocation.ToRoom.Id, relocation.Name);
         _equipmentRepo.RemoveEquipmentBatch(removingBatch);
         _equipmentRepo.AddEquipmentBatch(addingBatch);
-        DeleteRelocation(relocation.Id);
+        relocation.IsDone = true;
+        UpdateRelocation(relocation);
     }
 }

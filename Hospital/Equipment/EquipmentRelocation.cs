@@ -14,6 +14,7 @@ public class EquipmentRelocation
     public EquipmentType Type { get; set; }
     public int Count { get; set; }
     public DateTime WhenDone { get; set; }
+    public bool IsDone { get; set; }
 
     public EquipmentRelocation(string name, int count, EquipmentType type, DateTime whenDone, Room fromRoom, Room toRoom)
     {  // TODO: shuffle parameters
@@ -24,6 +25,7 @@ public class EquipmentRelocation
         Count = count;
         WhenDone = whenDone;
         Type = type;
+        IsDone = false;
     }
 
     public EquipmentRelocation(string name, int count, EquipmentType type, DateTime whenDone, ObjectId fromRoomId, ObjectId toRoomId)
@@ -35,5 +37,6 @@ public class EquipmentRelocation
         Count = count;
         WhenDone = whenDone;
         Type = type;
+        IsDone = false;
     }
 }
