@@ -47,6 +47,21 @@ public class EquipmentBatchRepository
         }
     }
 
+    // NOTE: only use during Relocation!!
+    public void RemoveEquipmentBatch(EquipmentBatch removingBatch)
+    {
+        var existingBatch = GetEquipmentBatch((ObjectId) removingBatch.Room.Id, removingBatch.Name);
+        if (existingBatch is null)
+        {
+            throw new Exception("HOW DID YOU GET HERE?");  // TODO: change exception
+        }
+        else
+        {
+            existingBatch.Remove(removingBatch);
+            UpdateEquipmentBatch(existingBatch);
+        }
+    }
+
     public void DeleteEquipmentBatchesInRoom(Room room)
     {
         GetEquipmentBatches().DeleteMany(batch => batch.Room.Id == room.Id);
