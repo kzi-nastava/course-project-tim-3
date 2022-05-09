@@ -120,7 +120,7 @@ public class PatientUI : ConsoleUI
         LogChange(CRUDOperation.DELETE);
         if (nextWillBlock)
         {
-            _user.Block = Block.BY_SYSTEM;
+            _user.BlockStatus = Block.BY_SYSTEM;
             _hospital.UserRepo.AddOrUpdateUser(_user);
             throw new UserBlockedException("Deleting too many checkups.");
         }
@@ -227,7 +227,7 @@ public class PatientUI : ConsoleUI
         LogChange(CRUDOperation.UPDATE);
         if (nextWillBlock)
         {
-            _user.Block = Block.BY_SYSTEM;
+            _user.BlockStatus = Block.BY_SYSTEM;
             _hospital.UserRepo.AddOrUpdateUser(_user);
             throw new UserBlockedException("Updating too many checkups.");
         }
@@ -502,7 +502,7 @@ public class PatientUI : ConsoleUI
         LogChange(CRUDOperation.CREATE);
         if (nextWillBlock)
         {
-            _user.Block = Block.BY_SYSTEM;
+            _user.BlockStatus = Block.BY_SYSTEM;
             _hospital.UserRepo.AddOrUpdateUser(_user);
             throw new UserBlockedException("Creating too many checkups.");
         }
@@ -561,7 +561,7 @@ public class PatientUI : ConsoleUI
 
     public override void Start()
     {
-        if (_user.Block != Block.UNBLOCK)
+        if (_user.BlockStatus != Block.UNBLOCKED)
         {
             Console.WriteLine(@"
             Account blocked.
