@@ -35,6 +35,7 @@ namespace Hospital
             RequestState = requestState;
         }
 
+        //TODO: Implement better tostring
         public override string ToString ()
         {
             return CheckupToChange + " " + CRUDOperation + " " +RequestState;

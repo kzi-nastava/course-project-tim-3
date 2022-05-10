@@ -12,9 +12,9 @@ namespace Hospital
             var hospital = new Hospital();
             var hospitalUsers = new {Users = new List<User>()};
 
-            //generate tests TODO: move this to dedicated teting interface
+            // //generate tests TODO: move this to dedicated teting interface
 
-            //generate users
+            // //generate users
             // int doctorSpecialtynumber = 0;
             // for (int i = 0; i < 100; i++)
             // {

@@ -114,8 +114,20 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
-        Console.WriteLine("Checkup deleted.");
+        if (selectedCheckup.TimeAndDate < _now.AddDays(2))
+        {
+            CheckupChangeRequest newRequest = new CheckupChangeRequest(
+                selectedCheckup,
+                selectedCheckup,
+                CRUDOperation.DELETE);
+                Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
+                _hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(newRequest);
+        }
+        else
+        {
+            _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
+            Console.WriteLine("Checkup deleted.");
+        }
 
         LogChange(CRUDOperation.DELETE);
         if (nextWillBlock)
@@ -229,6 +241,8 @@ public class PatientUI : ConsoleUI
                 selectedCheckup,
                 selectedCheckup,
                 CRUDOperation.UPDATE);
+                Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
+                _hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(newRequest);
         }
         else
         {
@@ -435,44 +449,6 @@ public class PatientUI : ConsoleUI
 
     public void CreateCheckup()
     {
-        // //TESTIRANJE CHANGE REQUESTOVA UNUTAR UI-A
-        // //ispis svih checkup-ova koji su referencirani u requestu (getCheckupById je imao bug da trazi preko doktorovog id-a)
-        // foreach (CheckupChangeRequest request in _hospital.CheckupChangeRequestRepo.GetAllCheckupChangeRequestsAsQueryable())
-        // {
-        //     var checkupId = (ObjectId)request.CheckupToChange.Id;
-        //     Checkup checkup = _hospital.AppointmentRepo.GetCheckupById(checkupId);
-        //     Console.WriteLine(checkup.toString());
-        // }
-        // //ispis svih requestova
-        // foreach (CheckupChangeRequest request in _hospital.CheckupChangeRequestRepo.GetAllCheckupChangeRequestsAsQueryable())
-        // {
-        //     Console.WriteLine(request.ToString());
-        // }
-        // System.Console.WriteLine(
-        //     "aaaaaaaaaaaaaaaa"
-        // );
-        // //ispis pojedinih requestova
-        // foreach (CheckupChangeRequest request in _hospital.CheckupChangeRequestRepo.GetCheckupChangeRequestsByState(RequestState.PENDING))
-        // {
-        //     Console.WriteLine(request.ToString());
-        // }
-        // //obavljanje svih pending requestova
-        // foreach (CheckupChangeRequest request in _hospital.CheckupChangeRequestRepo.GetCheckupChangeRequestsByState(RequestState.PENDING))
-        // {
-        //     var checkupId = (ObjectId)request.CheckupToChange.Id;
-        //     Checkup checkup = _hospital.AppointmentRepo.GetCheckupById(checkupId);
-        //     if (request.CRUDOperation == CRUDOperation.UPDATE)
-        //     {
-        //         _hospital.AppointmentRepo.AddOrUpdateCheckup(request.UpdatedCheckup);
-        //     }
-        //     else
-        //     {
-        //         _hospital.AppointmentRepo.DeleteCheckup(checkup);
-        //     }
-        //     //obavezno update-uj state da ne bi doslo do null reference 
-        //     request.RequestState = RequestState.APPROVED;
-        //     _hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
-        // }
 
         //TODO: change this
         bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.CREATE);
