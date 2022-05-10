@@ -114,8 +114,20 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
-        Console.WriteLine("Checkup deleted.");
+        if (selectedCheckup.TimeAndDate < _now.AddDays(2))
+        {
+            CheckupChangeRequest newRequest = new CheckupChangeRequest(
+                selectedCheckup,
+                selectedCheckup,
+                CRUDOperation.DELETE);
+                Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
+                _hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(newRequest);
+        }
+        else
+        {
+            _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
+            Console.WriteLine("Checkup deleted.");
+        }
 
         LogChange(CRUDOperation.DELETE);
         if (nextWillBlock)
@@ -213,17 +225,31 @@ public class PatientUI : ConsoleUI
 
         //create checkup
         selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
+        DateTime oldDate = selectedCheckup.TimeAndDate;
         selectedCheckup.TimeAndDate = newDate;
-        
+        //TODO: if both change doctor and change date are false, dont create a checkup
+
         if (_hospital.AppointmentRepo.IsDoctorBusy((DateTime)newDate,newDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
         }
-
-        _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
-        Console.WriteLine("Checkup updated.");
-
+        
+        if (oldDate < _now.AddDays(2))
+        {
+            CheckupChangeRequest newRequest = new CheckupChangeRequest(
+                selectedCheckup,
+                selectedCheckup,
+                CRUDOperation.UPDATE);
+                Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
+                _hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(newRequest);
+        }
+        else
+        {
+            _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
+            Console.WriteLine("Checkup updated.");
+        }
+        
         LogChange(CRUDOperation.UPDATE);
         if (nextWillBlock)
         {
@@ -423,6 +449,7 @@ public class PatientUI : ConsoleUI
 
     public void CreateCheckup()
     {
+
         //TODO: change this
         bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.CREATE);
         if (nextWillBlock)
