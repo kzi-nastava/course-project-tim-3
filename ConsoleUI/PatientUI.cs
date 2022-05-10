@@ -420,7 +420,6 @@ public class PatientUI : ConsoleUI
 
     public DateTime SelectDate()
     {
-        Console.Write("Please enter a date in dd-MM-yyyy format: ");
         string inputDate = ReadSanitizedLine().Trim();
 
         bool success = DateTime.TryParseExact(inputDate, 
@@ -443,6 +442,7 @@ public class PatientUI : ConsoleUI
 
     public DateTime SelectDateAndTime ()
     {   
+        Console.Write("Please enter a date in dd-MM-yyyy format: ");
         DateTime result = SelectDate();
 
         result = SelectTime(result);
@@ -488,6 +488,102 @@ public class PatientUI : ConsoleUI
         return suitableDoctors[selectedIndex];
     }
 
+    public List<Checkup> GetFirstFewFreeCheckups(Doctor doctor, int numberOfCheckups)
+    {
+        List<Checkup> checkups = new List<Checkup>();
+        DateTime iterationDate = RoundUp(DateTime.Now,TimeSpan.FromMinutes(15));
+
+        while ( checkups.Count < numberOfCheckups)
+        {
+            if (iterationDate.TimeOfDay >=_closingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, _openingTime.Hour, _openingTime.Minute, _openingTime.Second);
+                iterationDate = iterationDate.AddDays(1);
+                continue;
+            }
+
+            if (iterationDate.TimeOfDay < _openingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, _openingTime.Hour, _openingTime.Minute, _openingTime.Second);
+                continue;
+            }
+            
+            if (_hospital.AppointmentRepo.IsDoctorBusy(iterationDate,doctor))
+            {
+                iterationDate = iterationDate.AddMinutes(15);
+                continue;
+            }
+            else
+            {
+                Checkup newCheckup = new Checkup(
+                iterationDate,
+                new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
+                new MongoDB.Driver.MongoDBRef("doctors", doctor.Id),
+                "no anamnesis");
+                checkups.Add(newCheckup);
+                iterationDate = iterationDate.AddMinutes(15);
+            }
+        }
+        return checkups;
+    }
+
+    public DateTime RoundUp(DateTime dt, TimeSpan d)
+    {
+        return new DateTime((dt.Ticks + d.Ticks - 1) / d.Ticks * d.Ticks, dt.Kind);
+    }
+
+    public List<Checkup> FindCheckupsPriorityDoctor(Doctor doctor, DateTime intervalStart, DateTime intervalEnd, DateTime deadline)
+    {
+        List<Checkup> checkups = new List<Checkup>();
+        DateTime iterationDate = RoundUp(DateTime.Now,TimeSpan.FromMinutes(15));
+
+        while ( iterationDate < deadline)
+        {
+            if (iterationDate.TimeOfDay >=_closingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, _openingTime.Hour, _openingTime.Minute, _openingTime.Second);
+                iterationDate = iterationDate.AddDays(1);
+                continue;
+            }
+
+            if (iterationDate.TimeOfDay < _openingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, _openingTime.Hour, _openingTime.Minute, _openingTime.Second);
+                continue;
+            }
+
+            if (!(intervalStart.TimeOfDay<=iterationDate.TimeOfDay && iterationDate.TimeOfDay<intervalEnd.TimeOfDay))
+            {
+                iterationDate = iterationDate.AddMinutes(15);
+                continue;
+            }
+            
+            if (_hospital.AppointmentRepo.IsDoctorBusy(iterationDate,doctor))
+            {
+                iterationDate = iterationDate.AddMinutes(15);
+                continue;
+            }
+            else
+            {
+                Checkup newCheckup = new Checkup(
+                    iterationDate,
+                    new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
+                    new MongoDB.Driver.MongoDBRef("doctors", doctor.Id),
+                    "no anamnesis");
+                checkups.Add(newCheckup);
+                return checkups;
+            }
+        }
+        //if code gets to this point, it means it hasnt found a good match
+        return GetFirstFewFreeCheckups(doctor,3);
+    }
+
+    public List<Checkup> FindCheckupsPriorityInterval(Doctor doctor, DateTime intervalStart, DateTime intervalEnd, DateTime deadline)
+    {
+        List<Checkup> checkups = new List<Checkup>();
+        return checkups;
+    }
+
     public void CreateCheckupAdvanced()
     {
         bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.CREATE);
@@ -513,7 +609,45 @@ public class PatientUI : ConsoleUI
             return;
         }
 
+        //TODO: this doesnt have to be in 15 minute slots
+        System.Console.WriteLine("Please select starting time");
+        DateTime intervalStart = SelectTime(new DateTime());
+        System.Console.WriteLine("Please select starting time");
+        DateTime intervalEnd = SelectTime(new DateTime());
+        Console.Write("Please enter a date in dd-MM-yyyy format: ");
+        DateTime deadline = SelectDate();
+
+        if (intervalStart >= intervalEnd)
+        {
+            System.Console.WriteLine("Wrong start and end time. Aborting...");
+            return;
+        }
+
+        Console.WriteLine(intervalStart.TimeOfDay+" - "+intervalEnd.TimeOfDay+", "+deadline);
         Console.WriteLine(selectedSuitableDoctor);
+        List<Checkup> recommendationResults;
+
+        Console.Write("Is time interval a priority? Enter y if yes, anything else for doctor: ");
+        string choice = ReadSanitizedLine().Trim();
+
+        if (choice == "y")
+        {
+            recommendationResults = FindCheckupsPriorityDoctor(selectedSuitableDoctor,intervalStart,intervalEnd,deadline);
+            foreach (var item in recommendationResults)
+            {
+                System.Console.WriteLine(item);
+            }
+        }
+        else
+        {
+            recommendationResults = FindCheckupsPriorityInterval(selectedSuitableDoctor,intervalStart,intervalEnd,deadline);
+            System.Console.WriteLine(recommendationResults);
+        }
+
+        
+       
+
+
     }
 
     public void CreateCheckup()
