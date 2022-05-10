@@ -392,32 +392,10 @@ public class PatientUI : ConsoleUI
                 throw new InvalidInputException("Speciality not recognized.");
         }
     }
-    public DateTime SelectDateAndTime ()
-    {   
-        DateTime result;
 
-        // date selection
-        Console.Write("Please enter a date in dd-MM-yyyy format: ");
-        string inputDate = ReadSanitizedLine().Trim();
-
-        bool success = DateTime.TryParseExact(inputDate, 
-                       "dd-MM-yyyy", 
-                       CultureInfo.InvariantCulture, 
-                       DateTimeStyles.None, 
-                       out result);
-
-        if (!success) 
-        {
-            throw new InvalidInputException("Wrong date entered.");  
-        }
-
-        if (DateTime.Compare(result.Date, _now.Date) == -1 )
-        {
-            throw new InvalidInputException("The date entered is in past.");
-        }
-        
-        // time selection
-
+    //takes a datetime with date part already set, and sets its time part
+    public DateTime SelectTime(DateTime inputDate)
+    {
         int highestCheckupIndex = 0;
         DateTime iterationTime = _openingTime;
         
@@ -434,8 +412,40 @@ public class PatientUI : ConsoleUI
         System.Console.Write("Please enter a number from the list: ");
         int selectedIndex = ReadInt(0, highestCheckupIndex, "Number out of bounds!", "Number not recognized!");
 
-        result = result.AddHours(_openingTime.Hour);
-        result = result.Add(selectedIndex*_checkupDuration);
+        inputDate = inputDate.AddHours(_openingTime.Hour);
+        inputDate = inputDate.Add(selectedIndex*_checkupDuration);
+
+        return inputDate;
+    }
+
+    public DateTime SelectDate()
+    {
+        Console.Write("Please enter a date in dd-MM-yyyy format: ");
+        string inputDate = ReadSanitizedLine().Trim();
+
+        bool success = DateTime.TryParseExact(inputDate, 
+                       "dd-MM-yyyy", 
+                       CultureInfo.InvariantCulture, 
+                       DateTimeStyles.None, 
+                       out DateTime result);
+
+        if (!success) 
+        {
+            throw new InvalidInputException("Wrong date entered.");  
+        }
+
+        if (DateTime.Compare(result.Date, _now.Date) == -1 )
+        {
+            throw new InvalidInputException("The date entered is in past.");
+        }
+        return result;
+    }
+
+    public DateTime SelectDateAndTime ()
+    {   
+        DateTime result = SelectDate();
+
+        result = SelectTime(result);
        
         //TODO: The listed times shouldnt be the ones that expired
 
@@ -485,6 +495,25 @@ public class PatientUI : ConsoleUI
         {
             Console.WriteLine("Warning! Any additional checkup creation will result in account block!");
         }
+
+        Specialty selectedSpecialty;
+        try
+        {
+            selectedSpecialty = SelectSpecialty();
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
+            return;
+        }
+
+        Doctor? selectedSuitableDoctor = SelectDoctor(selectedSpecialty);
+        if (selectedSuitableDoctor == null)
+        {
+            return;
+        }
+
+        Console.WriteLine(selectedSuitableDoctor);
     }
 
     public void CreateCheckup()
