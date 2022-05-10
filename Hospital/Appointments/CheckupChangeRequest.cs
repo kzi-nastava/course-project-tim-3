@@ -4,6 +4,13 @@ using MongoDB.Driver;
 
 namespace Hospital
 {
+
+    public enum RequestState
+    {
+        PENDING,
+        DENIED,
+        APPROVED,
+    }
     public class CheckupChangeRequest
     {
         [BsonId]
@@ -15,15 +22,23 @@ namespace Hospital
         
         [BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public CRUDOperation CRUDOperation { get; set; }
+
+        [BsonRepresentation(MongoDB.Bson.BsonType.String)]
+        public RequestState RequestState { get; set; }
         
-        public CheckupChangeRequest(Checkup checkupToChange, Checkup updatedCheckup, CRUDOperation crudOperation)
+        public CheckupChangeRequest(Checkup checkupToChange, Checkup updatedCheckup, CRUDOperation crudOperation, RequestState requestState = RequestState.PENDING)
         {
             Id = ObjectId.GenerateNewId();
-            CheckupToChange = new MongoDBRef("checkup_change_requests",checkupToChange.Id);
+            CheckupToChange = new MongoDBRef("checkups",checkupToChange.Id);
             UpdatedCheckup = updatedCheckup;
             CRUDOperation = crudOperation;
+            RequestState = requestState;
         }
 
+        public override string ToString ()
+        {
+            return CheckupToChange + " " + CRUDOperation + " " +RequestState;
+        }
     }
 
 

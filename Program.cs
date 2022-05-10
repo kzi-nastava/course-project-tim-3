@@ -108,18 +108,26 @@ namespace Hospital
             // {
             //     Doctor doctor = hospital.DoctorRepo.GetDoctorByName("name1");
             //     List<Checkup> checkups = hospital.AppointmentRepo.GetCheckupsByDoctor(doctor.Id);
-            //     dateTime = dateTime.AddHours(1);
 
             //     if (i % 2 == 0)
-            //     {   
+            //     {   RequestState state = RequestState.PENDING;
+            //         if (i % 4 == 0)
+            //         {
+            //             state = RequestState.APPROVED;
+            //         }
             //         Checkup alteredCheckup = checkups[i];
             //         DateTime newDateAndTime =  new DateTime (2077,10,10);
             //         alteredCheckup.TimeAndDate = newDateAndTime;
-            //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],alteredCheckup,CRUDOperation.UPDATE);
+            //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],alteredCheckup,CRUDOperation.UPDATE,state);
             //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
             //     } else if (i % 2 == 1) 
             //     {
-            //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],checkups[i],CRUDOperation.DELETE);
+            //         RequestState state = RequestState.PENDING;
+            //         if (i % 3 == 0)
+            //         {
+            //             state = RequestState.DENIED;
+            //         }
+            //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],checkups[i],CRUDOperation.DELETE,state);
             //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
             //     }    
             // }
