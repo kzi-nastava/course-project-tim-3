@@ -79,7 +79,7 @@ public class PatientUI : ConsoleUI
         Console.WriteLine ("You have selected " + ConvertAppointmentToString(selectedCheckup));
 
         //TODO: find a way to remove current doctor from list
-        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(currentDoctor.Specialty);
+        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetDoctorsBySpecialty(currentDoctor.Specialty);
         Doctor newDoctor = currentDoctor;
         DateTime? newDate = currentDate;
 
@@ -434,7 +434,7 @@ public class PatientUI : ConsoleUI
            return;
         }
 
-        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(selectedSpecialty);
+        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorsBySpecialty(selectedSpecialty);
 
         if (suitableDoctors.Count == 0)
         {

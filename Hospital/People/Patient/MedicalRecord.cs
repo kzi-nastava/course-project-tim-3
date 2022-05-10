@@ -11,6 +11,7 @@ public class MedicalRecord {
     public List<string> AnamnesisHistory {get;} 
     [BsonElement]
     public List<string> Allergies {get;} 
+    public List<Referral> Referrals {get; set;}
     [BsonConstructor]
     public MedicalRecord() 
     {
@@ -18,18 +19,22 @@ public class MedicalRecord {
         WeightInKg = 70.0;
         AnamnesisHistory = new List<string>();
         Allergies = new List<string>();
+        Referrals = new List<Referral>();
     }
+
     [BsonConstructor]
-    public MedicalRecord(double heightInCm, double weightInKg, List<string> anamnesisHistory, List<string> allergies)
+    public MedicalRecord(double heightInCm, double weightInKg, List<string> anamnesisHistory, List<string> allergies, List<Referral> referrals)
     {
         HeightInCm = heightInCm;
         WeightInKg = weightInKg;
         AnamnesisHistory = anamnesisHistory;
         Allergies = allergies;
+        Referrals = referrals;
     }
+
     public override string ToString()
     {
         return "Height In Cm : " + HeightInCm + "\nWeight In Cm : " + WeightInKg + "\nAnamnesis History : " 
-        + string.Join( ",", AnamnesisHistory) + "\nAllergies : " + string.Join( ",", Allergies);
+        + string.Join( ",", AnamnesisHistory) + "\nAllergies : " + string.Join( ",", Allergies) + "\nReferrals : " + string.Join( ",", Referrals);
     }
 }

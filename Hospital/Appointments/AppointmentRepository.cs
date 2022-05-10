@@ -103,7 +103,7 @@ namespace Hospital
             foreach (Checkup checkup in checkups)
             {
                 //Console.WriteLine(checkup.TimeAndDate.ToString(), checkup.TimeAndDate.Add(checkup.Duration).ToString());
-                if (checkup.TimeAndDate <= date && checkup.TimeAndDate.Add(checkup.Duration) > date)
+                if (checkup.TimeAndDate <= date && checkup.TimeAndDate.Add(checkup.Duration) > date && checkup.TimeAndDate <= date.Add(checkup.Duration) && checkup.TimeAndDate.Add(checkup.Duration) > date.Add(checkup.Duration))
                 {
                     return true;
                 } 

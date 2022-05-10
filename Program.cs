@@ -57,10 +57,10 @@ namespace Hospital
             //    new JsonWriterSettings {Indent = true}));
             // }
             // //generate checkups and operations
-            // DateTime dateTime = new DateTime(2022, 5, 6, 4, 15, 0);
+            // DateTime dateTime = new DateTime(2022, 5, 7, 4, 15, 0);
             // for (int i = 0; i < 100; i++)
             // {
-            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByName("name1");
+            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1");
             //     Patient patient = hospital.PatientRepo.GetPatientByName("name2");
             //     dateTime = dateTime.AddHours(1);
 
