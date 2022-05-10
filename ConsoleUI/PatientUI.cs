@@ -447,6 +447,46 @@ public class PatientUI : ConsoleUI
         return result;
     }
 
+    public Doctor? SelectDoctor(Specialty selectedSpecialty)
+    {
+        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(selectedSpecialty);
+
+        if (suitableDoctors.Count == 0)
+        {
+            Console.WriteLine("No doctors found in selected specialty.");
+            ReadSanitizedLine();
+            return null;
+        }
+
+        for (int i=0; i<suitableDoctors.Count; i++)
+        {
+            Console.WriteLine(i+" - "+suitableDoctors[i].ToString());
+        }
+
+        int selectedIndex = -1;
+        try
+        {
+            System.Console.Write("Please enter a number from the list: ");
+            selectedIndex = ReadInt(0, suitableDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
+            return null;
+        }
+
+        return suitableDoctors[selectedIndex];
+    }
+
+    public void CreateCheckupAdvanced()
+    {
+        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.CREATE);
+        if (nextWillBlock)
+        {
+            Console.WriteLine("Warning! Any additional checkup creation will result in account block!");
+        }
+    }
+
     public void CreateCheckup()
     {
 
@@ -481,33 +521,11 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(selectedSpecialty);
-
-        if (suitableDoctors.Count == 0)
+        Doctor? selectedSuitableDoctor = SelectDoctor(selectedSpecialty);
+        if (selectedSuitableDoctor == null)
         {
-            Console.WriteLine("No doctors found in selected specialty.");
-            ReadSanitizedLine();
             return;
         }
-
-        for (int i=0; i<suitableDoctors.Count; i++)
-        {
-            Console.WriteLine(i+" - "+suitableDoctors[i].ToString());
-        }
-
-        int selectedIndex = -1;
-        try
-        {
-            System.Console.Write("Please enter a number from the list: ");
-            selectedIndex = ReadInt(0, suitableDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
-        }
-        catch (InvalidInputException e)
-        {
-            System.Console.Write(e.Message + " Aborting...");
-            return;
-        }
-
-        Doctor selectedSuitableDoctor = suitableDoctors[selectedIndex];
 
         if (_hospital.AppointmentRepo.IsDoctorBusy(selectedDate,selectedSuitableDoctor))
         {
@@ -541,6 +559,7 @@ public class PatientUI : ConsoleUI
             System.Console.WriteLine(@"
             Commands:
             cc - create checkup
+            ccr - create checkup (with recommendations)
             va - view and manage appointments
             return - go to the previous menu
             exit - quit the program
@@ -554,6 +573,10 @@ public class PatientUI : ConsoleUI
                 if (selectedOption == "cc")
                 {
                     CreateCheckup();
+                }
+                else if (selectedOption == "ccr")
+                {
+                    CreateCheckupAdvanced();
                 }
                 else if (selectedOption == "va")
                 {
