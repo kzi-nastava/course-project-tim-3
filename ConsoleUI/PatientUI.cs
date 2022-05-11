@@ -29,6 +29,117 @@ public class PatientUI : ConsoleUI
         _loggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
     }
 
+    public void StartAnamnesisSearch()
+    {
+        Console.Write("Please enter a search keyword: ");
+        string keyword = ReadSanitizedLine().Trim();
+
+        List<Checkup> filteredCheckups = _hospital.AppointmentRepo.GetPastCheckupsByAnamnesisKeyword(_loggedInPatient.Id,keyword);
+
+        if (filteredCheckups.Count == 0)
+        {
+            Console.WriteLine("No anamnesis found");
+            return;
+        }
+
+        System.Console.WriteLine(@"
+            Sort options:
+            d - sort by date
+            n - sort by doctors name
+            s - sort by specialty
+            ");
+        
+        string sortSelection = ReadSanitizedLine().Trim();
+        if (sortSelection == "d")
+        {
+            filteredCheckups.Sort((checkup1, checkup2) => DateTime.Compare(checkup1.StartTime, checkup2.StartTime));
+        }
+        else if (sortSelection == "n")
+        {
+            filteredCheckups.Sort((checkup1, checkup2) => String.Compare(_hospital.DoctorRepo.GetDoctorById((ObjectId)(checkup1.Doctor.Id)).FirstName ,
+                                                                        _hospital.DoctorRepo.GetDoctorById((ObjectId)(checkup2.Doctor.Id)).FirstName));
+        }
+        else if (sortSelection == "s")
+        {
+            filteredCheckups.Sort((checkup1, checkup2) => String.Compare(_hospital.DoctorRepo.GetDoctorById((ObjectId)(checkup1.Doctor.Id)).Specialty.ToString() ,
+                                                                        _hospital.DoctorRepo.GetDoctorById((ObjectId)(checkup2.Doctor.Id)).Specialty.ToString()));
+        }
+
+        foreach (Checkup checkup in filteredCheckups)
+        {
+            Console.WriteLine(ConvertAppointmentToString(checkup));
+            
+        }
+    }
+
+    public void StartPastCheckups()
+    {
+        ShowCheckups(CheckupInTime.PAST);
+        List<Checkup> pastCheckups = _hospital.AppointmentRepo.GetPastCheckupsByPatient(_loggedInPatient.Id);
+        int selectedIndex;
+        try
+        {
+            System.Console.Write("To view checkup anamnesis please enter a number from the list: ");
+            selectedIndex = ReadInt(0, pastCheckups.Count-1, "Number out of bounds!", "Number not recognized!");
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
+            throw new QuitToMainMenuException("Wrong input");
+        }
+
+        Checkup selectedCheckup = pastCheckups[selectedIndex];
+        Console.WriteLine("Anamnesis: "+ selectedCheckup.Anamnesis);
+
+    }
+
+    public void StartMedicalRecord()
+    {
+        while (true)
+        {
+            System.Console.WriteLine(@"
+            Commands:
+            sc - show past checkups
+            as - anamnesis search
+            return - go to the previous menu
+            exit - quit the program
+            ");
+
+            string selectedOption = ReadSanitizedLine().Trim();
+
+            try
+            {
+                if (selectedOption == "sc")
+                {
+                    StartPastCheckups();
+                }
+                else if (selectedOption == "as")
+                {
+                    StartAnamnesisSearch();
+                }
+                else if (selectedOption == "return")
+                {
+                    Console.WriteLine("Returning...\n");
+                    break;
+                }
+                else if (selectedOption == "exit")
+                {
+                    Console.WriteLine("Exiting...\n");
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Console.WriteLine("Unrecognized command, please try again");
+                }
+            }
+            //this might create problems
+            catch (InvalidInputException e)
+            {
+                System.Console.Write(e.Message);
+            }
+        }
+    }
+
     public bool WillNextCRUDOperationBlock(CRUDOperation crudOperation)
     {
         int limit;
@@ -75,8 +186,8 @@ public class PatientUI : ConsoleUI
 
     public Checkup SelectCheckup ()
     {
-        ShowCheckups();
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(_loggedInPatient.Id);
+        ShowCheckups(CheckupInTime.FUTURE);
+        List<Checkup> checkups = _hospital.AppointmentRepo.GetFutureCheckupsByPatient(_loggedInPatient.Id);
         if (checkups.Count == 0)
         {
             throw new QuitToMainMenuException("No checkups.");
@@ -269,10 +380,23 @@ public class PatientUI : ConsoleUI
         return output;
     }
 
-
-    public void ShowCheckups()
+    public void ShowCheckups(CheckupInTime checkupTime)
     {
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(_loggedInPatient.Id);
+        //unnecessary but code wouldnt compile
+        List<Checkup> checkups = new List<Checkup>();
+        switch (checkupTime)
+        {
+            case CheckupInTime.ALL:
+                checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(_loggedInPatient.Id);
+                break;   
+            case CheckupInTime.FUTURE:
+                checkups = _hospital.AppointmentRepo.GetFutureCheckupsByPatient(_loggedInPatient.Id);
+                break;
+            case CheckupInTime.PAST:
+                checkups = _hospital.AppointmentRepo.GetPastCheckupsByPatient(_loggedInPatient.Id);
+                break;
+        }
+        
         if (checkups.Count == 0)
         {
             Console.WriteLine("No checkups.");
@@ -300,7 +424,7 @@ public class PatientUI : ConsoleUI
     public void ShowAppointments()
     {   
         Console.WriteLine("### Checkups ###");
-        ShowCheckups();
+        ShowCheckups(CheckupInTime.FUTURE);
         Console.WriteLine("### Operations ###");
         showOperations();
 
@@ -884,6 +1008,7 @@ public class PatientUI : ConsoleUI
             System.Console.WriteLine(@"
             Commands:
             ma - manage appointments
+            vm - view medical record
             exit - quit the program
 
             ");
@@ -894,6 +1019,10 @@ public class PatientUI : ConsoleUI
                 if (selectedOption == "ma")
                 {
                     ManageAppointments();
+                }
+                else if (selectedOption == "vm")
+                {
+                    StartMedicalRecord();
                 }
                 else if (selectedOption == "exit")
                 {
