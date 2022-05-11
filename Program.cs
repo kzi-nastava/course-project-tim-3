@@ -12,9 +12,9 @@ namespace Hospital
             var hospital = new Hospital();
             var hospitalUsers = new {Users = new List<User>()};
 
-            // //generate tests TODO: move this to dedicated teting interface
+            // // //generate tests TODO: move this to dedicated teting interface
 
-            // //generate users
+            // // //generate users
             // int doctorSpecialtynumber = 0;
             // for (int i = 0; i < 100; i++)
             // {
@@ -61,24 +61,24 @@ namespace Hospital
             // File.WriteAllText("db/hospital.json", hospitalUsers.ToBsonDocument().ToJson(
             //    new JsonWriterSettings {Indent = true}));
             // }
-            //generate checkups and operations
-            DateTime dateTime = new DateTime(2022, 5, 11, 4, 15, 0);
-            for (int i = 0; i < 100; i++)
-            {
-                Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1","surname1");
-                Patient patient = hospital.PatientRepo.GetPatientByFullName("name2","surname2");
-                dateTime = dateTime.AddHours(1);
+            // //generate checkups and operations
+            // DateTime dateTime = new DateTime(2022, 5, 11, 4, 15, 0);
+            // for (int i = 0; i < 100; i++)
+            // {
+            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1","surname1");
+            //     Patient patient = hospital.PatientRepo.GetPatientByFullName("name2","surname2");
+            //     dateTime = dateTime.AddHours(1);
 
-                if (i % 2 == 0)
-                {   
-                    Checkup check = new Checkup(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "anamneza");
-                    hospital.AppointmentRepo.AddOrUpdateCheckup(check);
-                } else if (i % 2 == 1) 
-                {
-                    Operation op = new Operation(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "report", new TimeSpan(1,15,0));
-                    hospital.AppointmentRepo.AddOrUpdateOperation(op);
-                }    
-            }
+            //     if (i % 2 == 0)
+            //     {   
+            //         Checkup check = new Checkup(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "anamneza");
+            //         hospital.AppointmentRepo.AddOrUpdateCheckup(check);
+            //     } else if (i % 2 == 1) 
+            //     {
+            //         Operation op = new Operation(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "report", new TimeSpan(1,15,0));
+            //         hospital.AppointmentRepo.AddOrUpdateOperation(op);
+            //     }    
+            // }
             // //generate rooms and equipments
             // for (int i = 0; i < 10; i++)
             // {
@@ -106,7 +106,7 @@ namespace Hospital
             // //generate checkup change requests
             // for (int i = 0; i < 20; i++)
             // {
-            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByName("name1");
+            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1","surname1");
             //     List<Checkup> checkups = hospital.AppointmentRepo.GetCheckupsByDoctor(doctor.Id);
 
             //     if (i % 2 == 0)
@@ -117,9 +117,9 @@ namespace Hospital
             //         }
             //         Checkup alteredCheckup = checkups[i];
             //         DateTime newDateAndTime =  new DateTime (2077,10,10);
-            //         alteredCheckup.TimeAndDate = newDateAndTime;
+            //         alteredCheckup.StartTime = newDateAndTime;
             //         CheckupChangeRequest request = new CheckupChangeRequest(alteredCheckup,CRUDOperation.UPDATE,state);
-            //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
+            //         hospital.CheckupChangeRequestRepo.AddOrUpdate(request);
             //     } else if (i % 2 == 1) 
             //     {
             //         RequestState state = RequestState.PENDING;
@@ -128,7 +128,7 @@ namespace Hospital
             //             state = RequestState.DENIED;
             //         }
             //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],CRUDOperation.DELETE,state);
-            //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
+            //         hospital.CheckupChangeRequestRepo.AddOrUpdate(request);
             //     }    
             // }
             
