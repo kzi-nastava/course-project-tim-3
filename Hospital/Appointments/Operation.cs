@@ -5,8 +5,9 @@ namespace Hospital
     public class Operation : Appointment
     {
        public string Report {get; set;}
-       public Operation(DateTime startTime, MongoDBRef patient, MongoDBRef doctor, string report) : base(startTime, patient, doctor)
+       public Operation(DateTime startTime, MongoDBRef patient, MongoDBRef doctor, string report, TimeSpan duration) : base(startTime, patient, doctor)
        {
+           Duration = duration;
            Report = report;
        }
        public override string ToString()
