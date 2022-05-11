@@ -51,7 +51,7 @@ public class DirectorUI : ConsoleUI
     {
         while (true)
         {
-            List<Room> rooms = _hospital.RoomRepo.GetQueryableRooms().ToList();
+            List<Room> rooms = _hospital.RoomRepo.GetAll().ToList();
             System.Console.Clear();
             System.Console.WriteLine("--- ROOMS ---");
             DisplayRooms(rooms);
@@ -88,7 +88,7 @@ public class DirectorUI : ConsoleUI
                         throw new InvalidInputException("NOT A VALID TYPE!");
 
                     var newRoom = new Room(location, name, type);
-                    _hospital.RoomRepo.AddRoom(newRoom);
+                    _hospital.RoomRepo.Add(newRoom);
                     System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
                 }
                 else if (choice == "u" || choice == "ur" || choice == "update" || choice == "update room")
@@ -120,7 +120,7 @@ public class DirectorUI : ConsoleUI
                         room.Type = type;
                     }
 
-                    _hospital.RoomRepo.UpdateRoom(room);
+                    _hospital.RoomRepo.Replace(room);
                     System.Console.Write("SUCCESSFULLY UPDATED ROOM. INPUT ANYTHING TO CONTINUE >> ");
                 }
                 else if (choice == "delete room" || choice == "delete" || choice == "dr" || choice == "d")
@@ -136,7 +136,7 @@ public class DirectorUI : ConsoleUI
                             throw new AbortException("NOT A YES. ABORTING.");
                         _hospital.EquipmentRepo.DeleteInRoom(rooms[number]);
                     }
-                    _hospital.RoomRepo.DeleteRoom(rooms[number].Id);
+                    _hospital.RoomRepo.Delete(rooms[number].Id);
                     System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
                 }
                 else if (choice == "q" || choice == "quit")
@@ -212,7 +212,7 @@ public class DirectorUI : ConsoleUI
                     var rawDate = ReadSanitizedLine();
                     var whenDone = DateTime.Parse(rawDate);
 
-                    List<Room> rooms = _hospital.RoomRepo.GetQueryableRooms().ToList();
+                    List<Room> rooms = _hospital.RoomRepo.GetAll().ToList();
                     DisplayRooms(rooms);
                     System.Console.Write("INPUT ROOM NUMBER >> ");
                     var number = ReadInt(0, rooms.Count - 1);
@@ -279,7 +279,7 @@ public class DirectorUI : ConsoleUI
         for (int i = 0; i < equipmentBatches.Count; i++)
         {
             var equipmentBatch = equipmentBatches[i];
-            var room = _hospital.RoomRepo.GetRoom((ObjectId) equipmentBatch.Room.Id);
+            var room = _hospital.RoomRepo.Get((ObjectId) equipmentBatch.Room.Id);
             // TODO: exception if room is null
             System.Console.WriteLine(i + " | " + room?.Location + " | " + equipmentBatch.Type + 
                                         " | " + equipmentBatch.Name + " | " + equipmentBatch.Count);

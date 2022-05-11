@@ -13,49 +13,49 @@ public class RoomRepository
         this._dbClient = _dbClient;
     }
 
-    public IMongoCollection<Room> GetRooms()
+    private IMongoCollection<Room> GetCollection()
     {
         return _dbClient.GetDatabase("hospital").GetCollection<Room>("rooms");
     }
 
-    public IMongoQueryable<Room> GetQueryableRooms()
+    public IQueryable<Room> GetAll()
     {
-        return GetRooms().AsQueryable();
+        return GetCollection().AsQueryable();
     }
 
-    public bool DeleteRoom(string location)
+    public bool Delete(string location)
     {
-        var rooms = GetRooms();
+        var rooms = GetCollection();
         return rooms.DeleteOne(room => room.Location == location).DeletedCount == 1;
     }
 
-    public bool DeleteRoom(ObjectId id)
+    public bool Delete(ObjectId id)
     {
-        var rooms = GetRooms();
+        var rooms = GetCollection();
         return rooms.DeleteOne(room => room.Id == id).DeletedCount == 1;
     }
 
-    public void AddRoom(Room newRoom)
+    public void Add(Room newRoom)
     {
-        var rooms = GetRooms();
+        var rooms = GetCollection();
         rooms.ReplaceOne(room => room.Location == newRoom.Location, newRoom, new ReplaceOptions {IsUpsert = true});
     }
 
-    public void UpdateRoom(Room changingRoom)
+    public void Replace(Room changingRoom)
     {
-        var rooms = GetRooms();
-        rooms.ReplaceOne(room => room.Id == changingRoom.Id, changingRoom, new ReplaceOptions {IsUpsert = true});
+        var rooms = GetCollection();
+        rooms.ReplaceOne(room => room.Id == changingRoom.Id, changingRoom);
     }
 
-    public Room? GetRoom(string location)
+    public Room? Get(string location)
     {
-        var rooms = GetRooms();
+        var rooms = GetCollection();
         return rooms.Find(room => room.Location == location).FirstOrDefault();
     }
 
-    public Room? GetRoom(ObjectId id)
+    public Room? Get(ObjectId id)
     {
-        var rooms = GetRooms();
+        var rooms = GetCollection();
         return rooms.Find(room => room.Id == id).FirstOrDefault();
     }
 
