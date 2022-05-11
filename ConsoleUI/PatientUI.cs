@@ -2,6 +2,17 @@ namespace Hospital;
 using System.Globalization;
 using MongoDB.Bson;
 
+[System.Serializable]
+public class UserBlockedException : System.Exception
+{
+    public UserBlockedException() { }
+    public UserBlockedException(string message) : base(message) { }
+    public UserBlockedException(string message, System.Exception inner) : base(message, inner) { }
+    protected UserBlockedException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
 public class PatientUI : ConsoleUI
 {
     //there might be a better way to set opening time, only time will be used
@@ -16,6 +27,50 @@ public class PatientUI : ConsoleUI
     {
         this._user = _user;
         _loggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
+    }
+
+    public bool WillNextCRUDOperationBlock(CRUDOperation crudOperation)
+    {
+        int limit;
+        //TODO: unhardcode this
+        switch (crudOperation)
+        {
+            case CRUDOperation.CREATE:
+                limit = 8;
+                break;
+            case CRUDOperation.UPDATE:
+                limit = 4;
+                break;
+            case CRUDOperation.DELETE:
+                limit = 4;
+                break;
+            default:
+                //this is dummy value, as of now there are no read restrictions
+                limit = 999;
+                break;
+        }
+
+        int count = 0;
+        foreach (CheckupChangeLog log in _loggedInPatient.CheckupChangeLogs)
+        {
+            if (log.TimeAndDate > _now.AddDays(-30) &&  log.CRUDOperation == crudOperation)
+            {
+                count++;
+            }
+        }
+
+        if (count+1 > limit)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void LogChange(CRUDOperation crudOperation)
+    {
+        CheckupChangeLog log = new CheckupChangeLog(DateTime.Now,crudOperation);
+        _loggedInPatient.CheckupChangeLogs.Add(log);
+        _hospital.PatientRepo.AddOrUpdatePatient(_loggedInPatient);
     }
 
     public Checkup SelectCheckup ()
@@ -44,6 +99,11 @@ public class PatientUI : ConsoleUI
 
     public void DeleteCheckup ()
     {
+        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.DELETE);
+        if (nextWillBlock)
+        {
+            Console.WriteLine("Warning! Any additional checkup deletion will result in account block!");
+        }
         Checkup selectedCheckup;
         try
         {
@@ -54,12 +114,37 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
-        Console.WriteLine("Checkup deleted.");
+        if (selectedCheckup.TimeAndDate < _now.AddDays(2))
+        {
+            CheckupChangeRequest newRequest = new CheckupChangeRequest(
+                selectedCheckup,
+                CRUDOperation.DELETE);
+                Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
+                _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
+        }
+        else
+        {
+            _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
+            Console.WriteLine("Checkup deleted.");
+        }
+
+        LogChange(CRUDOperation.DELETE);
+        if (nextWillBlock)
+        {
+            _user.BlockStatus = Block.BY_SYSTEM;
+            _hospital.UserRepo.AddOrUpdateUser(_user);
+            throw new UserBlockedException("Deleting too many checkups.");
+        }
 
     }
 
     public void UpdateCheckup(){
+
+        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.UPDATE);
+        if (nextWillBlock)
+        {
+            Console.WriteLine("Warning! Any additional checkup updating will result in account block!");
+        }
         Checkup selectedCheckup;
         try
         {
@@ -139,16 +224,38 @@ public class PatientUI : ConsoleUI
 
         //create checkup
         selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
+        DateTime oldDate = selectedCheckup.TimeAndDate;
         selectedCheckup.TimeAndDate = newDate;
-        
+        //TODO: if both change doctor and change date are false, dont create a checkup
+
         if (_hospital.AppointmentRepo.IsDoctorBusy((DateTime)newDate,newDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
         }
+        
+        if (oldDate < _now.AddDays(2))
+        {
+            CheckupChangeRequest newRequest = new CheckupChangeRequest(
+                selectedCheckup,
+                CRUDOperation.UPDATE);
+                Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
+                _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
+        }
+        else
+        {
+            _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
+            Console.WriteLine("Checkup updated.");
+        }
+        
+        LogChange(CRUDOperation.UPDATE);
+        if (nextWillBlock)
+        {
+            _user.BlockStatus = Block.BY_SYSTEM;
+            _hospital.UserRepo.AddOrUpdateUser(_user);
+            throw new UserBlockedException("Updating too many checkups.");
+        }
 
-        _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
-        Console.WriteLine("Checkup updated.");
     }
 
     public string ConvertAppointmentToString(Appointment a)
@@ -245,6 +352,10 @@ public class PatientUI : ConsoleUI
                 }
                 
             }
+            catch(UserBlockedException e)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -336,6 +447,14 @@ public class PatientUI : ConsoleUI
 
     public void CreateCheckup()
     {
+
+        //TODO: change this
+        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.CREATE);
+        if (nextWillBlock)
+        {
+            Console.WriteLine("Warning! Any additional checkup creation will result in account block!");
+        }
+
         DateTime selectedDate;
         try
         {
@@ -405,6 +524,13 @@ public class PatientUI : ConsoleUI
         this._hospital.AppointmentRepo.AddOrUpdateCheckup(newCheckup);
         Console.WriteLine("Checkup created");
         
+        LogChange(CRUDOperation.CREATE);
+        if (nextWillBlock)
+        {
+            _user.BlockStatus = Block.BY_SYSTEM;
+            _hospital.UserRepo.AddOrUpdateUser(_user);
+            throw new UserBlockedException("Creating too many checkups.");
+        }
     }
 
     public void ManageAppointments()
@@ -446,7 +572,12 @@ public class PatientUI : ConsoleUI
                     Console.WriteLine("Unrecognized command, please try again");
                 }
             }
-            catch (Exception e)
+            catch(UserBlockedException e)
+            {
+                throw;
+            }
+            //this might create problems, used to be generic exception
+            catch (InvalidInputException e)
             {
                 System.Console.Write(e.Message);
             }
@@ -455,8 +586,18 @@ public class PatientUI : ConsoleUI
 
     public override void Start()
     {
+        if (_user.BlockStatus != Block.UNBLOCKED)
+        {
+            Console.WriteLine(@"
+            Account blocked.
+            Please contact secretary to unblock it.
+            Press enter to continue ");
+            ReadSanitizedLine();
+            return;
+        }
 
-        while (true){
+        while (true)
+        {
             System.Console.WriteLine(@"
             Commands:
             ma - manage appointments
@@ -481,7 +622,12 @@ public class PatientUI : ConsoleUI
                     Console.WriteLine("Unrecognized command, please try again");
                 }
             }
-            catch (Exception e)
+            catch(UserBlockedException e)
+            {
+                System.Console.WriteLine("Account blocked. Reason: "+ e.Message);
+                return;
+            }
+            catch (InvalidInputException e)
             {
                 Console.WriteLine(e.Message);
             }

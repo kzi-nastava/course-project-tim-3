@@ -5,11 +5,13 @@ namespace Hospital
     {
         [BsonElement]
         public MedicalRecord MedicalRecord {get; set;}
+        public List<CheckupChangeLog> CheckupChangeLogs {get; set;}
         public Patient(string firstName, string lastName, MedicalRecord medicalRecord) : base(firstName, lastName)
         {
             FirstName = firstName;
             LastName = lastName;
             MedicalRecord = medicalRecord;
+            CheckupChangeLogs = new List<CheckupChangeLog>();
         }
 
         public override string ToString()

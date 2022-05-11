@@ -86,7 +86,7 @@ namespace Hospital
         public Checkup GetCheckupById(ObjectId id)
         {
             var checkups = GetCheckups();
-            Checkup checkup = checkups.Find(appointment => appointment.Doctor.Id == id).FirstOrDefault();
+            Checkup checkup = checkups.Find(appointment => appointment.Id == id).FirstOrDefault();
             return checkup;
         }
 
