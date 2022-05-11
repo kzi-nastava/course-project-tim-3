@@ -1,6 +1,5 @@
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using MongoDB.Bson;
 
 namespace Hospital
 {
@@ -12,14 +11,14 @@ namespace Hospital
             this._dbClient = _dbClient;
         }
 
-        public IMongoCollection<CheckupChangeRequest> GetAllCheckupChangeRequests()
+        public IMongoCollection<CheckupChangeRequest> GetAll()
         {
             return _dbClient.GetDatabase("hospital").GetCollection<CheckupChangeRequest>("checkup_change_requests");
         }
 
-        public IMongoQueryable<CheckupChangeRequest> GetCheckupChangeRequestsByState(RequestState state)
+        public IMongoQueryable<CheckupChangeRequest> GetByState(RequestState state)
         {
-            var requests = GetAllCheckupChangeRequests().AsQueryable();
+            var requests = GetAll().AsQueryable();
             var matches = 
                 from request in requests
                 where request.RequestState == state
@@ -27,28 +26,28 @@ namespace Hospital
             return matches;
         }
 
-        public IMongoQueryable<CheckupChangeRequest> GetAllCheckupChangeRequestsAsQueryable()
+        public IMongoQueryable<CheckupChangeRequest> GetAllAsQueryable()
         {
             //there might be a better way to do this
-            return  GetAllCheckupChangeRequests().AsQueryable();
+            return  GetAll().AsQueryable();
         }
 
-        public void AddOrUpdateCheckupChangeRequest(Checkup checkup, CRUDOperation crudOperation, RequestState state = RequestState.PENDING)
+        public void AddOrUpdate(Checkup checkup, CRUDOperation crudOperation, RequestState state = RequestState.PENDING)
         {
             var newRequest = new CheckupChangeRequest(checkup, crudOperation, state);
-            var requests = GetAllCheckupChangeRequests();
+            var requests = GetAll();
             requests.ReplaceOne(request => request.Id == newRequest.Id, newRequest, new ReplaceOptions {IsUpsert = true});
         }
 
-        public void AddOrUpdateCheckupChangeRequest(CheckupChangeRequest newRequest)
+        public void AddOrUpdate(CheckupChangeRequest newRequest)
         {
-            var requests = GetAllCheckupChangeRequests();
+            var requests = GetAll();
             requests.ReplaceOne(request => request.Id == newRequest.Id, newRequest, new ReplaceOptions {IsUpsert = true});
         }
 
-        public void DeleteCheckupChangeRequest(CheckupChangeRequest request)
+        public void Delete(CheckupChangeRequest request)
         {
-         var requests = GetAllCheckupChangeRequests();
+         var requests = GetAll();
          var filter = Builders<CheckupChangeRequest>.Filter.Eq(deletedRequest => deletedRequest.Id, request.Id);
          requests.DeleteOne(filter);
         }
