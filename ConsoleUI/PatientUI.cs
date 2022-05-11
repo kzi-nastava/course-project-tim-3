@@ -215,7 +215,7 @@ public class PatientUI : ConsoleUI
         selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
         selectedCheckup.StartTime = newDate;
         
-        if (_hospital.AppointmentRepo.IsDoctorAvailable((DateTime)newDate,newDoctor))
+        if (!_hospital.AppointmentRepo.IsDoctorAvailable((DateTime)newDate,newDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
