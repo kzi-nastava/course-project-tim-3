@@ -12,9 +12,9 @@ namespace Hospital
             var hospital = new Hospital();
             var hospitalUsers = new {Users = new List<User>()};
 
-            //generate tests TODO: move this to dedicated teting interface
+            // //generate tests TODO: move this to dedicated teting interface
 
-            //generate users
+            // //generate users
             // int doctorSpecialtynumber = 0;
             // for (int i = 0; i < 100; i++)
             // {
@@ -103,6 +103,35 @@ namespace Hospital
             //         hospital.RoomRepo.AddRoom(newRoom);
             //     }
             // }
+            // //generate checkup change requests
+            // for (int i = 0; i < 20; i++)
+            // {
+            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByName("name1");
+            //     List<Checkup> checkups = hospital.AppointmentRepo.GetCheckupsByDoctor(doctor.Id);
+
+            //     if (i % 2 == 0)
+            //     {   RequestState state = RequestState.PENDING;
+            //         if (i % 4 == 0)
+            //         {
+            //             state = RequestState.APPROVED;
+            //         }
+            //         Checkup alteredCheckup = checkups[i];
+            //         DateTime newDateAndTime =  new DateTime (2077,10,10);
+            //         alteredCheckup.TimeAndDate = newDateAndTime;
+            //         CheckupChangeRequest request = new CheckupChangeRequest(alteredCheckup,CRUDOperation.UPDATE,state);
+            //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
+            //     } else if (i % 2 == 1) 
+            //     {
+            //         RequestState state = RequestState.PENDING;
+            //         if (i % 3 == 0)
+            //         {
+            //             state = RequestState.DENIED;
+            //         }
+            //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],CRUDOperation.DELETE,state);
+            //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
+            //     }    
+            // }
+            
 
             var ui = new HospitalUI(hospital);
             ui.Start();
