@@ -404,11 +404,8 @@ public class PatientUI : ConsoleUI
             highestCheckupIndex += 1;
         }
 
-        //while loop will add an extra "1" at the end of the loop, we will remove that
-        highestCheckupIndex -= 1;
-
         System.Console.Write("Please enter a number from the list: ");
-        int selectedIndex = ReadInt(0, highestCheckupIndex, "Number out of bounds!", "Number not recognized!");
+        int selectedIndex = ReadInt(0, highestCheckupIndex-1, "Number out of bounds!", "Number not recognized!");
 
         inputDate = inputDate.AddHours(_openingTime.Hour);
         inputDate = inputDate.Add(selectedIndex*_checkupDuration);
@@ -486,7 +483,7 @@ public class PatientUI : ConsoleUI
         return suitableDoctors[selectedIndex];
     }
 
-    public List<Checkup> GetFirstFewFreeCheckups(DateTime intervalStart, DateTime intervalEnd, Specialty speciality, int numberOfCheckups)
+    public List<Checkup> GetEarliestFreeCheckups(DateTime intervalStart, DateTime intervalEnd, Specialty speciality, int numberOfCheckups)
     {
         List<Checkup> checkups = new List<Checkup>();
         DateTime iterationDate = RoundUp(DateTime.Now,TimeSpan.FromMinutes(15));
@@ -626,7 +623,7 @@ public class PatientUI : ConsoleUI
         //if code gets to this point, it means it hasnt found a good match
         if (isIntervalPriority)
         {
-            return GetFirstFewFreeCheckups(intervalStart,intervalEnd,doctor.Specialty,3);
+            return GetEarliestFreeCheckups(intervalStart,intervalEnd,doctor.Specialty,3);
         }
         return GetFirstFewFreeCheckups(doctor,3);
     }
@@ -676,7 +673,7 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        List<Checkup> recommendationResults;
+        List<Checkup> recommendedCheckups;
 
         Console.Write("Is time interval a priority? Enter y if yes, anything else for doctor: ");
         string choice = ReadSanitizedLine().Trim();
@@ -687,11 +684,11 @@ public class PatientUI : ConsoleUI
             isIntervalPriority = true;
         }
 
-        recommendationResults = FindSuitableCheckups(selectedSuitableDoctor,intervalStart,intervalEnd,deadline,isIntervalPriority);
+        recommendedCheckups = FindSuitableCheckups(selectedSuitableDoctor,intervalStart,intervalEnd,deadline,isIntervalPriority);
         
-        if (recommendationResults.Count == 1)
+        if (recommendedCheckups.Count == 1)
         {
-            Checkup result = recommendationResults[0];
+            Checkup result = recommendedCheckups[0];
             Console.WriteLine("Recommendation:");
             Doctor referencedDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)result.Doctor.Id);
             Console.WriteLine(referencedDoctor.ToString()+" "+result.TimeAndDate);
@@ -718,9 +715,9 @@ public class PatientUI : ConsoleUI
         else
         {
             Console.WriteLine("Recommendations:");
-            for (int i=0; i<recommendationResults.Count; i++)
+            for (int i=0; i<recommendedCheckups.Count; i++)
             {
-                Checkup result = recommendationResults[i];
+                Checkup result = recommendedCheckups[i];
                 Doctor referencedDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)result.Doctor.Id);
                 Console.WriteLine(i+" - "+referencedDoctor.ToString()+" "+result.TimeAndDate);
             }
@@ -736,7 +733,7 @@ public class PatientUI : ConsoleUI
                 System.Console.Write(e.Message + " Aborting...");
                 return;
             }
-            _hospital.AppointmentRepo.AddOrUpdateCheckup(recommendationResults[selectedIndex]);
+            _hospital.AppointmentRepo.AddOrUpdateCheckup(recommendedCheckups[selectedIndex]);
             Console.WriteLine("Checkup created.");
                 
             LogChange(CRUDOperation.CREATE);
@@ -746,9 +743,7 @@ public class PatientUI : ConsoleUI
                 _hospital.UserRepo.AddOrUpdateUser(_user);
                 throw new UserBlockedException("Creating too many checkups.");
             }
-
         }
-
     }
 
     public void CreateCheckup()
@@ -785,13 +780,13 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        Doctor? selectedSuitableDoctor = SelectDoctor(selectedSpecialty);
-        if (selectedSuitableDoctor == null)
+        Doctor? selectedDoctor = SelectDoctor(selectedSpecialty);
+        if (selectedDoctor == null)
         {
             return;
         }
 
-        if (_hospital.AppointmentRepo.IsDoctorBusy(selectedDate,selectedSuitableDoctor))
+        if (_hospital.AppointmentRepo.IsDoctorBusy(selectedDate,selectedDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
@@ -802,7 +797,7 @@ public class PatientUI : ConsoleUI
         Checkup newCheckup = new Checkup(
             selectedDate,
             new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
-            new MongoDB.Driver.MongoDBRef("doctors", selectedSuitableDoctor.Id),
+            new MongoDB.Driver.MongoDBRef("doctors", selectedDoctor.Id),
             "no anamnesis");
         
         _hospital.AppointmentRepo.AddOrUpdateCheckup(newCheckup);
