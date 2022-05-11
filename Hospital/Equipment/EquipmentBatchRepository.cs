@@ -25,32 +25,32 @@ public class EquipmentBatchRepository
 
     public IQueryable<EquipmentBatch> GetAllInRoom(Room room)
     {
-        var equipmentBatches = GetAll();
+        var batches = GetAll();
         var matches = 
-            from equipmentBatch in equipmentBatches
-            where equipmentBatch.Room.Id == room.Id
-            select equipmentBatch;
+            from batch in batches
+            where batch.RoomLocation == room.Location
+            select batch;
         return matches;
     }
 
-    public void Add(EquipmentBatch newEquipmentBatch)
+    public void Add(EquipmentBatch newBatch)
     {
-        var equipmentBatch = Get((ObjectId) newEquipmentBatch.Room.Id, newEquipmentBatch.Name);
-        if (equipmentBatch is null)
+        var batch = Get(newBatch.RoomLocation, newBatch.Name);
+        if (batch is null)
         {
-            GetCollection().InsertOne(newEquipmentBatch);
+            GetCollection().InsertOne(newBatch);
         }
         else
         {
-            equipmentBatch.MergeWith(newEquipmentBatch);
-            Replace(equipmentBatch);
+            batch.MergeWith(newBatch);
+            Replace(batch);
         }
     }
 
     // NOTE: only use during Relocation!!
     public void Remove(EquipmentBatch removingBatch)
     {
-        var existingBatch = Get((ObjectId) removingBatch.Room.Id, removingBatch.Name);
+        var existingBatch = Get(removingBatch.RoomLocation, removingBatch.Name);
         if (existingBatch is null)
         {
             throw new Exception("HOW DID YOU GET HERE?");  // TODO: change exception
@@ -67,30 +67,30 @@ public class EquipmentBatchRepository
 
     public void DeleteInRoom(Room room)
     {
-        GetCollection().DeleteMany(batch => batch.Room.Id == room.Id);
+        GetCollection().DeleteMany(batch => batch.RoomLocation == room.Location);
     }
 
-    private void Replace(EquipmentBatch newEquipmentBatch) // EXPECTS EXISTING EQUIPMENTBATCH!
+    private void Replace(EquipmentBatch newBatch) // EXPECTS EXISTING EQUIPMENTBATCH!
     {
-        GetCollection().ReplaceOne(equipmentBatch => equipmentBatch.Id == newEquipmentBatch.Id, newEquipmentBatch);
+        GetCollection().ReplaceOne(batch => batch.Id == newBatch.Id, newBatch);
     }
 
-    public EquipmentBatch? Get(ObjectId roomId, string name)
+    public EquipmentBatch? Get(string roomLocation, string name)
     {
-        var equipmentBatches = GetCollection();
-        return equipmentBatches.Find(equipment => equipment.Room.Id == roomId && equipment.Name == name).FirstOrDefault();
+        var batches = GetCollection();
+        return batches.Find(batch => batch.RoomLocation == roomLocation && batch.Name == name).FirstOrDefault();
     }
 
     public IQueryable<EquipmentBatch> Search(EquipmentQuery query)  // TODO: probably have to move this
     {
-        var equipmentBatches = GetAll();
+        var batches = GetAll();
         var matches = 
-            from equipmentBatch in equipmentBatches
-            where (query.MinCount == null || query.MinCount <= equipmentBatch.Count)
-                && (query.MaxCount == null || query.MaxCount >= equipmentBatch.Count)
-                && (query.Type == null || query.Type == equipmentBatch.Type)
-                && (query.NameContains == null || query.NameContains.IsMatch(equipmentBatch.Name))
-            select equipmentBatch;
+            from batch in batches
+            where (query.MinCount == null || query.MinCount <= batch.Count)
+                && (query.MaxCount == null || query.MaxCount >= batch.Count)
+                && (query.Type == null || query.Type == batch.Type)
+                && (query.NameContains == null || query.NameContains.IsMatch(batch.Name))
+            select batch;
         return matches;
     }
 }

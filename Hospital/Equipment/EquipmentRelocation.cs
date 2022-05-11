@@ -1,6 +1,5 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace Hospital;
 
@@ -8,19 +7,20 @@ public class EquipmentRelocation
 {
     [BsonId]
     public ObjectId Id { get; set; }
-    public MongoDBRef FromRoom { get; set; }
-    public MongoDBRef ToRoom { get; set; }
+    public string FromRoomLocation { get; set; }
+    public string ToRoomLocation { get; set; }
     public string Name { get; set; }
     public EquipmentType Type { get; set; }
     public int Count { get; set; }
     public DateTime WhenDone { get; set; }
     public bool IsDone { get; set; }
 
-    public EquipmentRelocation(string name, int count, EquipmentType type, DateTime whenDone, ObjectId fromRoomId, ObjectId toRoomId)
+    public EquipmentRelocation(string name, int count, EquipmentType type, 
+        DateTime whenDone, string fromRoomLocation, string toRoomLocation)
     {
         Id = ObjectId.GenerateNewId();
-        FromRoom = new MongoDBRef("rooms", fromRoomId);
-        ToRoom = new MongoDBRef("rooms", toRoomId);
+        FromRoomLocation = fromRoomLocation;
+        ToRoomLocation = toRoomLocation;
         Name = name;
         Count = count;
         WhenDone = whenDone;

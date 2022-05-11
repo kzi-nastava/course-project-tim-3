@@ -19,7 +19,7 @@ public class EquipmentUI : ConsoleUI
         {
             System.Console.Clear();
             System.Console.WriteLine("--- EQUIPMENTS ---");
-            DisplayEquipmentBatches(_loadedBatches);
+            DisplayBatches(_loadedBatches);
             System.Console.WriteLine(@"
             INPUT OPTION:
                 [search equipment|search|se] Search equipment batches
@@ -68,17 +68,16 @@ public class EquipmentUI : ConsoleUI
         }
     }
 
-    public void DisplayEquipmentBatches(List<EquipmentBatch> equipmentBatches)
+    private void DisplayBatches(List<EquipmentBatch> batches)
     {
         System.Console.WriteLine("No. | Room Location | Type | Name | Count");
         // TODO: paginate and make prettier
-        for (int i = 0; i < equipmentBatches.Count; i++)
+        for (int i = 0; i < batches.Count; i++)
         {
-            var equipmentBatch = equipmentBatches[i];
-            var room = _hospital.RoomRepo.Get((ObjectId) equipmentBatch.Room.Id);
+            var batch = batches[i];
             // TODO: exception if room is null
-            System.Console.WriteLine(i + " | " + room?.Location + " | " + equipmentBatch.Type + 
-                                        " | " + equipmentBatch.Name + " | " + equipmentBatch.Count);
+            System.Console.WriteLine(i + " | " + batch.RoomLocation + " | " + batch.Type + 
+                                        " | " + batch.Name + " | " + batch.Count);
         }
     }
 
@@ -96,13 +95,13 @@ public class EquipmentUI : ConsoleUI
         var whenDone = DateTime.Parse(rawDate);
 
         List<Room> rooms = _hospital.RoomRepo.GetAll().ToList();
-        var roomUI = new RoomUI(_hospital);  // TODO: this ugly...
+        var roomUI = new RoomUI(_hospital, rooms);  // TODO: this ugly...
         roomUI.DisplayRooms();
         System.Console.Write("INPUT ROOM NUMBER >> ");
         var number = ReadInt(0, rooms.Count - 1);
         
         var relocation = new EquipmentRelocation(equipmentBatch.Name, amount, 
-            equipmentBatch.Type, whenDone, (ObjectId) equipmentBatch.Room.Id, rooms[number].Id);
+            equipmentBatch.Type, whenDone, equipmentBatch.RoomLocation, rooms[number].Location);
         _hospital.RelocationRepo.Add(relocation);
         _hospital.RelocationRepo.Schedule(relocation);
         System.Console.Write("RELOCATION SCHEDULED SUCCESSFULLY. INPUT ANYTHING TO CONTINUE >> ");

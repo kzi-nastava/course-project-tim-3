@@ -47,8 +47,8 @@ public class EquipmentRelocationRepository
 
     private void MoveEquipment(EquipmentRelocation relocation)
     {
-        var removing = new EquipmentBatch((ObjectId) relocation.FromRoom.Id, relocation.Name, relocation.Count, relocation.Type);
-        var adding = new EquipmentBatch((ObjectId) relocation.ToRoom.Id, relocation.Name, relocation.Count, relocation.Type);
+        var removing = new EquipmentBatch(relocation.FromRoomLocation, relocation.Name, relocation.Count, relocation.Type);
+        var adding = new EquipmentBatch(relocation.ToRoomLocation, relocation.Name, relocation.Count, relocation.Type);
         _equipmentRepo.Remove(removing);
         _equipmentRepo.Add(adding);
         relocation.IsDone = true;

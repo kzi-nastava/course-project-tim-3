@@ -16,41 +16,32 @@ public class EquipmentBatch
 {
     [BsonId]
     public ObjectId Id { get; set; }
-    public MongoDBRef Room { get; set; }
+    public string RoomLocation { get; set; }
     public string Name { get; set; }
     public int Count { get; set; }  // TODO: add AvailableEquipment
     [BsonRepresentation(BsonType.String)]
     public EquipmentType Type { get; set; }
     
     // TODO: add min count 1
-    public EquipmentBatch(Room room, string name, int count, EquipmentType type)
+    public EquipmentBatch(string roomLocation, string name, int count, EquipmentType type)
     {
         Id = ObjectId.GenerateNewId();
         Name = name;
         Count = count;
         Type = type;
-        Room = new MongoDBRef("rooms", room.Id);
-    }
-
-    public EquipmentBatch(ObjectId roomId, string name, int count, EquipmentType type)
-    {
-        Id = ObjectId.GenerateNewId();
-        Name = name;
-        Count = count;
-        Type = type;
-        Room = new MongoDBRef("rooms", roomId);
+        RoomLocation = roomLocation;
     }
 
     public void MergeWith(EquipmentBatch other)
     {
-        if (other.Name != Name || other.Room.Id != Room.Id)
+        if (other.Name != Name || other.RoomLocation != RoomLocation)
             throw new Exception("NOPE, NOT THE SAME EQUIP");  // TODO: change this exception
         Count += other.Count;
     }
 
     public void Remove(EquipmentBatch other)
     {
-        if (other.Name != Name || other.Room.Id != Room.Id)
+        if (other.Name != Name || other.RoomLocation != RoomLocation)
             throw new Exception("NOPE, NOT THE SAME EQUIP");  // TODO: change this exception
         if (other.Count > Count)
             throw new Exception("NOPE, CAN'T REMOVE MORE THAN YOU HAVE");  // TODO: change this exception

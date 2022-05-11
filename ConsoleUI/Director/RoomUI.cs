@@ -9,6 +9,11 @@ public class RoomUI : ConsoleUI
         _loadedRooms = _hospital.RoomRepo.GetAll().ToList();
     }
 
+    public RoomUI(Hospital hospital, List<Room> loadedRooms) : base(hospital)
+    {
+        _loadedRooms = loadedRooms;
+    }
+
     public override void Start()
     {
         while (true)
