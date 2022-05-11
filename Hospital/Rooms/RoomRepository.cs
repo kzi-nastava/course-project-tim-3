@@ -1,5 +1,4 @@
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 using MongoDB.Bson;
 
 namespace Hospital;
