@@ -196,7 +196,7 @@ public class DirectorUI : ConsoleUI
                     var search = ReadSanitizedLine();
                     query.NameContains = new Regex(search);
 
-                    equipmentBatches = SearchEquipmentBatches(query).ToList();
+                    equipmentBatches = _hospital.EquipmentRepo.Search(query).ToList();
                 }
                 else if (choice == "me" || choice == "move" || choice == "move equipment")
                 {
@@ -248,19 +248,6 @@ public class DirectorUI : ConsoleUI
         }
     }
 
-    private IQueryable<EquipmentBatch> SearchEquipmentBatches(EquipmentQuery query)  // TODO: probably have to move this
-    {
-        var equipmentBatches = _hospital.EquipmentRepo.GetAll();
-        var matches = 
-            from equipmentBatch in equipmentBatches
-            where (query.MinCount == null || query.MinCount <= equipmentBatch.Count)
-                && (query.MaxCount == null || query.MaxCount >= equipmentBatch.Count)
-                && (query.Type == null || query.Type == equipmentBatch.Type)
-                && (query.NameContains == null || query.NameContains.IsMatch(equipmentBatch.Name))
-            select equipmentBatch;
-        return matches;
-    }
-
     public void DisplayRooms(List<Room> rooms)
     {
         System.Console.WriteLine("No. | Location | Name | Type");
@@ -283,55 +270,6 @@ public class DirectorUI : ConsoleUI
             // TODO: exception if room is null
             System.Console.WriteLine(i + " | " + room?.Location + " | " + equipmentBatch.Type + 
                                         " | " + equipmentBatch.Name + " | " + equipmentBatch.Count);
-        }
-    }
-
-    private struct EquipmentQuery
-    {
-        public int? MinCount { get; set; }
-        public int? MaxCount { get; set; }
-        public EquipmentType? Type { get; set; }
-        public Regex? NameContains { get; set; }
-
-        public EquipmentQuery(string query)
-        {
-            // TODO: make it so repeated same will throw error
-            MinCount = null;
-            MaxCount = null;
-            Type = null;
-            NameContains = null;
-            if (query == "")
-                return;
-            var tokens = query.Split();
-            foreach (var token in tokens)
-            {
-                if (token.StartsWith("min:"))
-                {
-                    bool success = Int32.TryParse(token.Substring(4), out int number);
-                    if (!success)
-                        throw new InvalidInputException("GIVEN MIN IS NOT A NUMBER.");
-                    MinCount = number;
-                } 
-                else if (token.StartsWith("max:"))
-                {
-                    bool success = Int32.TryParse(token.Substring(4), out int number);
-                    if (!success)
-                        throw new InvalidInputException("GIVEN MAX IS NOT A NUMBER.");
-                    MaxCount = number;
-                }
-                else if (token.StartsWith("type:"))
-                {
-                    EquipmentType type;
-                    var success = Enum.TryParse(token.Substring(5), true, out type);
-                    if (!success)
-                        throw new InvalidInputException("NOT A VALID TYPE!");
-                    Type = type;
-                }
-                else
-                {
-                    throw new InvalidInputException("UNRECOGNIZED TOKEN: " + token);
-                }
-            }
         }
     }
 }

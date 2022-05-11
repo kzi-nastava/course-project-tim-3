@@ -80,4 +80,17 @@ public class EquipmentBatchRepository
         var equipmentBatches = GetCollection();
         return equipmentBatches.Find(equipment => equipment.Room.Id == roomId && equipment.Name == name).FirstOrDefault();
     }
+
+    public IQueryable<EquipmentBatch> Search(EquipmentQuery query)  // TODO: probably have to move this
+    {
+        var equipmentBatches = GetAll();
+        var matches = 
+            from equipmentBatch in equipmentBatches
+            where (query.MinCount == null || query.MinCount <= equipmentBatch.Count)
+                && (query.MaxCount == null || query.MaxCount >= equipmentBatch.Count)
+                && (query.Type == null || query.Type == equipmentBatch.Type)
+                && (query.NameContains == null || query.NameContains.IsMatch(equipmentBatch.Name))
+            select equipmentBatch;
+        return matches;
+    }
 }
