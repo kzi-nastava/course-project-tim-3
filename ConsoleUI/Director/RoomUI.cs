@@ -2,19 +2,20 @@ namespace Hospital;
 
 public class RoomUI : ConsoleUI
 {
+    private List<Room> _loadedRooms;
+
     public RoomUI(Hospital hospital) : base(hospital)
     {
-
+        _loadedRooms = _hospital.RoomRepo.GetAll().ToList();
     }
 
     public override void Start()
     {
         while (true)
         {
-            List<Room> rooms = _hospital.RoomRepo.GetAll().ToList();
             System.Console.Clear();
             System.Console.WriteLine("--- ROOMS ---");
-            DisplayRooms(rooms);
+            DisplayRooms();
             System.Console.WriteLine(@"
             INPUT OPTION:
                 [add room|add|ar|a] Add a room
@@ -34,11 +35,11 @@ public class RoomUI : ConsoleUI
                 }
                 else if (choice == "u" || choice == "ur" || choice == "update" || choice == "update room")
                 {
-                    Update(rooms);
+                    Update();
                 }
                 else if (choice == "delete room" || choice == "delete" || choice == "dr" || choice == "d")
                 {
-                    Delete(rooms);
+                    Delete();
                 }
                 else if (choice == "q" || choice == "quit")
                 {
@@ -66,23 +67,22 @@ public class RoomUI : ConsoleUI
         }
     }
 
-    // TODO: this static but not in EquipUI??
-    public static void DisplayRooms(List<Room> rooms)
+    public void DisplayRooms()
     {
         System.Console.WriteLine("No. | Location | Name | Type");
         // TODO: paginate and make prettier
-        for (int i = 0; i < rooms.Count; i++)
+        for (int i = 0; i < _loadedRooms.Count; i++)
         {
-            var room = rooms[i];
+            var room = _loadedRooms[i];
             System.Console.WriteLine(i + " | " + room.Location + " | " + room.Name + " | " + room.Type);
         }
     }
 
-    private void Update(List<Room> rooms)
+    private void Update()
     {
         System.Console.Write("INPUT NUMBER >> ");
-        var number = ReadInt(0, rooms.Count - 1);
-        var room = rooms[number];
+        var number = ReadInt(0, _loadedRooms.Count - 1);
+        var room = _loadedRooms[number];
 
         System.Console.WriteLine("INPUT NOTHING TO KEEP AS IS");
 
@@ -134,20 +134,20 @@ public class RoomUI : ConsoleUI
         System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
     }
 
-    private void Delete(List<Room> rooms)
+    private void Delete()
     {
         System.Console.Write("INPUT NUMBER >> ");
-        var number = ReadInt(0, rooms.Count - 1);
-        if (_hospital.EquipmentRepo.GetAllInRoom(rooms[number]).Any())
+        var number = ReadInt(0, _loadedRooms.Count - 1);
+        if (_hospital.EquipmentRepo.GetAllInRoom(_loadedRooms[number]).Any())
         {
             // TODO: make into a moving equipment submenu
             System.Console.Write("THIS ROOM HAS EQUIPMENT IN IT. THIS OPERATION WILL DELETE IT ALL. ARE YOU SURE? [y/N] >> ");
             var answer = ReadSanitizedLine();
             if (answer != "y")
                 throw new AbortException("NOT A YES. ABORTING.");
-            _hospital.EquipmentRepo.DeleteInRoom(rooms[number]);
+            _hospital.EquipmentRepo.DeleteInRoom(_loadedRooms[number]);
         }
-        _hospital.RoomRepo.Delete(rooms[number].Id);
+        _hospital.RoomRepo.Delete(_loadedRooms[number].Id);
         System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
     }
 }

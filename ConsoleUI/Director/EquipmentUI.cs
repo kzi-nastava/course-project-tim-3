@@ -96,7 +96,8 @@ public class EquipmentUI : ConsoleUI
         var whenDone = DateTime.Parse(rawDate);
 
         List<Room> rooms = _hospital.RoomRepo.GetAll().ToList();
-        RoomUI.DisplayRooms(rooms);
+        var roomUI = new RoomUI(_hospital);  // TODO: this ugly...
+        roomUI.DisplayRooms();
         System.Console.Write("INPUT ROOM NUMBER >> ");
         var number = ReadInt(0, rooms.Count - 1);
         
