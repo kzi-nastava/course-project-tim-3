@@ -12,9 +12,9 @@ namespace Hospital
             var hospital = new Hospital();
             var hospitalUsers = new {Users = new List<User>()};
 
-            // //generate tests TODO: move this to dedicated teting interface
+            // // //generate tests TODO: move this to dedicated teting interface
 
-            // //generate users
+            // // //generate users
             // int doctorSpecialtynumber = 0;
             // for (int i = 0; i < 100; i++)
             // {
@@ -62,21 +62,21 @@ namespace Hospital
             //    new JsonWriterSettings {Indent = true}));
             // }
             // //generate checkups and operations
-            // DateTime dateTime = new DateTime(2022, 5, 6, 4, 15, 0);
+            // DateTime dateTime = new DateTime(2022, 5, 11, 4, 15, 0);
             // for (int i = 0; i < 100; i++)
             // {
-            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByName("name1");
-            //     Patient patient = hospital.PatientRepo.GetPatientByName("name2");
+            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1","surname1");
+            //     Patient patient = hospital.PatientRepo.GetPatientByFullName("name2","surname2");
             //     dateTime = dateTime.AddHours(1);
 
             //     if (i % 2 == 0)
             //     {   
             //         Checkup check = new Checkup(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "anamneza");
-            //         hospital.AppointmentRepo.AddOrUpdateCheckup(check.TimeAndDate, check.Patient, check.Doctor, check.Duration, check.Anamnesis);
+            //         hospital.AppointmentRepo.AddOrUpdateCheckup(check);
             //     } else if (i % 2 == 1) 
             //     {
-            //         Operation op = new Operation(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "report");
-            //         hospital.AppointmentRepo.AddOrUpdateOperation(op.TimeAndDate, op.Patient, op.Doctor, op.Duration, op.Report);
+            //         Operation op = new Operation(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "report", new TimeSpan(1,15,0));
+            //         hospital.AppointmentRepo.AddOrUpdateOperation(op);
             //     }    
             // }
             // //generate rooms and equipments
@@ -85,28 +85,28 @@ namespace Hospital
             //     if (i % 3 == 0)
             //     {   
             //         var newRoom = new Room("90" + i, "NA" + i, RoomType.STOCK);
-            //         hospital.RoomRepo.AddRoom(newRoom);
+            //         hospital.RoomRepo.Add(newRoom);
             //         for (int j = 0; j < 4; j++)
             //         {
-            //             var newEquipmentBatch = new EquipmentBatch(newRoom, "scalpel", 3, EquipmentType.OPERATION);
-            //             hospital.EquipmentRepo.AddEquipmentBatch(newEquipmentBatch);
+            //             var newEquipmentBatch = new EquipmentBatch(newRoom.Location, "scalpel", 3, EquipmentType.OPERATION);
+            //             hospital.EquipmentRepo.Add(newEquipmentBatch);
             //         }
             //     } 
             //     else if (i % 3 == 1)
             //     {
             //         var newRoom = new Room("10" + i, "NA" + i, RoomType.OPERATION);
-            //         hospital.RoomRepo.AddRoom(newRoom);
+            //         hospital.RoomRepo.Add(newRoom);
             //     } 
             //     else
             //     {
             //         var newRoom = new Room("55" + i, "NA" + i, RoomType.CHECKUP);
-            //         hospital.RoomRepo.AddRoom(newRoom);
+            //         hospital.RoomRepo.Add(newRoom);
             //     }
             // }
             // //generate checkup change requests
             // for (int i = 0; i < 20; i++)
             // {
-            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByName("name1");
+            //     Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1","surname1");
             //     List<Checkup> checkups = hospital.AppointmentRepo.GetCheckupsByDoctor(doctor.Id);
 
             //     if (i % 2 == 0)
@@ -117,9 +117,9 @@ namespace Hospital
             //         }
             //         Checkup alteredCheckup = checkups[i];
             //         DateTime newDateAndTime =  new DateTime (2077,10,10);
-            //         alteredCheckup.TimeAndDate = newDateAndTime;
+            //         alteredCheckup.StartTime = newDateAndTime;
             //         CheckupChangeRequest request = new CheckupChangeRequest(alteredCheckup,CRUDOperation.UPDATE,state);
-            //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
+            //         hospital.CheckupChangeRequestRepo.AddOrUpdate(request);
             //     } else if (i % 2 == 1) 
             //     {
             //         RequestState state = RequestState.PENDING;
@@ -128,7 +128,7 @@ namespace Hospital
             //             state = RequestState.DENIED;
             //         }
             //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],CRUDOperation.DELETE,state);
-            //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
+            //         hospital.CheckupChangeRequestRepo.AddOrUpdate(request);
             //     }    
             // }
             

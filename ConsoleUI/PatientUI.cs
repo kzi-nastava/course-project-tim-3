@@ -53,7 +53,7 @@ public class PatientUI : ConsoleUI
         int count = 0;
         foreach (CheckupChangeLog log in _loggedInPatient.CheckupChangeLogs)
         {
-            if (log.TimeAndDate > _now.AddDays(-30) &&  log.CRUDOperation == crudOperation)
+            if (log.StartTime > _now.AddDays(-30) &&  log.CRUDOperation == crudOperation)
             {
                 count++;
             }
@@ -114,13 +114,13 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        if (selectedCheckup.TimeAndDate < _now.AddDays(2))
+        if (selectedCheckup.StartTime < _now.AddDays(2))
         {
             CheckupChangeRequest newRequest = new CheckupChangeRequest(
                 selectedCheckup,
                 CRUDOperation.DELETE);
                 Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
-                _hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(newRequest);
+                _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
         }
         else
         {
@@ -157,9 +157,9 @@ public class PatientUI : ConsoleUI
         Console.WriteLine ("You have selected " + ConvertAppointmentToString(selectedCheckup));
 
         Doctor currentDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)selectedCheckup.Doctor.Id);
-        DateTime existingDate = selectedCheckup.TimeAndDate;
+        DateTime existingDate = selectedCheckup.StartTime;
         
-        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(currentDoctor.Specialty);
+        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetDoctorsBySpecialty(currentDoctor.Specialty);
         alternativeDoctors.Remove(currentDoctor);
         Doctor newDoctor = currentDoctor;
         DateTime newDate = existingDate;
@@ -224,11 +224,11 @@ public class PatientUI : ConsoleUI
 
         //create checkup
         selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
-        DateTime oldDate = selectedCheckup.TimeAndDate;
-        selectedCheckup.TimeAndDate = newDate;
-        //TODO: if both change doctor and change date are false, dont create a checkup
-
-        if (_hospital.AppointmentRepo.IsDoctorBusy((DateTime)newDate,newDoctor))
+        DateTime oldDate = selectedCheckup.StartTime;
+        selectedCheckup.StartTime = newDate;
+        
+        
+        if (!_hospital.AppointmentRepo.IsDoctorAvailable((DateTime)newDate,newDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
@@ -240,7 +240,7 @@ public class PatientUI : ConsoleUI
                 selectedCheckup,
                 CRUDOperation.UPDATE);
                 Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
-                _hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(newRequest);
+                _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
         }
         else
         {
@@ -262,7 +262,7 @@ public class PatientUI : ConsoleUI
     {
         string output = "";
 
-        output += a.TimeAndDate +" ";
+        output += a.StartTime +" ";
         Doctor doctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)a.Doctor.Id);
         output += doctor.ToString();
 
@@ -454,8 +454,7 @@ public class PatientUI : ConsoleUI
 
     public Doctor? SelectDoctor(Specialty selectedSpecialty)
     {
-        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(selectedSpecialty);
-
+        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorsBySpecialty(selectedSpecialty);
         if (suitableDoctors.Count == 0)
         {
             Console.WriteLine("No doctors found in selected specialty.");
@@ -509,9 +508,9 @@ public class PatientUI : ConsoleUI
                 continue;
             }
 
-            foreach (Doctor doctor in _hospital.DoctorRepo.GetDoctorBySpecialty(speciality))
+            foreach (Doctor doctor in _hospital.DoctorRepo.GetDoctorsBySpecialty(speciality))
             {
-                if (_hospital.AppointmentRepo.IsDoctorBusy(iterationDate,doctor))
+                if (!_hospital.AppointmentRepo.IsDoctorAvailable(iterationDate,doctor))
                 {
                     continue;
                 }
@@ -555,7 +554,7 @@ public class PatientUI : ConsoleUI
                 continue;
             }
             
-            if (_hospital.AppointmentRepo.IsDoctorBusy(iterationDate,doctor))
+            if (!_hospital.AppointmentRepo.IsDoctorAvailable(iterationDate,doctor))
             {
                 iterationDate = iterationDate.AddMinutes(15);
                 continue;
@@ -604,7 +603,7 @@ public class PatientUI : ConsoleUI
                 continue;
             }
             
-            if (_hospital.AppointmentRepo.IsDoctorBusy(iterationDate,doctor))
+            if (!_hospital.AppointmentRepo.IsDoctorAvailable(iterationDate,doctor))
             {
                 iterationDate = iterationDate.AddMinutes(15);
                 continue;
@@ -691,7 +690,7 @@ public class PatientUI : ConsoleUI
             Checkup result = recommendedCheckups[0];
             Console.WriteLine("Recommendation:");
             Doctor referencedDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)result.Doctor.Id);
-            Console.WriteLine(referencedDoctor.ToString()+" "+result.TimeAndDate);
+            Console.WriteLine(referencedDoctor.ToString()+" "+result.StartTime);
 
             Console.Write("Create checkup? Enter y for yes: ");
             if (ReadSanitizedLine().Trim() == "y")
@@ -719,7 +718,7 @@ public class PatientUI : ConsoleUI
             {
                 Checkup result = recommendedCheckups[i];
                 Doctor referencedDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)result.Doctor.Id);
-                Console.WriteLine(i+" - "+referencedDoctor.ToString()+" "+result.TimeAndDate);
+                Console.WriteLine(i+" - "+referencedDoctor.ToString()+" "+result.StartTime);
             }
 
             System.Console.Write("Please enter a number from the list: ");
@@ -786,7 +785,7 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        if (_hospital.AppointmentRepo.IsDoctorBusy(selectedDate,selectedDoctor))
+        if (!_hospital.AppointmentRepo.IsDoctorAvailable(selectedDate,selectedDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;

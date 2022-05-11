@@ -21,24 +21,10 @@ namespace Hospital
             return _dbClient.GetDatabase("hospital").GetCollection<Operation>("operations");
         }
 
-        public void AddOrUpdateCheckup(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, TimeSpan duration, string anamnesis)
-        {
-            var newCheckup = new Checkup(timeAndDate, patient, doctor, anamnesis);
-            var checkups = GetCheckups();
-            checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
-        }
-
         public void AddOrUpdateCheckup(Checkup newCheckup)
         {
             var checkups = GetCheckups();
             checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
-        }
-
-        public void AddOrUpdateOperation(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, TimeSpan duration, string report)
-        {
-            var newOperation = new Operation(timeAndDate, patient, doctor, report);
-            var operations = GetOperations();
-            operations.ReplaceOne(operation => operation.Id == newOperation.Id, newOperation, new ReplaceOptions {IsUpsert = true});
         }
 
         public void AddOrUpdateOperation(Operation newOperation)
@@ -78,7 +64,7 @@ namespace Hospital
         public List<Checkup> GetCheckupsByDay(DateTime date)
         {
             var checkups = GetCheckups();
-            List<Checkup> checkupsByDay = checkups.Find(appointment => appointment.TimeAndDate > date && appointment.TimeAndDate < date.AddDays(1)).ToList();
+            List<Checkup> checkupsByDay = checkups.Find(appointment => appointment.StartTime > date && appointment.StartTime < date.AddDays(1)).ToList();
             return checkupsByDay;
         }
 
@@ -97,18 +83,25 @@ namespace Hospital
          checkups.DeleteOne(filter);
         }
 
-        public bool IsDoctorBusy(DateTime date, Doctor doctor)
+        public bool IsDoctorAvailable(DateTime date, Doctor doctor)
         {
             List<Checkup> checkups = GetCheckupsByDoctor(doctor.Id);
+            List<Operation> operations = GetOperationsByDoctor(doctor.Id);
             foreach (Checkup checkup in checkups)
             {
-                //Console.WriteLine(checkup.TimeAndDate.ToString(), checkup.TimeAndDate.Add(checkup.Duration).ToString());
-                if (checkup.TimeAndDate <= date && checkup.TimeAndDate.Add(checkup.Duration) > date)
+                if (checkup.StartTime < date.AddMinutes(15) && date < checkup.EndTime)
                 {
-                    return true;
+                    return false;
                 } 
             }
-            return false;
+            foreach (Operation operation in operations)
+            {
+                if (operation.StartTime < date.AddMinutes(15) && date < operation.EndTime)
+                {
+                    return false;
+                } 
+            }
+            return true;
         }
     }
 }

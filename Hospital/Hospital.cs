@@ -1,5 +1,4 @@
  using MongoDB.Driver;
- using MongoDB.Bson;
 
  namespace Hospital
  {
@@ -14,6 +13,7 @@
         public SecretaryRepository SecretaryRepo {get;}
         public RoomRepository RoomRepo {get;}
         public EquipmentBatchRepository EquipmentRepo { get; }
+        public EquipmentRelocationRepository RelocationRepo { get; }
         public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
 
         public Hospital()
@@ -26,6 +26,7 @@
             SecretaryRepo = new SecretaryRepository(_dbClient);
             RoomRepo = new RoomRepository(_dbClient);
             EquipmentRepo = new EquipmentBatchRepository(_dbClient);
+            RelocationRepo = new EquipmentRelocationRepository(_dbClient, EquipmentRepo);
             CheckupChangeRequestRepo = new CheckupChangeRequestRepository(_dbClient);
         }
 
