@@ -72,11 +72,11 @@ namespace Hospital
             //     if (i % 2 == 0)
             //     {   
             //         Checkup check = new Checkup(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "anamneza");
-            //         hospital.AppointmentRepo.AddOrUpdateCheckup(check.TimeAndDate, check.Patient, check.Doctor, check.Duration, check.Anamnesis);
+            //         hospital.AppointmentRepo.AddOrUpdateCheckup(check.StartTime, check.Patient, check.Doctor, check.Duration, check.Anamnesis);
             //     } else if (i % 2 == 1) 
             //     {
             //         Operation op = new Operation(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "report");
-            //         hospital.AppointmentRepo.AddOrUpdateOperation(op.TimeAndDate, op.Patient, op.Doctor, op.Duration, op.Report);
+            //         hospital.AppointmentRepo.AddOrUpdateOperation(op.StartTime, op.Patient, op.Doctor, op.Duration, op.Report);
             //     }    
             // }
             // //generate rooms and equipments

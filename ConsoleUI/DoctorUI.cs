@@ -11,7 +11,7 @@ public class DoctorUI : ConsoleUI
         bool exit = false;
         while (!exit)
         {
-            Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Create Checkup\n4.Log out");
+            Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Exit");
             Console.Write("\n>>");
             var option = Console.ReadLine().Trim();
             switch (option)
@@ -27,23 +27,6 @@ public class DoctorUI : ConsoleUI
                     break;
                 }
                 case "3":
-                {
-                    Console.WriteLine("Creating new Checkup appointment...");
-                    Console.Write("\nEnter date >>");
-                    string? date = Console.ReadLine();
-                    Console.Write("\nEnter time >>");
-                    string? time = Console.ReadLine();
-                    DateTime dateTime = DateTime.Parse(date + " " + time);
-                    Console.Write("\nEnter patient name >>");
-                    string? name = Console.ReadLine();
-                    Console.Write("\nEnter patient surname >>");
-                    string? surname = Console.ReadLine();
-                    Patient patient = _hospital.PatientRepo.GetPatientByFullName(name,surname);
-                    Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
-                    _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
-                    break;
-                }
-                case "4":
                 {
                     exit = true;
                     break;
@@ -103,13 +86,13 @@ public class DoctorUI : ConsoleUI
                         StartCheckup(checkups[checkupNumber]);
                     } catch (IOException e)
                     {
-                        Console.WriteLine("Wrong input1.");
+                        Console.WriteLine("Wrong input.");
                     } catch (ArgumentOutOfRangeException e)
                     {
-                        Console.WriteLine("Wrong input2.");
+                        Console.WriteLine("Wrong input.");
                     } catch (NullReferenceException e)
                     {
-                        Console.WriteLine("Wrong input3.");
+                        Console.WriteLine("Wrong input.");
                     }
                     break;
                 }
@@ -153,7 +136,23 @@ public class DoctorUI : ConsoleUI
                     }                    
                     break;
                 }
-                
+                case "5":
+                {
+                    Console.WriteLine("Creating new Checkup appointment...");
+                    Console.Write("\nEnter date >>");
+                    string? date = Console.ReadLine();
+                    Console.Write("\nEnter time >>");
+                    string? time = Console.ReadLine();
+                    DateTime dateTime = DateTime.Parse(date + " " + time);
+                    Console.Write("\nEnter patient name >>");
+                    string? name = Console.ReadLine();
+                    Console.Write("\nEnter patient surname >>");
+                    string? surname = Console.ReadLine();
+                    Patient patient = _hospital.PatientRepo.GetPatientByFullName(name,surname);
+                    Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
+                    _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+                    break;
+                }
                 case "6":
                 {
                     exit = true;
@@ -171,8 +170,8 @@ public class DoctorUI : ConsoleUI
         {
             Patient patient = _hospital.PatientRepo.GetPatientById((ObjectId)checkup.Patient.Id);
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 60)));
-            Console.WriteLine(String.Format("{0,5} {1,12} {2,12} {3,25}", i, checkup.TimeAndDate.ToString("dd.MM.yyyy"), 
-            checkup.TimeAndDate.ToString("HH:mm"), patient));
+            Console.WriteLine(String.Format("{0,5} {1,12} {2,12} {3,25}", i, checkup.StartTime.ToString("dd.MM.yyyy"), 
+            checkup.StartTime.ToString("HH:mm"), patient));
             i++;
         }
     }
@@ -189,7 +188,7 @@ public class DoctorUI : ConsoleUI
     {
         Patient patient =  ShowPatientInfo(checkup);
         Console.WriteLine("\n\nCheckup started.\n");
-        Console.Write("\nCheckup options:\n\n1. Add Anamnesis\n2. Edit Medical Record\n3. Write referral\n4. Back\n\n");
+        Console.Write("\nCheckup options:\n\n1. Add Anamnesis\n2. Edit Medical Record\n3. Back\n\n");
         Console.Write(">>");
         var input = Console.ReadLine();
         switch (input)
@@ -208,11 +207,6 @@ public class DoctorUI : ConsoleUI
                 break;
             }
             case "3":
-            {
-                WriteReferral(patient);
-                break;
-            }
-            case "4":
             {
                 break;
             }
@@ -277,7 +271,7 @@ public class DoctorUI : ConsoleUI
                 string? time = Console.ReadLine();
                 DateTime newDateTime = DateTime.Parse(date + " " + time);
                 Console.Write(newDateTime);
-                checkup.TimeAndDate = newDateTime;
+                checkup.StartTime = newDateTime;
                 _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
                 Console.WriteLine("Edit successfull");
                 break;
@@ -291,92 +285,6 @@ public class DoctorUI : ConsoleUI
                 checkup.Patient = new MongoDB.Driver.MongoDBRef("patients", _hospital.PatientRepo.GetPatientByFullName(newName,newSurname).Id);
                 _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);                
                 Console.WriteLine("Edit successfull");
-                break;
-            }
-        }
-    }
-
-    public void WriteReferral(Patient patient)
-    {
-        Console.Write("\nRefferal by specialty or doctor [s/d] >> ");
-        string? option = Console.ReadLine();
-        switch (option)
-        {
-            case "s":
-            {
-                Console.Write("\nChoose specialty:\n1. Dermatology\n2. Radiology\n3. Stomatology\n4. Ophthalmology\n5. Family medicine>> ");
-                string? specialty = Console.ReadLine();
-                switch (specialty)
-                {
-                    case "1":
-                    {
-                        Doctor doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.DERMATOLOGY);
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                        break;
-                    }
-                    case "2":
-                    {
-                        Doctor doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.RADIOLOGY);
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                        break;
-                    }
-                    case "3":
-                    {
-                        Doctor doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.STOMATOLOGY);
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                        break;
-                    }
-                    case "4":
-                    {
-                        Doctor doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.OPHTHALMOLOGY);
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                        break;
-                    }
-                    case "5":
-                    {
-                        Doctor doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.FAMILY_MEDICINE);
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        Console.WriteLine(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                        break;
-                    }
-                }
-                break;
-            }
-            case "d":
-            {
-                Console.Write("\nEnter doctor's first name >> ");
-                string? firstName = Console.ReadLine();
-                Console.Write("\nEnter doctor's last name >> ");
-                string? lastName = Console.ReadLine();
-                if (firstName != null && lastName != null)
-                {
-                    Doctor doctor = _hospital.DoctorRepo.GetDoctorByFullName(firstName, lastName);
-                    if (doctor != null)
-                    {
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                    }
-                    else
-                    {
-                        Console.WriteLine("No such doctor exists");
-                    }
-                    
-                }
-                else 
-                {
-                    Console.WriteLine("Wrong input");
-                }
                 break;
             }
         }

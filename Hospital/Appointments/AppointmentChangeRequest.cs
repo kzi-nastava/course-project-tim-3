@@ -13,7 +13,7 @@ namespace Hospital
 
         public MongoDBRef Doctor { get; set; }
 
-        public DateTime TimeAndDate { get; set; }
+        public DateTime StartTime { get; set; }
 
         AppointmentChangeRequest()
         {
