@@ -15,6 +15,7 @@ namespace Hospital
             //generate tests TODO: move this to dedicated teting interface
 
             //generate users
+            // int doctorSpecialtynumber = 0;
             // for (int i = 0; i < 100; i++)
             // {
             //     User user;
@@ -30,10 +31,14 @@ namespace Hospital
             //     {
             //         //user = new User("a" + i, "a" + i, "name" + i, "surname" + i, Role.DOCTOR);
             //         Doctor doctor;
-            //         doctor = new Doctor("name" + i,"surname" + i, Specialty.FAMILY_MEDICINE);
+            //         int namesCount = Enum.GetNames(typeof(Specialty)).Length;
+            //         Specialty doctorsSpecialty = (Specialty)(doctorSpecialtynumber%namesCount);
+            //         doctorSpecialtynumber++; 
+            //         doctor = new Doctor("name" + i,"surname" + i, doctorsSpecialty);
             //         user = new User("a" + i, "a" + i, doctor, Role.DOCTOR);
             //         hospital.DoctorRepo.AddOrUpdateDoctor(doctor);
-            //         hospital.UserRepo.AddOrUpdateUser(user);                
+            //         hospital.UserRepo.AddOrUpdateUser(user);
+                                   
             //     }
             //     else if (i % 4 == 2) 
             //     {
@@ -73,6 +78,30 @@ namespace Hospital
             //         Operation op = new Operation(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "report");
             //         hospital.AppointmentRepo.AddOrUpdateOperation(op.TimeAndDate, op.Patient, op.Doctor, op.Duration, op.Report);
             //     }    
+            // }
+            // //generate rooms and equipments
+            // for (int i = 0; i < 10; i++)
+            // {
+            //     if (i % 3 == 0)
+            //     {   
+            //         var newRoom = new Room("90" + i, "NA" + i, RoomType.STOCK);
+            //         hospital.RoomRepo.AddRoom(newRoom);
+            //         for (int j = 0; j < 4; j++)
+            //         {
+            //             var newEquipmentBatch = new EquipmentBatch(newRoom, "scalpel", 3, EquipmentType.OPERATION);
+            //             hospital.EquipmentRepo.AddEquipmentBatch(newEquipmentBatch);
+            //         }
+            //     } 
+            //     else if (i % 3 == 1)
+            //     {
+            //         var newRoom = new Room("10" + i, "NA" + i, RoomType.OPERATION);
+            //         hospital.RoomRepo.AddRoom(newRoom);
+            //     } 
+            //     else
+            //     {
+            //         var newRoom = new Room("55" + i, "NA" + i, RoomType.CHECKUP);
+            //         hospital.RoomRepo.AddRoom(newRoom);
+            //     }
             // }
 
             var ui = new HospitalUI(hospital);
