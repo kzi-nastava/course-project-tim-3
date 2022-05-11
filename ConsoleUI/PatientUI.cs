@@ -586,7 +586,6 @@ public class PatientUI : ConsoleUI
 
     public override void Start()
     {
-
         if (_user.BlockStatus != Block.UNBLOCKED)
         {
             Console.WriteLine(@"
