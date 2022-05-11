@@ -118,7 +118,6 @@ public class PatientUI : ConsoleUI
         {
             CheckupChangeRequest newRequest = new CheckupChangeRequest(
                 selectedCheckup,
-                selectedCheckup,
                 CRUDOperation.DELETE);
                 Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
                 _hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(newRequest);
@@ -238,7 +237,6 @@ public class PatientUI : ConsoleUI
         if (oldDate < _now.AddDays(2))
         {
             CheckupChangeRequest newRequest = new CheckupChangeRequest(
-                selectedCheckup,
                 selectedCheckup,
                 CRUDOperation.UPDATE);
                 Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");

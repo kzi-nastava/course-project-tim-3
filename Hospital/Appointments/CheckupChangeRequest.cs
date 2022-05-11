@@ -15,10 +15,7 @@ namespace Hospital
     {
         [BsonId]
         public ObjectId Id { get; set; }
-
-        public MongoDBRef CheckupToChange { get; set; }
-
-        public Checkup UpdatedCheckup { get; set; }
+        public Checkup Checkup { get; set; }
         
         [BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public CRUDOperation CRUDOperation { get; set; }
@@ -26,11 +23,10 @@ namespace Hospital
         [BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public RequestState RequestState { get; set; }
         
-        public CheckupChangeRequest(Checkup checkupToChange, Checkup updatedCheckup, CRUDOperation crudOperation, RequestState requestState = RequestState.PENDING)
+        public CheckupChangeRequest(Checkup checkup, CRUDOperation crudOperation, RequestState requestState = RequestState.PENDING)
         {
             Id = ObjectId.GenerateNewId();
-            CheckupToChange = new MongoDBRef("checkups",checkupToChange.Id);
-            UpdatedCheckup = updatedCheckup;
+            Checkup = checkup;
             CRUDOperation = crudOperation;
             RequestState = requestState;
         }
@@ -38,7 +34,7 @@ namespace Hospital
         //TODO: Implement better tostring
         public override string ToString ()
         {
-            return CheckupToChange + " " + CRUDOperation + " " +RequestState;
+            return Checkup + " " + CRUDOperation + " " +RequestState;
         }
     }
 
