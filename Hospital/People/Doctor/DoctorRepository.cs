@@ -31,7 +31,7 @@ namespace Hospital
         }
 
         // this should return an empty list if there are no doctors in selected specialty
-        public List<Doctor> GetDoctorBySpecialty(Specialty specialty)
+        public List<Doctor> GetDoctorsBySpecialty(Specialty specialty)
         {
             var doctors = GetDoctors();
             var specizedDoctors =
@@ -42,16 +42,23 @@ namespace Hospital
             return specizedDoctors.ToList();
         }
 
+        public Doctor GetDoctorBySpecialty(Specialty specialty)
+        {
+            var doctors = GetDoctors();
+            var foundDoctor = doctors.Find(doctor => doctor.Specialty == specialty).FirstOrDefault();
+            return foundDoctor;
+        }
+
         public void AddOrUpdateDoctor(Doctor doctor)
         {
             var newDoctor = doctor;
             var doctors = GetDoctors();
             doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
         }
-        public Doctor GetDoctorByName(string name)
+        public Doctor GetDoctorByFullName(string firstName, string lastName)
         {
             var doctors = GetDoctors();
-            var foundDoctor = doctors.Find(doctor => doctor.FirstName == name).FirstOrDefault();
+            var foundDoctor = doctors.Find(doctor => doctor.FirstName == firstName && doctor.LastName == lastName).FirstOrDefault();
             return foundDoctor;
         }
 
