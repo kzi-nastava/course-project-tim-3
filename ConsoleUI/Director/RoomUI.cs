@@ -30,74 +30,15 @@ public class RoomUI : ConsoleUI
                 // todo: unhardcode choices so they match menu display always
                 if (choice == "a" || choice == "ar" || choice == "add" || choice == "add rooms")
                 {
-                    // todo: move to function everything...
-                    System.Console.Write("ENTER ROOM LOCATION >> ");
-                    var location = ReadSanitizedLine();
-                    if (location == "")
-                        throw new InvalidInputException("INVALID LOCATION!");
-
-                    System.Console.Write("ENTER ROOM NAME >> ");
-                    var name = ReadSanitizedLine();
-                    if (name == "")
-                        throw new InvalidInputException("INVALID NAME!");
-
-                    System.Console.Write("ENTER ROOM TYPE [rest|operation|checkup|other] >> ");
-                    var rawType = ReadSanitizedLine();
-                    bool success = Enum.TryParse(rawType, true, out RoomType type);
-                    if (!success || type == RoomType.STOCK)
-                        throw new InvalidInputException("NOT A VALID TYPE!");
-
-                    var newRoom = new Room(location, name, type);
-                    _hospital.RoomRepo.Add(newRoom);
-                    System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+                    Add();
                 }
                 else if (choice == "u" || choice == "ur" || choice == "update" || choice == "update room")
                 {
-                    System.Console.Write("INPUT NUMBER >> ");
-                    var number = ReadInt(0, rooms.Count - 1);
-                    var room = rooms[number];
-
-                    System.Console.WriteLine("INPUT NOTHING TO KEEP AS IS");
-
-                    System.Console.Write("ENTER ROOM LOCATION >> ");
-                    var location = ReadSanitizedLine();
-                    if (location != "")
-                        room.Location = location;
-
-                    System.Console.Write("ENTER ROOM NAME >> ");
-                    var name = ReadSanitizedLine();
-                    if (name != "")
-                        room.Name = name;
-
-                    System.Console.Write("ENTER ROOM TYPE [rest|operation|checkup|other] >> ");
-                    var rawType = ReadSanitizedLine();
-                    RoomType type;
-                    if (rawType != "")
-                    {
-                        var success = Enum.TryParse(rawType, true, out type);
-                        if (!success || type == RoomType.STOCK)
-                            throw new InvalidInputException("NOT A VALID TYPE!");
-                        room.Type = type;
-                    }
-
-                    _hospital.RoomRepo.Replace(room);
-                    System.Console.Write("SUCCESSFULLY UPDATED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+                    Update(rooms);
                 }
                 else if (choice == "delete room" || choice == "delete" || choice == "dr" || choice == "d")
                 {
-                    System.Console.Write("INPUT NUMBER >> ");
-                    var number = ReadInt(0, rooms.Count - 1);
-                    if (_hospital.EquipmentRepo.GetAllInRoom(rooms[number]).Any())
-                    {
-                        // TODO: make into a moving equipment submenu
-                        System.Console.Write("THIS ROOM HAS EQUIPMENT IN IT. THIS OPERATION WILL DELETE IT ALL. ARE YOU SURE? [y/N] >> ");
-                        var answer = ReadSanitizedLine();
-                        if (answer != "y")
-                            throw new AbortException("NOT A YES. ABORTING.");
-                        _hospital.EquipmentRepo.DeleteInRoom(rooms[number]);
-                    }
-                    _hospital.RoomRepo.Delete(rooms[number].Id);
-                    System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+                    Delete(rooms);
                 }
                 else if (choice == "q" || choice == "quit")
                 {
@@ -137,4 +78,76 @@ public class RoomUI : ConsoleUI
         }
     }
 
+    private void Update(List<Room> rooms)
+    {
+        System.Console.Write("INPUT NUMBER >> ");
+        var number = ReadInt(0, rooms.Count - 1);
+        var room = rooms[number];
+
+        System.Console.WriteLine("INPUT NOTHING TO KEEP AS IS");
+
+        System.Console.Write("ENTER ROOM LOCATION >> ");
+        var location = ReadSanitizedLine();
+        if (location != "")
+            room.Location = location;
+
+        System.Console.Write("ENTER ROOM NAME >> ");
+        var name = ReadSanitizedLine();
+        if (name != "")
+            room.Name = name;
+
+        System.Console.Write("ENTER ROOM TYPE [rest|operation|checkup|other] >> ");
+        var rawType = ReadSanitizedLine();
+        RoomType type;
+        if (rawType != "")
+        {
+            var success = Enum.TryParse(rawType, true, out type);
+            if (!success || type == RoomType.STOCK)
+                throw new InvalidInputException("NOT A VALID TYPE!");
+            room.Type = type;
+        }
+
+        _hospital.RoomRepo.Replace(room);
+        System.Console.Write("SUCCESSFULLY UPDATED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+    }
+
+    private void Add()
+    {
+        System.Console.Write("ENTER ROOM LOCATION >> ");
+        var location = ReadSanitizedLine();
+        if (location == "")
+            throw new InvalidInputException("INVALID LOCATION!");
+
+        System.Console.Write("ENTER ROOM NAME >> ");
+        var name = ReadSanitizedLine();
+        if (name == "")
+            throw new InvalidInputException("INVALID NAME!");
+
+        System.Console.Write("ENTER ROOM TYPE [rest|operation|checkup|other] >> ");
+        var rawType = ReadSanitizedLine();
+        bool success = Enum.TryParse(rawType, true, out RoomType type);
+        if (!success || type == RoomType.STOCK)
+            throw new InvalidInputException("NOT A VALID TYPE!");
+
+        var newRoom = new Room(location, name, type);
+        _hospital.RoomRepo.Add(newRoom);
+        System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+    }
+
+    private void Delete(List<Room> rooms)
+    {
+        System.Console.Write("INPUT NUMBER >> ");
+        var number = ReadInt(0, rooms.Count - 1);
+        if (_hospital.EquipmentRepo.GetAllInRoom(rooms[number]).Any())
+        {
+            // TODO: make into a moving equipment submenu
+            System.Console.Write("THIS ROOM HAS EQUIPMENT IN IT. THIS OPERATION WILL DELETE IT ALL. ARE YOU SURE? [y/N] >> ");
+            var answer = ReadSanitizedLine();
+            if (answer != "y")
+                throw new AbortException("NOT A YES. ABORTING.");
+            _hospital.EquipmentRepo.DeleteInRoom(rooms[number]);
+        }
+        _hospital.RoomRepo.Delete(rooms[number].Id);
+        System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+    }
 }
