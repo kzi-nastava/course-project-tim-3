@@ -219,7 +219,7 @@ public class DirectorUI : ConsoleUI
                     
                     var relocation = new EquipmentRelocation(equipmentBatch.Name, amount, 
                         equipmentBatch.Type, whenDone, (ObjectId) equipmentBatch.Room.Id, rooms[number].Id);
-                    _hospital.RelocationRepo.AddRelocation(relocation);
+                    _hospital.RelocationRepo.Add(relocation);
                     _hospital.RelocationRepo.Schedule(relocation);
                     System.Console.Write("RELOCATION SCHEDULED SUCCESSFULLY. INPUT ANYTHING TO CONTINUE >> ");
                     ReadSanitizedLine();
