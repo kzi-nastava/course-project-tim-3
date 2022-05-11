@@ -85,22 +85,22 @@ namespace Hospital
             //     if (i % 3 == 0)
             //     {   
             //         var newRoom = new Room("90" + i, "NA" + i, RoomType.STOCK);
-            //         hospital.RoomRepo.AddRoom(newRoom);
+            //         hospital.RoomRepo.Add(newRoom);
             //         for (int j = 0; j < 4; j++)
             //         {
-            //             var newEquipmentBatch = new EquipmentBatch(newRoom, "scalpel", 3, EquipmentType.OPERATION);
-            //             hospital.EquipmentRepo.AddEquipmentBatch(newEquipmentBatch);
+            //             var newEquipmentBatch = new EquipmentBatch(newRoom.Location, "scalpel", 3, EquipmentType.OPERATION);
+            //             hospital.EquipmentRepo.Add(newEquipmentBatch);
             //         }
             //     } 
             //     else if (i % 3 == 1)
             //     {
             //         var newRoom = new Room("10" + i, "NA" + i, RoomType.OPERATION);
-            //         hospital.RoomRepo.AddRoom(newRoom);
+            //         hospital.RoomRepo.Add(newRoom);
             //     } 
             //     else
             //     {
             //         var newRoom = new Room("55" + i, "NA" + i, RoomType.CHECKUP);
-            //         hospital.RoomRepo.AddRoom(newRoom);
+            //         hospital.RoomRepo.Add(newRoom);
             //     }
             // }
             // //generate checkup change requests

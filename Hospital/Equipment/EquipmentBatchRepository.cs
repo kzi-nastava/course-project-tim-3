@@ -1,6 +1,5 @@
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using MongoDB.Bson;
 
 namespace Hospital;
 
@@ -13,54 +12,84 @@ public class EquipmentBatchRepository
         this._dbClient = _dbClient;
     }
 
-    public IMongoCollection<EquipmentBatch> GetEquipmentBatches()
+    private IMongoCollection<EquipmentBatch> GetCollection()
     {
         return _dbClient.GetDatabase("hospital").GetCollection<EquipmentBatch>("equipments");
     }
 
-    public IMongoQueryable<EquipmentBatch> GetQueryableEquipmentBatches()
+    public IQueryable<EquipmentBatch> GetAll()
     {
-        return GetEquipmentBatches().AsQueryable();
+        return GetCollection().AsQueryable();
     }
 
-    public IMongoQueryable<EquipmentBatch> GetEquipmentBatchesInRoom(Room room)
+    public IQueryable<EquipmentBatch> GetAllInRoom(Room room)
     {
-        var equipmentBatches = GetQueryableEquipmentBatches();
+        var batches = GetAll();
         var matches = 
-            from equipmentBatch in equipmentBatches
-            where equipmentBatch.Room.Id == room.Id
-            select equipmentBatch;
+            from batch in batches
+            where batch.RoomLocation == room.Location
+            select batch;
         return matches;
     }
 
-    public void AddEquipmentBatch(EquipmentBatch newEquipmentBatch)
+    public void Add(EquipmentBatch newBatch)
     {
-        var equipmentBatch = GetEquipmentBatch((ObjectId) newEquipmentBatch.Room.Id, newEquipmentBatch.Name);
-        if (equipmentBatch is null)
+        var batch = Get(newBatch.RoomLocation, newBatch.Name);
+        if (batch is null)
         {
-            GetEquipmentBatches().InsertOne(newEquipmentBatch);
+            GetCollection().InsertOne(newBatch);
         }
         else
         {
-            equipmentBatch.MergeWith(newEquipmentBatch);
-            UpdateEquipmentBatch(equipmentBatch);
+            batch.MergeWith(newBatch);
+            Replace(batch);
         }
     }
 
-    public void DeleteEquipmentBatchesInRoom(Room room)
+    // NOTE: only use during Relocation!!
+    public void Remove(EquipmentBatch removingBatch)
     {
-        GetEquipmentBatches().DeleteMany(batch => batch.Room.Id == room.Id);
+        var existingBatch = Get(removingBatch.RoomLocation, removingBatch.Name);
+        if (existingBatch is null)
+        {
+            throw new Exception("HOW DID YOU GET HERE?");  // TODO: change exception
+        }
+        else
+        {
+            existingBatch.Remove(removingBatch);
+            if (existingBatch.Count != 0)
+                Replace(existingBatch);
+            else
+                GetCollection().DeleteOne(batch => batch.Id == existingBatch.Id);
+        }
     }
 
-    private void UpdateEquipmentBatch(EquipmentBatch newEquipmentBatch) // EXPECTS EXISTING EQUIPMENTBATCH!
+    public void DeleteInRoom(Room room)
     {
-        var equipmentBatches = GetEquipmentBatches();
-        equipmentBatches.ReplaceOne(equipmentBatch => equipmentBatch.Id == newEquipmentBatch.Id, newEquipmentBatch);
+        GetCollection().DeleteMany(batch => batch.RoomLocation == room.Location);
     }
 
-    public EquipmentBatch? GetEquipmentBatch(ObjectId roomId, string name)
+    private void Replace(EquipmentBatch newBatch) // EXPECTS EXISTING EQUIPMENTBATCH!
     {
-        var equipmentBatches = GetEquipmentBatches();
-        return equipmentBatches.Find(equipment => equipment.Room.Id == roomId && equipment.Name == name).FirstOrDefault();
+        GetCollection().ReplaceOne(batch => batch.Id == newBatch.Id, newBatch);
+    }
+
+    public EquipmentBatch? Get(string roomLocation, string name)
+    {
+        var batches = GetCollection();
+        return batches.Find(batch => batch.RoomLocation == roomLocation && batch.Name == name).FirstOrDefault();
+    }
+
+    public IQueryable<EquipmentBatch> Search(EquipmentQuery query)  // TODO: probably have to move this
+    {
+        var batches = GetAll();
+        var matches = 
+            from batch in batches
+            where (query.MinCount == null || query.MinCount <= batch.Count)
+                && (query.MaxCount == null || query.MaxCount >= batch.Count)
+                && (query.Type == null || query.Type == batch.Type)
+                && (query.NameContains == null || query.NameContains.IsMatch(batch.Name))
+            select batch;
+        return matches;
     }
 }
