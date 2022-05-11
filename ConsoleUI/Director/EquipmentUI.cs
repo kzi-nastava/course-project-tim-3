@@ -14,7 +14,7 @@ public class EquipmentUI : ConsoleUI
 
     public override void Start()
     {
-        // TODO: load schedules
+        _hospital.RelocationRepo.ScheduleAll();
         while (true)
         {
             System.Console.Clear();

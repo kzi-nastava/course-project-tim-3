@@ -54,4 +54,13 @@ public class EquipmentRelocationRepository
         relocation.IsDone = true;
         Replace(relocation);
     }
+
+    // TODO: move this and some others to service
+    public void ScheduleAll()
+    {
+        foreach (var relocation in GetAll())
+        {
+            Schedule(relocation);
+        }
+    }
 }
