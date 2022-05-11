@@ -118,7 +118,7 @@ namespace Hospital
             //         Checkup alteredCheckup = checkups[i];
             //         DateTime newDateAndTime =  new DateTime (2077,10,10);
             //         alteredCheckup.TimeAndDate = newDateAndTime;
-            //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],alteredCheckup,CRUDOperation.UPDATE,state);
+            //         CheckupChangeRequest request = new CheckupChangeRequest(alteredCheckup,CRUDOperation.UPDATE,state);
             //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
             //     } else if (i % 2 == 1) 
             //     {
@@ -127,7 +127,7 @@ namespace Hospital
             //         {
             //             state = RequestState.DENIED;
             //         }
-            //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],checkups[i],CRUDOperation.DELETE,state);
+            //         CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],CRUDOperation.DELETE,state);
             //         hospital.CheckupChangeRequestRepo.AddOrUpdateCheckupChangeRequest(request);
             //     }    
             // }
