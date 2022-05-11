@@ -114,8 +114,19 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
-        Console.WriteLine("Checkup deleted.");
+        if (selectedCheckup.StartTime < _now.AddDays(2))
+        {
+            CheckupChangeRequest newRequest = new CheckupChangeRequest(
+                selectedCheckup,
+                CRUDOperation.DELETE);
+                Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
+                _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
+        }
+        else
+        {
+            _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
+            Console.WriteLine("Checkup deleted.");
+        }
 
         LogChange(CRUDOperation.DELETE);
         if (nextWillBlock)
@@ -213,17 +224,30 @@ public class PatientUI : ConsoleUI
 
         //create checkup
         selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
+        DateTime oldDate = selectedCheckup.StartTime;
         selectedCheckup.StartTime = newDate;
+        
         
         if (!_hospital.AppointmentRepo.IsDoctorAvailable((DateTime)newDate,newDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
         }
-
-        _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
-        Console.WriteLine("Checkup updated.");
-
+        
+        if (oldDate < _now.AddDays(2))
+        {
+            CheckupChangeRequest newRequest = new CheckupChangeRequest(
+                selectedCheckup,
+                CRUDOperation.UPDATE);
+                Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
+                _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
+        }
+        else
+        {
+            _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
+            Console.WriteLine("Checkup updated.");
+        }
+        
         LogChange(CRUDOperation.UPDATE);
         if (nextWillBlock)
         {
