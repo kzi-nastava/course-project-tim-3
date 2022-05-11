@@ -13,19 +13,19 @@ public class EquipmentBatchRepository
         this._dbClient = _dbClient;
     }
 
-    public IMongoCollection<EquipmentBatch> GetEquipmentBatches()
+    private IMongoCollection<EquipmentBatch> GetCollection()
     {
         return _dbClient.GetDatabase("hospital").GetCollection<EquipmentBatch>("equipments");
     }
 
-    public IMongoQueryable<EquipmentBatch> GetQueryableEquipmentBatches()
+    public IQueryable<EquipmentBatch> GetAll()
     {
-        return GetEquipmentBatches().AsQueryable();
+        return GetCollection().AsQueryable();
     }
 
-    public IMongoQueryable<EquipmentBatch> GetEquipmentBatchesInRoom(Room room)
+    public IQueryable<EquipmentBatch> GetAllInRoom(Room room)
     {
-        var equipmentBatches = GetQueryableEquipmentBatches();
+        var equipmentBatches = GetAll();
         var matches = 
             from equipmentBatch in equipmentBatches
             where equipmentBatch.Room.Id == room.Id
@@ -33,24 +33,24 @@ public class EquipmentBatchRepository
         return matches;
     }
 
-    public void AddEquipmentBatch(EquipmentBatch newEquipmentBatch)
+    public void Add(EquipmentBatch newEquipmentBatch)
     {
-        var equipmentBatch = GetEquipmentBatch((ObjectId) newEquipmentBatch.Room.Id, newEquipmentBatch.Name);
+        var equipmentBatch = Get((ObjectId) newEquipmentBatch.Room.Id, newEquipmentBatch.Name);
         if (equipmentBatch is null)
         {
-            GetEquipmentBatches().InsertOne(newEquipmentBatch);
+            GetCollection().InsertOne(newEquipmentBatch);
         }
         else
         {
             equipmentBatch.MergeWith(newEquipmentBatch);
-            UpdateEquipmentBatch(equipmentBatch);
+            Replace(equipmentBatch);
         }
     }
 
     // NOTE: only use during Relocation!!
-    public void RemoveEquipmentBatch(EquipmentBatch removingBatch)
+    public void Remove(EquipmentBatch removingBatch)
     {
-        var existingBatch = GetEquipmentBatch((ObjectId) removingBatch.Room.Id, removingBatch.Name);
+        var existingBatch = Get((ObjectId) removingBatch.Room.Id, removingBatch.Name);
         if (existingBatch is null)
         {
             throw new Exception("HOW DID YOU GET HERE?");  // TODO: change exception
@@ -59,26 +59,25 @@ public class EquipmentBatchRepository
         {
             existingBatch.Remove(removingBatch);
             if (existingBatch.Count != 0)
-                UpdateEquipmentBatch(existingBatch);
+                Replace(existingBatch);
             else
-                GetEquipmentBatches().DeleteOne(batch => batch.Id == existingBatch.Id);
+                GetCollection().DeleteOne(batch => batch.Id == existingBatch.Id);
         }
     }
 
-    public void DeleteEquipmentBatchesInRoom(Room room)
+    public void DeleteInRoom(Room room)
     {
-        GetEquipmentBatches().DeleteMany(batch => batch.Room.Id == room.Id);
+        GetCollection().DeleteMany(batch => batch.Room.Id == room.Id);
     }
 
-    private void UpdateEquipmentBatch(EquipmentBatch newEquipmentBatch) // EXPECTS EXISTING EQUIPMENTBATCH!
+    private void Replace(EquipmentBatch newEquipmentBatch) // EXPECTS EXISTING EQUIPMENTBATCH!
     {
-        var equipmentBatches = GetEquipmentBatches();
-        equipmentBatches.ReplaceOne(equipmentBatch => equipmentBatch.Id == newEquipmentBatch.Id, newEquipmentBatch);
+        GetCollection().ReplaceOne(equipmentBatch => equipmentBatch.Id == newEquipmentBatch.Id, newEquipmentBatch);
     }
 
-    public EquipmentBatch? GetEquipmentBatch(ObjectId roomId, string name)
+    public EquipmentBatch? Get(ObjectId roomId, string name)
     {
-        var equipmentBatches = GetEquipmentBatches();
+        var equipmentBatches = GetCollection();
         return equipmentBatches.Find(equipment => equipment.Room.Id == roomId && equipment.Name == name).FirstOrDefault();
     }
 }

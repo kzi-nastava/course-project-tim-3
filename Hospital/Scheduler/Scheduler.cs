@@ -4,7 +4,7 @@ namespace Hospital;
 
 public delegate void Task();
 
-public class Scheduler
+public static class Scheduler
 {
     public static void Schedule(DateTime invokeAt, Task task)
     {

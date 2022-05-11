@@ -127,14 +127,14 @@ public class DirectorUI : ConsoleUI
                 {
                     System.Console.Write("INPUT NUMBER >> ");
                     var number = ReadInt(0, rooms.Count - 1);
-                    if (_hospital.EquipmentRepo.GetEquipmentBatchesInRoom(rooms[number]).Any())
+                    if (_hospital.EquipmentRepo.GetAllInRoom(rooms[number]).Any())
                     {
                         // TODO: make into a moving equipment submenu
                         System.Console.Write("THIS ROOM HAS EQUIPMENT IN IT. THIS OPERATION WILL DELETE IT ALL. ARE YOU SURE? [y/N] >> ");
                         var answer = ReadSanitizedLine();
                         if (answer != "y")
                             throw new AbortException("NOT A YES. ABORTING.");
-                        _hospital.EquipmentRepo.DeleteEquipmentBatchesInRoom(rooms[number]);
+                        _hospital.EquipmentRepo.DeleteInRoom(rooms[number]);
                     }
                     _hospital.RoomRepo.DeleteRoom(rooms[number].Id);
                     System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
@@ -164,7 +164,7 @@ public class DirectorUI : ConsoleUI
     public void StartManageEquipment()
     {
         // TODO: load schedules
-        List<EquipmentBatch> equipmentBatches = _hospital.EquipmentRepo.GetQueryableEquipmentBatches().ToList();
+        List<EquipmentBatch> equipmentBatches = _hospital.EquipmentRepo.GetAll().ToList();
         while (true)
         {
             System.Console.Clear();
@@ -250,7 +250,7 @@ public class DirectorUI : ConsoleUI
 
     private IQueryable<EquipmentBatch> SearchEquipmentBatches(EquipmentQuery query)  // TODO: probably have to move this
     {
-        var equipmentBatches = _hospital.EquipmentRepo.GetQueryableEquipmentBatches();
+        var equipmentBatches = _hospital.EquipmentRepo.GetAll();
         var matches = 
             from equipmentBatch in equipmentBatches
             where (query.MinCount == null || query.MinCount <= equipmentBatch.Count)
