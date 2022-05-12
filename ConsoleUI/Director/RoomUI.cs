@@ -165,7 +165,7 @@ public class RoomUI : ConsoleUI
                 throw new AbortException("NOT A YES. ABORTING.");
             _hospital.EquipmentRepo.DeleteInRoom(_loadedRooms[number]);
         }
-        _hospital.RoomRepo.Delete(_loadedRooms[number].Id);
+        _hospital.RoomRepo.Delete(_loadedRooms[number].Location);
         System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
     }
 

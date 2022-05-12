@@ -66,7 +66,7 @@ public class EquipmentUI : ConsoleUI
         }
     }
 
-    private void DisplayBatches(List<EquipmentBatch> batches)
+    public void DisplayBatches(List<EquipmentBatch> batches)
     {
         System.Console.WriteLine("No. | Room Location | Type | Name | Count");
         // TODO: paginate and make prettier

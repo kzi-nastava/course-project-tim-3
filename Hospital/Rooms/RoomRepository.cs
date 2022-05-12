@@ -21,43 +21,44 @@ public class RoomRepository
     {
         return 
             from room in GetCollection().AsQueryable()
-            where room.Active
+            where room.Active && !room.Deleted
             select room;
     }
 
-    public bool Delete(ObjectId id)
+    public bool Delete(string location)
     {
         var rooms = GetCollection();
-        return rooms.DeleteOne(room => room.Id == id).DeletedCount == 1;
+        return rooms.UpdateOne(room => room.Location == location && !room.Deleted,
+            Builders<Room>.Update.Set("Deleted", true)).ModifiedCount == 1;
     }
 
     public void Add(Room newRoom)
     {
         var rooms = GetCollection();
-        rooms.ReplaceOne(room => room.Location == newRoom.Location, newRoom, new ReplaceOptions {IsUpsert = true});
+        rooms.InsertOne(newRoom);
     }
 
     public bool DoesExist(string location)
     {
-        return GetCollection().Find(room => room.Location == location).Any();
+        return GetCollection().Find(room => room.Location == location && !room.Deleted).Any();
     }
 
     public void Replace(Room changingRoom)
     {
         var rooms = GetCollection();
-        rooms.ReplaceOne(room => room.Id == changingRoom.Id, changingRoom);
+        rooms.ReplaceOne(room => room.Id == changingRoom.Id && !room.Deleted, changingRoom);
     }
 
     public void Activate(string location)
     {
         var rooms = GetCollection();
-        rooms.UpdateOne(room => room.Location == location, Builders<Room>.Update.Set("Active", true));
+        rooms.UpdateOne(room => room.Location == location && !room.Deleted, Builders<Room>.Update.Set("Active", true));
     }
 
     public void Deactivate(string location)
     {
         // TODO: check if room still exists by this time... or stop delete if renovating
         var rooms = GetCollection();
-        rooms.UpdateOne(room => room.Location == location, Builders<Room>.Update.Set("Active", false));
+        rooms.UpdateOne(room => room.Location == location && !room.Deleted, Builders<Room>.Update.Set("Active", false));
     }
 }

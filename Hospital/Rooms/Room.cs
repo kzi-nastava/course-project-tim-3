@@ -23,6 +23,7 @@ public class Room
     public string Location {get; set;}
     public string Name {get; set;}
     public bool Active { get; set; }
+    public bool Deleted { get; set; }
 
     public Room(string location, string name, RoomType type)
     {
@@ -31,5 +32,6 @@ public class Room
         Name = name;
         Type = type;
         Active = true;
+        Deleted = false;
     }
 }
