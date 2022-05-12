@@ -33,14 +33,6 @@ namespace Hospital
         public Block BlockStatus {get;set;}
         public MongoDBRef Person {get;set;}
 
-        // public User(string email, string password, string firstName, string lastName, Role role)
-        // {
-        //     this.Email = email;
-        //     this.Password = password;
-        //     this.Role = role;
-        // }
-
-        // [BsonConstructor]
         public User(string email, string password, Person person, Role role, Block blockStatus = Block.UNBLOCKED)
         {
             Id = ObjectId.GenerateNewId();
