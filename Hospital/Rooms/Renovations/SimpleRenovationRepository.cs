@@ -57,9 +57,9 @@ public class SimpleRenovationRepository
     // TODO: move this and some others to service
     public void ScheduleAll()
     {
-        foreach (var relocation in GetAll())
+        foreach (var renovation in GetAll())
         {
-            Schedule(relocation);
+            Schedule(renovation);
         }
     }
 }
