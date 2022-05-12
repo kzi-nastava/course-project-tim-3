@@ -37,7 +37,7 @@ public class EquipmentRelocationRepository
 
     public void Schedule(EquipmentRelocation relocation)
     {
-        Scheduler.Schedule(relocation.WhenDone, () => 
+        Scheduler.Schedule(relocation.EndTime, () => 
         {
             MoveEquipment(relocation);
         });

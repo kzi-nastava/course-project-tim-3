@@ -15,19 +15,21 @@
         public EquipmentBatchRepository EquipmentRepo { get; }
         public EquipmentRelocationRepository RelocationRepo { get; }
         public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
+        public SimpleRenovationRepository SimpleRenovationRepo { get; set; }
 
         public Hospital()
         {
-            UserRepo = new UserRepository(_dbClient);
-            DoctorRepo = new DoctorRepository(_dbClient);
-            PatientRepo = new PatientRepository(_dbClient);
-            AppointmentRepo = new AppointmentRepository(_dbClient);
-            DirectorRepo = new DirectorRepository(_dbClient);
-            SecretaryRepo = new SecretaryRepository(_dbClient);
-            RoomRepo = new RoomRepository(_dbClient);
-            EquipmentRepo = new EquipmentBatchRepository(_dbClient);
-            RelocationRepo = new EquipmentRelocationRepository(_dbClient, EquipmentRepo);
-            CheckupChangeRequestRepo = new CheckupChangeRequestRepository(_dbClient);
+            UserRepo = new (_dbClient);
+            DoctorRepo = new (_dbClient);
+            PatientRepo = new (_dbClient);
+            AppointmentRepo = new (_dbClient);
+            DirectorRepo = new (_dbClient);
+            SecretaryRepo = new (_dbClient);
+            RoomRepo = new (_dbClient);
+            EquipmentRepo = new (_dbClient);
+            RelocationRepo = new (_dbClient, EquipmentRepo);
+            CheckupChangeRequestRepo = new (_dbClient);
+            SimpleRenovationRepo = new (_dbClient, RoomRepo);
         }
 
         public User? Login(string email, string password)
