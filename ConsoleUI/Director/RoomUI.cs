@@ -186,6 +186,11 @@ public class RoomUI : ConsoleUI
             throw new InvalidInputException("NOPE, CAN NOT END BEFORE IT STARTS!");
         }
 
+        if (endTime - startTime < TimeSpan.FromSeconds(60))
+        {
+            throw new InvalidInputException("NOPE, RENOVATION CAN'T LAST LESS THAN ONE MINUTE!");
+        }
+
         var renovation = new SimpleRenovation(_loadedRooms[number].Location, startTime, endTime);
         _hospital.SimpleRenovationRepo.Add(renovation);
         _hospital.SimpleRenovationRepo.Schedule(renovation);
