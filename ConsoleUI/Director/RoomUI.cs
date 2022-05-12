@@ -131,6 +131,8 @@ public class RoomUI : ConsoleUI
         var location = ReadSanitizedLine();
         if (location == "")
             throw new InvalidInputException("INVALID LOCATION!");
+        if (_hospital.RoomRepo.DoesExist(location))
+            throw new InvalidInputException("ROOM WITH THAT LOCATION ALREADY EXISTS!");
 
         System.Console.Write("ENTER ROOM NAME >> ");
         var name = ReadSanitizedLine();
@@ -143,6 +145,7 @@ public class RoomUI : ConsoleUI
         if (!success || type == RoomType.STOCK)
             throw new InvalidInputException("NOT A VALID TYPE!");
 
+        // TODO: stop from making with existing location
         var newRoom = new Room(location, name, type);
         _hospital.RoomRepo.Add(newRoom);
         System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");

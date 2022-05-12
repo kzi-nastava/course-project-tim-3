@@ -37,6 +37,11 @@ public class RoomRepository
         rooms.ReplaceOne(room => room.Location == newRoom.Location, newRoom, new ReplaceOptions {IsUpsert = true});
     }
 
+    public bool DoesExist(string location)
+    {
+        return GetCollection().Find(room => room.Location == location).Any();
+    }
+
     public void Replace(Room changingRoom)
     {
         var rooms = GetCollection();
