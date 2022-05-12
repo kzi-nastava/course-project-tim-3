@@ -29,6 +29,14 @@ public class PatientUI : ConsoleUI
         _loggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
     }
 
+    public void ShowCheckupsAnamnesis(Checkup checkup)
+    {
+        Doctor doctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)(checkup.Doctor.Id));
+        Console.WriteLine("[ "+checkup.StartTime+" "+doctor.ToString()+ " ] ");
+        Console.WriteLine(checkup.Anamnesis);
+        Console.WriteLine();
+    }
+
     public void StartAnamnesisSearch()
     {
         Console.Write("Please enter a search keyword: ");
@@ -49,6 +57,7 @@ public class PatientUI : ConsoleUI
             s - sort by specialty
             ");
         
+        //i know, this isnt pretty :(
         string sortSelection = ReadSanitizedLine().Trim();
         if (sortSelection == "d")
         {
@@ -67,8 +76,7 @@ public class PatientUI : ConsoleUI
 
         foreach (Checkup checkup in filteredCheckups)
         {
-            Console.WriteLine(ConvertAppointmentToString(checkup));
-            
+           ShowCheckupsAnamnesis(checkup);
         }
     }
 
