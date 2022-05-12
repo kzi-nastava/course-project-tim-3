@@ -57,15 +57,6 @@ public static class TestGenerator
             }
         }
         
-        foreach (string collection in dbClient.GetDatabase("hospital").ListCollectionNames().ToEnumerable())
-        {
-            File.WriteAllText("db/" + collection + ".json", 
-                dbClient.GetDatabase("hospital").GetCollection<BsonDocument>(collection).ToJson(
-                    new JsonWriterSettings {Indent = true}
-                )
-            );
-        }
-
         //generate checkups and operations
         DateTime dateTime = new DateTime(2022, 5, 11, 4, 15, 0);
         for (int i = 0; i < 100; i++)
@@ -138,6 +129,25 @@ public static class TestGenerator
                 hospital.CheckupChangeRequestRepo.AddOrUpdate(request);
             }    
         }
+
+        Dictionary<String, List<Object>> allCollections = new();
+        foreach (string collectionName in dbClient.GetDatabase("hospital").ListCollectionNames().ToEnumerable())
+        {
+            foreach (var item in dbClient.GetDatabase("hospital").GetCollection<BsonDocument>(collectionName).Find(x => true).ToEnumerable())
+            {
+                if (!allCollections.ContainsKey(collectionName))
+                {
+                    allCollections[collectionName] = new();
+                }
+                allCollections[collectionName].Add(item);
+            }
+        }
+        File.WriteAllText("db/hospital.json", 
+            allCollections.ToJson(
+                new JsonWriterSettings {Indent = true}
+            )
+        );
+
         System.Console.WriteLine("GENERATED TESTS IN DB");
     }
 }
