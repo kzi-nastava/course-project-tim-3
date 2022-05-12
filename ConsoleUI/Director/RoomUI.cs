@@ -26,6 +26,7 @@ public class RoomUI : ConsoleUI
                 [add room|add|ar|a] Add a room
                 [update room|update|ur|u] Update a room
                 [delete room|delete|dr|d] Delete a room
+                [renovate room|renovate|rr|r] Renovate a room
                 [quit|q] Quit to main menu
                 [exit|x] Exit program
             ");
@@ -45,6 +46,10 @@ public class RoomUI : ConsoleUI
                 else if (choice == "delete room" || choice == "delete" || choice == "dr" || choice == "d")
                 {
                     Delete();
+                }
+                else if (choice == "renovate room" || choice == "renovate" || choice == "rr" || choice == "r")
+                {
+                    DoSimpleRenovation();
                 }
                 else if (choice == "q" || choice == "quit")
                 {
@@ -66,6 +71,10 @@ public class RoomUI : ConsoleUI
             }
             catch (AbortException e)
             {  // TODO: make hierarchy extension same with above
+                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+            }
+            catch (FormatException e)
+            {
                 System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
             }
             ReadSanitizedLine();
@@ -154,5 +163,21 @@ public class RoomUI : ConsoleUI
         }
         _hospital.RoomRepo.Delete(_loadedRooms[number].Id);
         System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+    }
+
+    private void DoSimpleRenovation()
+    {
+        System.Console.Write("INPUT NUMBER >> ");
+        var number = ReadInt(0, _loadedRooms.Count - 1);
+        // TODO: add check if room has checkups or operations before allowing
+
+        System.Console.Write("INPUT DATE-TIME WHEN IT IS DONE >> ");
+        var rawDate = ReadSanitizedLine();
+        var whenDone = DateTime.Parse(rawDate);
+
+        var renovation = new SimpleRenovation(_loadedRooms[number].Location, whenDone);
+        _hospital.SimpleRenovationRepo.Add(renovation);
+        _hospital.SimpleRenovationRepo.Schedule(renovation);
+        System.Console.WriteLine("SUCCESSFULLY SCHEDULED SIMPLE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
     }
 }

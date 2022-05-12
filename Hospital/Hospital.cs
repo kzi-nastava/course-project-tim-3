@@ -15,6 +15,7 @@
         public EquipmentBatchRepository EquipmentRepo { get; }
         public EquipmentRelocationRepository RelocationRepo { get; }
         public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
+        public SimpleRenovationRepository SimpleRenovationRepo { get; set; }
 
         public Hospital()
         {
@@ -28,6 +29,7 @@
             EquipmentRepo = new EquipmentBatchRepository(_dbClient);
             RelocationRepo = new EquipmentRelocationRepository(_dbClient, EquipmentRepo);
             CheckupChangeRequestRepo = new CheckupChangeRequestRepository(_dbClient);
+            SimpleRenovationRepo = new SimpleRenovationRepository(_dbClient, RoomRepo);
         }
 
         public User? Login(string email, string password)
