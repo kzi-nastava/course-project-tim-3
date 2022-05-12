@@ -173,11 +173,20 @@ public class RoomUI : ConsoleUI
         var number = ReadInt(0, _loadedRooms.Count - 1);
         // TODO: add check if room has checkups or operations before allowing
 
-        System.Console.Write("INPUT DATE-TIME WHEN IT IS DONE >> ");
+        System.Console.Write("INPUT DATE-TIME WHEN IT STARTS >> ");
         var rawDate = ReadSanitizedLine();
+        var startTime = DateTime.Parse(rawDate);
+
+        System.Console.Write("INPUT DATE-TIME WHEN IT IS DONE >> ");
+        rawDate = ReadSanitizedLine();
         var endTime = DateTime.Parse(rawDate);
 
-        var renovation = new SimpleRenovation(_loadedRooms[number].Location, endTime);
+        if (endTime < startTime)
+        {
+            throw new InvalidInputException("NOPE, CAN NOT END BEFORE IT STARTS!");
+        }
+
+        var renovation = new SimpleRenovation(_loadedRooms[number].Location, startTime, endTime);
         _hospital.SimpleRenovationRepo.Add(renovation);
         _hospital.SimpleRenovationRepo.Schedule(renovation);
         System.Console.Write("SUCCESSFULLY SCHEDULED SIMPLE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");

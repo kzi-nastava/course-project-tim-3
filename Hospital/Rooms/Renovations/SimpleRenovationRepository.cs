@@ -40,7 +40,10 @@ public class SimpleRenovationRepository
 
     public void Schedule(SimpleRenovation renovation)
     {
-        _roomRepo.Deactivate(renovation.RoomLocation);
+        Scheduler.Schedule(renovation.StartTime, () =>
+        {
+            _roomRepo.Deactivate(renovation.RoomLocation);
+        });
         Scheduler.Schedule(renovation.EndTime, () => 
         {
             FinishRenovation(renovation);
