@@ -168,7 +168,7 @@ public class RoomUI : ConsoleUI
     private void DoSimpleRenovation()
     {
         System.Console.WriteLine("WARNING! Doing this will make any equipment inside inaccessible. ");
-        System.Console.Write("Move it first if you so desire");
+        System.Console.WriteLine("Move it first if you so desire");
         System.Console.Write("INPUT NUMBER >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
         // TODO: add check if room has checkups or operations before allowing
