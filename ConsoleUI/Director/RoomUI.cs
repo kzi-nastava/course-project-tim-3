@@ -77,6 +77,7 @@ public class RoomUI : ConsoleUI
             {
                 System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
             }
+            _loadedRooms = _hospital.RoomRepo.GetAll().ToList();
             ReadSanitizedLine();
         }
     }
