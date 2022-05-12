@@ -52,12 +52,6 @@ public class RoomRepository
         return rooms.Find(room => room.Location == location).FirstOrDefault();
     }
 
-    public Room? Get(ObjectId id)
-    {
-        var rooms = GetCollection();
-        return rooms.Find(room => room.Id == id).FirstOrDefault();
-    }
-
     public void Activate(string location)
     {
         var rooms = GetCollection();
@@ -70,5 +64,4 @@ public class RoomRepository
         var rooms = GetCollection();
         rooms.UpdateOne(room => room.Location == location, Builders<Room>.Update.Set("Active", false));
     }
-    // todo: update
 }
