@@ -19,13 +19,10 @@ public class RoomRepository
 
     public IQueryable<Room> GetAll()
     {
-        return GetCollection().AsQueryable();
-    }
-
-    public bool Delete(string location)
-    {
-        var rooms = GetCollection();
-        return rooms.DeleteOne(room => room.Location == location).DeletedCount == 1;
+        return 
+            from room in GetCollection().AsQueryable()
+            where room.Active
+            select room;
     }
 
     public bool Delete(ObjectId id)
@@ -44,12 +41,6 @@ public class RoomRepository
     {
         var rooms = GetCollection();
         rooms.ReplaceOne(room => room.Id == changingRoom.Id, changingRoom);
-    }
-
-    public Room? Get(string location)
-    {
-        var rooms = GetCollection();
-        return rooms.Find(room => room.Location == location).FirstOrDefault();
     }
 
     public void Activate(string location)
