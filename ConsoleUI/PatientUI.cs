@@ -86,11 +86,11 @@ public class PatientUI : ConsoleUI
         }
         else if (sortSelection == "n")
         {
-            filteredCheckups.Sort( (checkup1, checkup2) => CompareByDoctorsName(checkup1,checkup2) );
+            filteredCheckups.Sort(CompareByDoctorsName);
         }
         else if (sortSelection == "s")
         {
-            filteredCheckups.Sort( (checkup1, checkup2) => CompareByDoctorsSpecialty(checkup1,checkup2) );
+            filteredCheckups.Sort(CompareByDoctorsSpecialty);
         }
 
         foreach (Checkup checkup in filteredCheckups)

@@ -48,12 +48,12 @@ namespace Hospital
         }
        
 
-        public List<Checkup>  SearchPastCheckups(ObjectId patientId, string AnamnesisKeyword)
+        public List<Checkup>  SearchPastCheckups(ObjectId patientId, string anamnesisKeyword)
         {
             var checkups = GetCheckups();
             //might not be the best way to indent
             List<Checkup> filteredCheckups = checkups.Find(
-                                                    checkup => checkup.Anamnesis.ToLower().Contains(AnamnesisKeyword.ToLower())
+                                                    checkup => checkup.Anamnesis.ToLower().Contains(anamnesisKeyword.ToLower())
                                                     && checkup.StartTime < DateTime.Now 
                                                     && checkup.Patient.Id == patientId
                                                     ).ToList();
