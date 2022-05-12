@@ -11,9 +11,6 @@ public class SimpleRenovationRepository
     {
         _dbClient = dbClient;
         _roomRepo = roomRepo;
-        // TODO: this doesn't belong, here. put it in service classes or something
-        // TODO: this will create problems later, I can feel it. BREAKING!!
-        ScheduleAll();
     }
 
     private IMongoCollection<SimpleRenovation> GetCollection()

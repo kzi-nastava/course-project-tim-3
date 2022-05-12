@@ -11,9 +11,6 @@ public class EquipmentRelocationRepository
     {
         _dbClient = dbClient;
         _equipmentRepo = equipmentRepo;
-        // TODO: this doesn't belong, here. put it in service classes or something
-        // TODO: this will create problems later, I can feel it. BREAKING!!
-        ScheduleAll();
     }
 
     private IMongoCollection<EquipmentRelocation> GetCollection()
