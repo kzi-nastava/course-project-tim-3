@@ -48,12 +48,12 @@ namespace Hospital
         }
        
 
-        public List<Checkup>  GetPastCheckupsByAnamnesisKeyword(ObjectId patientId, string keyword)
+        public List<Checkup>  SearchPastCheckups(ObjectId patientId, string AnamnesisKeyword)
         {
             var checkups = GetCheckups();
             //might not be the best way to indent
             List<Checkup> filteredCheckups = checkups.Find(
-                                                    checkup => checkup.Anamnesis.ToLower().Contains(keyword.ToLower())
+                                                    checkup => checkup.Anamnesis.ToLower().Contains(AnamnesisKeyword.ToLower())
                                                     && checkup.StartTime < DateTime.Now 
                                                     && checkup.Patient.Id == patientId
                                                     ).ToList();
@@ -88,10 +88,10 @@ namespace Hospital
             return checkupsByDay;
         }
 
-        public List<Checkup> GetPastCheckupsByPatient(ObjectId patientId)
+        public List<Checkup> GetPastCheckupsByPatient(ObjectId id)
         {
             var checkups = GetCheckups();
-            List<Checkup> selectedCheckups = checkups.Find(checkup => checkup.StartTime < DateTime.Now && checkup.Patient.Id == patientId).ToList();
+            List<Checkup> selectedCheckups = checkups.Find(checkup => checkup.StartTime < DateTime.Now && checkup.Patient.Id == id).ToList();
             return selectedCheckups;
         }
 

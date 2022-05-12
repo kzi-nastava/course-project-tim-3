@@ -2,6 +2,13 @@ namespace Hospital;
 using System.Globalization;
 using MongoDB.Bson;
 
+public enum CheckupInTime
+    {
+        PAST,
+        FUTURE,
+        ALL,
+    }
+
 [System.Serializable]
 public class UserBlockedException : System.Exception
 {
@@ -31,10 +38,24 @@ public class PatientUI : ConsoleUI
 
     public void ShowCheckupsAnamnesis(Checkup checkup)
     {
-        Doctor doctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)(checkup.Doctor.Id));
-        Console.WriteLine("[ "+checkup.StartTime+" "+doctor.ToString()+ " ] ");
+        Doctor doctor = _hospital.DoctorRepo.GetDoctorById( (ObjectId)checkup.Doctor.Id );
+        Console.WriteLine("[ " + checkup.StartTime + " " + doctor.ToString() + " ] ");
         Console.WriteLine(checkup.Anamnesis);
         Console.WriteLine();
+    }
+
+    public int CompareByDoctorsName(Checkup checkup1, Checkup checkup2)
+    {
+        string name1 = _hospital.DoctorRepo.GetDoctorById((ObjectId)checkup1.Doctor.Id).FirstName;
+        string name2 = _hospital.DoctorRepo.GetDoctorById((ObjectId)checkup2.Doctor.Id).FirstName;
+        return String.Compare(name1, name2);
+    }
+
+    public int CompareByDoctorsSpecialty(Checkup checkup1, Checkup checkup2)
+    {
+        string specialty1 = _hospital.DoctorRepo.GetDoctorById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
+        string specialty2 = _hospital.DoctorRepo.GetDoctorById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
+        return String.Compare(specialty1, specialty2);
     }
 
     public void StartAnamnesisSearch()
@@ -42,7 +63,7 @@ public class PatientUI : ConsoleUI
         Console.Write("Please enter a search keyword: ");
         string keyword = ReadSanitizedLine().Trim();
 
-        List<Checkup> filteredCheckups = _hospital.AppointmentRepo.GetPastCheckupsByAnamnesisKeyword(_loggedInPatient.Id,keyword);
+        List<Checkup> filteredCheckups = _hospital.AppointmentRepo.SearchPastCheckups(_loggedInPatient.Id,keyword);
 
         if (filteredCheckups.Count == 0)
         {
@@ -57,21 +78,19 @@ public class PatientUI : ConsoleUI
             s - sort by specialty
             ");
         
-        //i know, this isnt pretty :(
+        //there is probably a better way to do n and s, but idk
         string sortSelection = ReadSanitizedLine().Trim();
         if (sortSelection == "d")
         {
-            filteredCheckups.Sort((checkup1, checkup2) => DateTime.Compare(checkup1.StartTime, checkup2.StartTime));
+            filteredCheckups.Sort((checkup1, checkup2)=> DateTime.Compare(checkup1.StartTime, checkup2.StartTime));
         }
         else if (sortSelection == "n")
         {
-            filteredCheckups.Sort((checkup1, checkup2) => String.Compare(_hospital.DoctorRepo.GetDoctorById((ObjectId)(checkup1.Doctor.Id)).FirstName ,
-                                                                        _hospital.DoctorRepo.GetDoctorById((ObjectId)(checkup2.Doctor.Id)).FirstName));
+            filteredCheckups.Sort( (checkup1, checkup2) => CompareByDoctorsName(checkup1,checkup2) );
         }
         else if (sortSelection == "s")
         {
-            filteredCheckups.Sort((checkup1, checkup2) => String.Compare(_hospital.DoctorRepo.GetDoctorById((ObjectId)(checkup1.Doctor.Id)).Specialty.ToString() ,
-                                                                        _hospital.DoctorRepo.GetDoctorById((ObjectId)(checkup2.Doctor.Id)).Specialty.ToString()));
+            filteredCheckups.Sort( (checkup1, checkup2) => CompareByDoctorsSpecialty(checkup1,checkup2) );
         }
 
         foreach (Checkup checkup in filteredCheckups)

@@ -2,12 +2,6 @@ using MongoDB.Driver;
 
 namespace Hospital
 {
-    public enum CheckupInTime
-    {
-        PAST,
-        FUTURE,
-        ALL,
-    }
     public class Checkup : Appointment
     {
         public string Anamnesis {get; set;}
