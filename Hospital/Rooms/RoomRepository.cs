@@ -58,5 +58,17 @@ public class RoomRepository
         return rooms.Find(room => room.Id == id).FirstOrDefault();
     }
 
+    public void Activate(string location)
+    {
+        var rooms = GetCollection();
+        rooms.UpdateOne(room => room.Location == location, Builders<Room>.Update.Set("Active", true));
+    }
+
+    public void Deactivate(string location)
+    {
+        // TODO: check if room still exists by this time... or stop delete if renovating
+        var rooms = GetCollection();
+        rooms.UpdateOne(room => room.Location == location, Builders<Room>.Update.Set("Active", false));
+    }
     // todo: update
 }

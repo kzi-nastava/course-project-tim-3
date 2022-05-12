@@ -40,6 +40,7 @@ public class SimpleRenovationRepository
 
     public void Schedule(SimpleRenovation renovation)
     {
+        _roomRepo.Deactivate(renovation.RoomLocation);
         Scheduler.Schedule(renovation.WhenDone, () => 
         {
             FinishRenovation(renovation);
@@ -50,6 +51,7 @@ public class SimpleRenovationRepository
     {
         renovation.IsDone = true;
         Replace(renovation);
+        _roomRepo.Activate(renovation.RoomLocation);
     }
 
     // TODO: move this and some others to service
