@@ -27,6 +27,7 @@ public class RoomUI : ConsoleUI
                 [update room|update|ur|u] Update a room
                 [delete room|delete|dr|d] Delete a room
                 [renovate room|renovate|rr|r] Renovate a room
+                [split renovation|split|sr|s] Renovate a room by splitting it in two
                 [quit|q] Quit to main menu
                 [exit|x] Exit program
             ");
@@ -50,6 +51,10 @@ public class RoomUI : ConsoleUI
                 else if (choice == "renovate room" || choice == "renovate" || choice == "rr" || choice == "r")
                 {
                     DoSimpleRenovation();
+                }
+                else if (choice == "s" || choice == "sr" || choice == "split" || choice == "split renovation")
+                {
+                    DoSplitRenovation();
                 }
                 else if (choice == "q" || choice == "quit")
                 {
@@ -128,6 +133,13 @@ public class RoomUI : ConsoleUI
 
     private void Add()
     {
+        var newRoom = InputRoom();
+        _hospital.RoomRepo.Add(newRoom);
+        System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+    }
+
+    private Room InputRoom()
+    {
         System.Console.Write("ENTER ROOM LOCATION >> ");
         var location = ReadSanitizedLine();
         if (location == "")
@@ -146,10 +158,7 @@ public class RoomUI : ConsoleUI
         if (!success || type == RoomType.STOCK)
             throw new InvalidInputException("NOT A VALID TYPE!");
 
-        // TODO: stop from making with existing location
-        var newRoom = new Room(location, name, type);
-        _hospital.RoomRepo.Add(newRoom);
-        System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+        return new Room(location, name, type);
     }
 
     private void Delete()
@@ -199,5 +208,43 @@ public class RoomUI : ConsoleUI
         _hospital.SimpleRenovationRepo.Add(renovation);
         _hospital.SimpleRenovationRepo.Schedule(renovation);
         System.Console.Write("SUCCESSFULLY SCHEDULED SIMPLE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
+    }
+
+    private void DoSplitRenovation()
+    {
+        System.Console.WriteLine("WARNING! Doing this will make any equipment inside inaccessible. ");
+        System.Console.WriteLine("Move it first if you so desire");
+        System.Console.Write("INPUT NUMBER TO SPLIT >> ");
+        var number = ReadInt(0, _loadedRooms.Count - 1);
+        // TODO: add check if room has checkups or operations before allowing
+
+        System.Console.Write("INPUT DATE-TIME WHEN IT STARTS >> ");
+        var rawDate = ReadSanitizedLine();
+        var startTime = DateTime.Parse(rawDate);
+
+        System.Console.Write("INPUT DATE-TIME WHEN IT IS DONE >> ");
+        rawDate = ReadSanitizedLine();
+        var endTime = DateTime.Parse(rawDate);
+
+        if (endTime < startTime)
+        {
+            throw new InvalidInputException("NOPE, CAN NOT END BEFORE IT STARTS!");
+        }
+
+        if (endTime - startTime < TimeSpan.FromSeconds(60))
+        {
+            throw new InvalidInputException("NOPE, RENOVATION CAN'T LAST LESS THAN ONE MINUTE!");
+        }
+
+        System.Console.WriteLine("INPUT THE FIRST ROOM THAT WILL SPLIT OFF:");
+        var firstRoom = InputRoom();
+
+        System.Console.WriteLine("INPUT THE SECOND ROOM THAT WILL SPLIT OFF:");
+        var secondRoom = InputRoom();
+
+        var renovation = new SplitRenovation(_loadedRooms[number].Location, startTime, endTime, firstRoom, secondRoom);
+        _hospital.SplitRenovationRepo.Add(renovation, firstRoom, secondRoom);
+        _hospital.SplitRenovationRepo.Schedule(renovation);
+        System.Console.Write("SUCCESSFULLY SCHEDULED SPLIT RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
     }
 }
