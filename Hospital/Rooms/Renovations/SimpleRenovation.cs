@@ -7,15 +7,15 @@ public class SimpleRenovation
 {
     [BsonId]
     public ObjectId Id { get; set; }
-    public DateTime WhenDone { get; set; }
+    public DateTime EndTime { get; set; }
     public string RoomLocation { get; set; }
     public bool IsDone { get; set; }
 
-    public SimpleRenovation(string roomLocation, DateTime whenDone)
+    public SimpleRenovation(string roomLocation, DateTime endTime)
     {
         Id = ObjectId.GenerateNewId();
         RoomLocation = roomLocation;
-        WhenDone = whenDone;
+        EndTime = endTime;
         IsDone = false;
     }
 }

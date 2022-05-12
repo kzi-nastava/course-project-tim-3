@@ -90,7 +90,7 @@ public class EquipmentUI : ConsoleUI
 
         System.Console.Write("INPUT DATE-TIME WHEN IT IS DONE >> ");
         var rawDate = ReadSanitizedLine();
-        var whenDone = DateTime.Parse(rawDate);
+        var endTime = DateTime.Parse(rawDate);
 
         List<Room> rooms = _hospital.RoomRepo.GetAll().ToList();
         var roomUI = new RoomUI(_hospital, rooms);  // TODO: this ugly...
@@ -99,7 +99,7 @@ public class EquipmentUI : ConsoleUI
         var number = ReadInt(0, rooms.Count - 1);
         
         var relocation = new EquipmentRelocation(equipmentBatch.Name, amount, 
-            equipmentBatch.Type, whenDone, equipmentBatch.RoomLocation, rooms[number].Location);
+            equipmentBatch.Type, endTime, equipmentBatch.RoomLocation, rooms[number].Location);
         _hospital.RelocationRepo.Add(relocation);
         _hospital.RelocationRepo.Schedule(relocation);
         System.Console.Write("RELOCATION SCHEDULED SUCCESSFULLY. INPUT ANYTHING TO CONTINUE >> ");

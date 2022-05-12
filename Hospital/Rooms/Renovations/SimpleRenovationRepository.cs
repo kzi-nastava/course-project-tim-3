@@ -41,7 +41,7 @@ public class SimpleRenovationRepository
     public void Schedule(SimpleRenovation renovation)
     {
         _roomRepo.Deactivate(renovation.RoomLocation);
-        Scheduler.Schedule(renovation.WhenDone, () => 
+        Scheduler.Schedule(renovation.EndTime, () => 
         {
             FinishRenovation(renovation);
         });

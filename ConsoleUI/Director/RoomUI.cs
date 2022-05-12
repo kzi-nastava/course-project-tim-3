@@ -175,9 +175,9 @@ public class RoomUI : ConsoleUI
 
         System.Console.Write("INPUT DATE-TIME WHEN IT IS DONE >> ");
         var rawDate = ReadSanitizedLine();
-        var whenDone = DateTime.Parse(rawDate);
+        var endTime = DateTime.Parse(rawDate);
 
-        var renovation = new SimpleRenovation(_loadedRooms[number].Location, whenDone);
+        var renovation = new SimpleRenovation(_loadedRooms[number].Location, endTime);
         _hospital.SimpleRenovationRepo.Add(renovation);
         _hospital.SimpleRenovationRepo.Schedule(renovation);
         System.Console.Write("SUCCESSFULLY SCHEDULED SIMPLE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");

@@ -12,18 +12,18 @@ public class EquipmentRelocation
     public string Name { get; set; }
     public EquipmentType Type { get; set; }
     public int Count { get; set; }
-    public DateTime WhenDone { get; set; }
+    public DateTime EndTime { get; set; }
     public bool IsDone { get; set; }
 
     public EquipmentRelocation(string name, int count, EquipmentType type, 
-        DateTime whenDone, string fromRoomLocation, string toRoomLocation)
+        DateTime endTime, string fromRoomLocation, string toRoomLocation)
     {
         Id = ObjectId.GenerateNewId();
         FromRoomLocation = fromRoomLocation;
         ToRoomLocation = toRoomLocation;
         Name = name;
         Count = count;
-        WhenDone = whenDone;
+        EndTime = endTime;
         Type = type;
         IsDone = false;
     }
