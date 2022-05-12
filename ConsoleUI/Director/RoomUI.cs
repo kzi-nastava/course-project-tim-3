@@ -178,6 +178,6 @@ public class RoomUI : ConsoleUI
         var renovation = new SimpleRenovation(_loadedRooms[number].Location, whenDone);
         _hospital.SimpleRenovationRepo.Add(renovation);
         _hospital.SimpleRenovationRepo.Schedule(renovation);
-        System.Console.WriteLine("SUCCESSFULLY SCHEDULED SIMPLE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
+        System.Console.Write("SUCCESSFULLY SCHEDULED SIMPLE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
     }
 }

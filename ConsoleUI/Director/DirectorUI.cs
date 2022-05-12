@@ -9,7 +9,6 @@ public class DirectorUI : ConsoleUI
 
     public override void Start()
     {
-        _hospital.SimpleRenovationRepo.ScheduleAll();
         while (true)
         {
             try
