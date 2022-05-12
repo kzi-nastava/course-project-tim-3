@@ -14,18 +14,18 @@ namespace Hospital
 
     [BsonIgnoreExtraElements]
     public class CheckupChangeLog {
-        public DateTime TimeAndDate {get; set;}
+        public DateTime StartTime {get; set;}
         [BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public CRUDOperation CRUDOperation {get; set;}
 
-        public CheckupChangeLog(DateTime timeAndDate, CRUDOperation crudOperation) 
+        public CheckupChangeLog(DateTime startTime, CRUDOperation crudOperation) 
         {
-            TimeAndDate = timeAndDate;
+            StartTime = startTime;
             CRUDOperation = crudOperation;
         }
         public override string ToString()
         {
-            return TimeAndDate + " " + CRUDOperation.ToString();
+            return StartTime + " " + CRUDOperation.ToString();
         }
     
     }

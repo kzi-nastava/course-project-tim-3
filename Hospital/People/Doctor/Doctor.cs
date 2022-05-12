@@ -21,7 +21,7 @@ namespace Hospital
         
         public override string ToString() 
         {
-            return Id + " " +FirstName +" "+ LastName +" "+ Specialty;
+            return FirstName +" "+ LastName +" "+ Specialty;
         }
     }
 }

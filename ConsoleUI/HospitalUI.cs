@@ -5,6 +5,7 @@ public class HospitalUI : ConsoleUI
 
     private bool TryLogin()
     {
+        System.Console.Write("Login:\n\n");
         System.Console.Write("input email >> ");
         var email = Console.ReadLine();
         System.Console.Write("input password >> ");
@@ -20,6 +21,10 @@ public class HospitalUI : ConsoleUI
 
     public override void Start()
     {
+        // TODO: this doesn't belong, here. put it in service classes or something
+        _hospital.RelocationRepo.ScheduleAll();
+        _hospital.SimpleRenovationRepo.ScheduleAll();
+
         bool exit = false;
         while (!exit)
         {

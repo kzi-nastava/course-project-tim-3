@@ -53,7 +53,7 @@ public class PatientUI : ConsoleUI
         int count = 0;
         foreach (CheckupChangeLog log in _loggedInPatient.CheckupChangeLogs)
         {
-            if (log.TimeAndDate > _now.AddDays(-30) &&  log.CRUDOperation == crudOperation)
+            if (log.StartTime > _now.AddDays(-30) &&  log.CRUDOperation == crudOperation)
             {
                 count++;
             }
@@ -114,8 +114,19 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
-        Console.WriteLine("Checkup deleted.");
+        if (selectedCheckup.StartTime < _now.AddDays(2))
+        {
+            CheckupChangeRequest newRequest = new CheckupChangeRequest(
+                selectedCheckup,
+                CRUDOperation.DELETE);
+                Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
+                _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
+        }
+        else
+        {
+            _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
+            Console.WriteLine("Checkup deleted.");
+        }
 
         LogChange(CRUDOperation.DELETE);
         if (nextWillBlock)
@@ -146,9 +157,9 @@ public class PatientUI : ConsoleUI
         Console.WriteLine ("You have selected " + ConvertAppointmentToString(selectedCheckup));
 
         Doctor currentDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)selectedCheckup.Doctor.Id);
-        DateTime existingDate = selectedCheckup.TimeAndDate;
+        DateTime existingDate = selectedCheckup.StartTime;
         
-        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(currentDoctor.Specialty);
+        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetDoctorsBySpecialty(currentDoctor.Specialty);
         alternativeDoctors.Remove(currentDoctor);
         Doctor newDoctor = currentDoctor;
         DateTime newDate = existingDate;
@@ -213,17 +224,30 @@ public class PatientUI : ConsoleUI
 
         //create checkup
         selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
-        selectedCheckup.TimeAndDate = newDate;
+        DateTime oldDate = selectedCheckup.StartTime;
+        selectedCheckup.StartTime = newDate;
         
-        if (_hospital.AppointmentRepo.IsDoctorBusy((DateTime)newDate,newDoctor))
+        
+        if (!_hospital.AppointmentRepo.IsDoctorAvailable((DateTime)newDate,newDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
         }
-
-        _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
-        Console.WriteLine("Checkup updated.");
-
+        
+        if (oldDate < _now.AddDays(2))
+        {
+            CheckupChangeRequest newRequest = new CheckupChangeRequest(
+                selectedCheckup,
+                CRUDOperation.UPDATE);
+                Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
+                _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
+        }
+        else
+        {
+            _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
+            Console.WriteLine("Checkup updated.");
+        }
+        
         LogChange(CRUDOperation.UPDATE);
         if (nextWillBlock)
         {
@@ -238,9 +262,9 @@ public class PatientUI : ConsoleUI
     {
         string output = "";
 
-        output += a.TimeAndDate +" ";
+        output += a.StartTime +" ";
         Doctor doctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)a.Doctor.Id);
-        output += doctor.FirstName+" "+doctor.LastName;
+        output += doctor.ToString();
 
         return output;
     }
@@ -366,32 +390,10 @@ public class PatientUI : ConsoleUI
                 throw new InvalidInputException("Speciality not recognized.");
         }
     }
-    public DateTime SelectDateAndTime ()
-    {   
-        DateTime result;
 
-        // date selection
-        Console.Write("Please enter a date in dd-MM-yyyy format: ");
-        string inputDate = ReadSanitizedLine().Trim();
-
-        bool success = DateTime.TryParseExact(inputDate, 
-                       "dd-MM-yyyy", 
-                       CultureInfo.InvariantCulture, 
-                       DateTimeStyles.None, 
-                       out result);
-
-        if (!success) 
-        {
-            throw new InvalidInputException("Wrong date entered.");  
-        }
-
-        if (DateTime.Compare(result.Date, _now.Date) == -1 )
-        {
-            throw new InvalidInputException("The date entered is in past.");
-        }
-        
-        // time selection
-
+    //takes a datetime with date part already set, and sets its time part
+    public DateTime SelectTime(DateTime inputDate)
+    {
         int highestCheckupIndex = 0;
         DateTime iterationTime = _openingTime;
         
@@ -402,14 +404,43 @@ public class PatientUI : ConsoleUI
             highestCheckupIndex += 1;
         }
 
-        //while loop will add an extra "1" at the end of the loop, we will remove that
-        highestCheckupIndex -= 1;
-
         System.Console.Write("Please enter a number from the list: ");
-        int selectedIndex = ReadInt(0, highestCheckupIndex, "Number out of bounds!", "Number not recognized!");
+        int selectedIndex = ReadInt(0, highestCheckupIndex-1, "Number out of bounds!", "Number not recognized!");
 
-        result = result.AddHours(_openingTime.Hour);
-        result = result.Add(selectedIndex*_checkupDuration);
+        inputDate = inputDate.AddHours(_openingTime.Hour);
+        inputDate = inputDate.Add(selectedIndex*_checkupDuration);
+
+        return inputDate;
+    }
+
+    public DateTime SelectDate()
+    {
+        string inputDate = ReadSanitizedLine().Trim();
+
+        bool success = DateTime.TryParseExact(inputDate, 
+                       "dd-MM-yyyy", 
+                       CultureInfo.InvariantCulture, 
+                       DateTimeStyles.None, 
+                       out DateTime result);
+
+        if (!success) 
+        {
+            throw new InvalidInputException("Wrong date entered.");  
+        }
+
+        if (DateTime.Compare(result.Date, _now.Date) == -1 )
+        {
+            throw new InvalidInputException("The date entered is in past.");
+        }
+        return result;
+    }
+
+    public DateTime SelectDateAndTime ()
+    {   
+        Console.Write("Please enter a date in dd-MM-yyyy format: ");
+        DateTime result = SelectDate();
+
+        result = SelectTime(result);
        
         //TODO: The listed times shouldnt be the ones that expired
 
@@ -421,8 +452,302 @@ public class PatientUI : ConsoleUI
         return result;
     }
 
+    public Doctor? SelectDoctor(Specialty selectedSpecialty)
+    {
+        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorsBySpecialty(selectedSpecialty);
+        if (suitableDoctors.Count == 0)
+        {
+            Console.WriteLine("No doctors found in selected specialty.");
+            ReadSanitizedLine();
+            return null;
+        }
+
+        for (int i=0; i<suitableDoctors.Count; i++)
+        {
+            Console.WriteLine(i+" - "+suitableDoctors[i].ToString());
+        }
+
+        int selectedIndex = -1;
+        try
+        {
+            System.Console.Write("Please enter a number from the list: ");
+            selectedIndex = ReadInt(0, suitableDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
+            return null;
+        }
+
+        return suitableDoctors[selectedIndex];
+    }
+
+    public List<Checkup> GetEarliestFreeCheckups(DateTime intervalStart, DateTime intervalEnd, Specialty speciality, int numberOfCheckups)
+    {
+        List<Checkup> checkups = new List<Checkup>();
+        DateTime iterationDate = RoundUp(DateTime.Now,TimeSpan.FromMinutes(15));
+
+        while ( checkups.Count < numberOfCheckups)
+        {
+            if (iterationDate.TimeOfDay >=_closingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, _openingTime.Hour, _openingTime.Minute, _openingTime.Second);
+                iterationDate = iterationDate.AddDays(1);
+                continue;
+            }
+
+            if (iterationDate.TimeOfDay < _openingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, _openingTime.Hour, _openingTime.Minute, _openingTime.Second);
+                continue;
+            }
+
+            if (!(intervalStart.TimeOfDay<=iterationDate.TimeOfDay && iterationDate.TimeOfDay<intervalEnd.TimeOfDay))
+            {
+                iterationDate = iterationDate.AddMinutes(15);
+                continue;
+            }
+
+            foreach (Doctor doctor in _hospital.DoctorRepo.GetDoctorsBySpecialty(speciality))
+            {
+                if (!_hospital.AppointmentRepo.IsDoctorAvailable(iterationDate,doctor))
+                {
+                    continue;
+                }
+                else
+                {
+                    if (checkups.Count >= numberOfCheckups)
+                    {
+                        break;
+                    }
+
+                    Checkup newCheckup = new Checkup(
+                    iterationDate,
+                    new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
+                    new MongoDB.Driver.MongoDBRef("doctors", doctor.Id),
+                    "no anamnesis");
+                    checkups.Add(newCheckup);
+                }
+            }
+            iterationDate = iterationDate.AddMinutes(15);
+        }
+        return checkups;
+    }
+
+    public List<Checkup> GetFirstFewFreeCheckups(Doctor doctor, int numberOfCheckups)
+    {
+        List<Checkup> checkups = new List<Checkup>();
+        DateTime iterationDate = RoundUp(DateTime.Now,TimeSpan.FromMinutes(15));
+
+        while ( checkups.Count < numberOfCheckups)
+        {
+            if (iterationDate.TimeOfDay >=_closingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, _openingTime.Hour, _openingTime.Minute, _openingTime.Second);
+                iterationDate = iterationDate.AddDays(1);
+                continue;
+            }
+
+            if (iterationDate.TimeOfDay < _openingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, _openingTime.Hour, _openingTime.Minute, _openingTime.Second);
+                continue;
+            }
+            
+            if (!_hospital.AppointmentRepo.IsDoctorAvailable(iterationDate,doctor))
+            {
+                iterationDate = iterationDate.AddMinutes(15);
+                continue;
+            }
+            else
+            {
+                Checkup newCheckup = new Checkup(
+                iterationDate,
+                new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
+                new MongoDB.Driver.MongoDBRef("doctors", doctor.Id),
+                "no anamnesis");
+                checkups.Add(newCheckup);
+                iterationDate = iterationDate.AddMinutes(15);
+            }
+        }
+        return checkups;
+    }
+
+    public DateTime RoundUp(DateTime dt, TimeSpan d)
+    {
+        return new DateTime((dt.Ticks + d.Ticks - 1) / d.Ticks * d.Ticks, dt.Kind);
+    }
+
+    public List<Checkup> FindSuitableCheckups(Doctor doctor, DateTime intervalStart, DateTime intervalEnd, DateTime deadline, bool isIntervalPriority)
+    {
+        List<Checkup> checkups = new List<Checkup>();
+        DateTime iterationDate = RoundUp(DateTime.Now,TimeSpan.FromMinutes(15));
+        while ( iterationDate < deadline)
+        {
+            if (iterationDate.TimeOfDay >=_closingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, _openingTime.Hour, _openingTime.Minute, _openingTime.Second);
+                iterationDate = iterationDate.AddDays(1);
+                continue;
+            }
+
+            if (iterationDate.TimeOfDay < _openingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, _openingTime.Hour, _openingTime.Minute, _openingTime.Second);
+                continue;
+            }
+
+            if (!(intervalStart.TimeOfDay<=iterationDate.TimeOfDay && iterationDate.TimeOfDay<intervalEnd.TimeOfDay))
+            {
+                iterationDate = iterationDate.AddMinutes(15);
+                continue;
+            }
+            
+            if (!_hospital.AppointmentRepo.IsDoctorAvailable(iterationDate,doctor))
+            {
+                iterationDate = iterationDate.AddMinutes(15);
+                continue;
+            }
+            else
+            {
+                Checkup newCheckup = new Checkup(
+                    iterationDate,
+                    new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
+                    new MongoDB.Driver.MongoDBRef("doctors", doctor.Id),
+                    "no anamnesis");
+                checkups.Add(newCheckup);
+                return checkups;
+            }
+        }
+        //if code gets to this point, it means it hasnt found a good match
+        if (isIntervalPriority)
+        {
+            return GetEarliestFreeCheckups(intervalStart,intervalEnd,doctor.Specialty,3);
+        }
+        return GetFirstFewFreeCheckups(doctor,3);
+    }
+
+    public List<Checkup> FindCheckupsPriorityInterval(Doctor doctor, DateTime intervalStart, DateTime intervalEnd, DateTime deadline)
+    {
+        List<Checkup> checkups = new List<Checkup>();
+        return checkups;
+    }
+
+    public void CreateCheckupAdvanced()
+    {
+        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.CREATE);
+        if (nextWillBlock)
+        {
+            Console.WriteLine("Warning! Any additional checkup creation will result in account block!");
+        }
+
+        Specialty selectedSpecialty;
+        try
+        {
+            selectedSpecialty = SelectSpecialty();
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
+            return;
+        }
+
+        Doctor? selectedSuitableDoctor = SelectDoctor(selectedSpecialty);
+        if (selectedSuitableDoctor == null)
+        {
+            return;
+        }
+
+        //TODO: this doesnt have to be in 15 minute slots
+        System.Console.WriteLine("Please select starting time");
+        DateTime intervalStart = SelectTime(new DateTime());
+        System.Console.WriteLine("Please select starting time");
+        DateTime intervalEnd = SelectTime(new DateTime());
+        Console.Write("Please enter a date in dd-MM-yyyy format: ");
+        DateTime deadline = SelectDate();
+
+        if (intervalStart >= intervalEnd)
+        {
+            System.Console.WriteLine("Wrong start and end time. Aborting...");
+            return;
+        }
+
+        List<Checkup> recommendedCheckups;
+
+        Console.Write("Is time interval a priority? Enter y if yes, anything else for doctor: ");
+        string choice = ReadSanitizedLine().Trim();
+        bool isIntervalPriority = false;
+
+        if (choice == "y")
+        {
+            isIntervalPriority = true;
+        }
+
+        recommendedCheckups = FindSuitableCheckups(selectedSuitableDoctor,intervalStart,intervalEnd,deadline,isIntervalPriority);
+        
+        if (recommendedCheckups.Count == 1)
+        {
+            Checkup result = recommendedCheckups[0];
+            Console.WriteLine("Recommendation:");
+            Doctor referencedDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)result.Doctor.Id);
+            Console.WriteLine(referencedDoctor.ToString()+" "+result.StartTime);
+
+            Console.Write("Create checkup? Enter y for yes: ");
+            if (ReadSanitizedLine().Trim() == "y")
+            {
+                _hospital.AppointmentRepo.AddOrUpdateCheckup(result);
+                Console.WriteLine("Checkup created.");
+                
+                LogChange(CRUDOperation.CREATE);
+                if (nextWillBlock)
+                {
+                    _user.BlockStatus = Block.BY_SYSTEM;
+                    _hospital.UserRepo.AddOrUpdateUser(_user);
+                    throw new UserBlockedException("Creating too many checkups.");
+                }
+
+                return;
+            }
+            Console.WriteLine("Checkup creation canceled.");
+
+        }
+        else
+        {
+            Console.WriteLine("Recommendations:");
+            for (int i=0; i<recommendedCheckups.Count; i++)
+            {
+                Checkup result = recommendedCheckups[i];
+                Doctor referencedDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)result.Doctor.Id);
+                Console.WriteLine(i+" - "+referencedDoctor.ToString()+" "+result.StartTime);
+            }
+
+            System.Console.Write("Please enter a number from the list: ");
+            int selectedIndex;
+            try
+            {
+                selectedIndex = ReadInt(0, 2, "Number out of bounds!", "Number not recognized!");
+            }
+            catch (InvalidInputException e)
+            {
+                System.Console.Write(e.Message + " Aborting...");
+                return;
+            }
+            _hospital.AppointmentRepo.AddOrUpdateCheckup(recommendedCheckups[selectedIndex]);
+            Console.WriteLine("Checkup created.");
+                
+            LogChange(CRUDOperation.CREATE);
+            if (nextWillBlock)
+            {
+                _user.BlockStatus = Block.BY_SYSTEM;
+                _hospital.UserRepo.AddOrUpdateUser(_user);
+                throw new UserBlockedException("Creating too many checkups.");
+            }
+        }
+    }
+
     public void CreateCheckup()
     {
+
         //TODO: change this
         bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.CREATE);
         if (nextWillBlock)
@@ -454,35 +779,13 @@ public class PatientUI : ConsoleUI
             return;
         }
 
-        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorBySpecialty(selectedSpecialty);
-
-        if (suitableDoctors.Count == 0)
+        Doctor? selectedDoctor = SelectDoctor(selectedSpecialty);
+        if (selectedDoctor == null)
         {
-            Console.WriteLine("No doctors found in selected specialty.");
-            ReadSanitizedLine();
             return;
         }
 
-        for (int i=0; i<suitableDoctors.Count; i++)
-        {
-            Console.WriteLine(i+" - "+suitableDoctors[i].ToString());
-        }
-
-        int selectedIndex = -1;
-        try
-        {
-            System.Console.Write("Please enter a number from the list: ");
-            selectedIndex = ReadInt(0, suitableDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
-        }
-        catch (InvalidInputException e)
-        {
-            System.Console.Write(e.Message + " Aborting...");
-            return;
-        }
-
-        Doctor selectedSuitableDoctor = suitableDoctors[selectedIndex];
-
-        if (_hospital.AppointmentRepo.IsDoctorBusy(selectedDate,selectedSuitableDoctor))
+        if (!_hospital.AppointmentRepo.IsDoctorAvailable(selectedDate,selectedDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
@@ -493,10 +796,10 @@ public class PatientUI : ConsoleUI
         Checkup newCheckup = new Checkup(
             selectedDate,
             new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
-            new MongoDB.Driver.MongoDBRef("doctors", selectedSuitableDoctor.Id),
+            new MongoDB.Driver.MongoDBRef("doctors", selectedDoctor.Id),
             "no anamnesis");
         
-        this._hospital.AppointmentRepo.AddOrUpdateCheckup(newCheckup);
+        _hospital.AppointmentRepo.AddOrUpdateCheckup(newCheckup);
         Console.WriteLine("Checkup created");
         
         LogChange(CRUDOperation.CREATE);
@@ -514,6 +817,7 @@ public class PatientUI : ConsoleUI
             System.Console.WriteLine(@"
             Commands:
             cc - create checkup
+            ccr - create checkup (with recommendations)
             va - view and manage appointments
             return - go to the previous menu
             exit - quit the program
@@ -527,6 +831,10 @@ public class PatientUI : ConsoleUI
                 if (selectedOption == "cc")
                 {
                     CreateCheckup();
+                }
+                else if (selectedOption == "ccr")
+                {
+                    CreateCheckupAdvanced();
                 }
                 else if (selectedOption == "va")
                 {

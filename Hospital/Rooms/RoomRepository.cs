@@ -1,5 +1,4 @@
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 using MongoDB.Bson;
 
 namespace Hospital;
@@ -13,51 +12,47 @@ public class RoomRepository
         this._dbClient = _dbClient;
     }
 
-    public IMongoCollection<Room> GetRooms()
+    private IMongoCollection<Room> GetCollection()
     {
         return _dbClient.GetDatabase("hospital").GetCollection<Room>("rooms");
     }
 
-    public IMongoQueryable<Room> GetQueryableRooms()
+    public IQueryable<Room> GetAll()
     {
-        return GetRooms().AsQueryable();
+        return 
+            from room in GetCollection().AsQueryable()
+            where room.Active
+            select room;
     }
 
-    public bool DeleteRoom(string location)
+    public bool Delete(ObjectId id)
     {
-        var rooms = GetRooms();
-        return rooms.DeleteOne(room => room.Location == location).DeletedCount == 1;
-    }
-
-    public bool DeleteRoom(ObjectId id)
-    {
-        var rooms = GetRooms();
+        var rooms = GetCollection();
         return rooms.DeleteOne(room => room.Id == id).DeletedCount == 1;
     }
 
-    public void AddRoom(Room newRoom)
+    public void Add(Room newRoom)
     {
-        var rooms = GetRooms();
+        var rooms = GetCollection();
         rooms.ReplaceOne(room => room.Location == newRoom.Location, newRoom, new ReplaceOptions {IsUpsert = true});
     }
 
-    public void UpdateRoom(Room changingRoom)
+    public void Replace(Room changingRoom)
     {
-        var rooms = GetRooms();
-        rooms.ReplaceOne(room => room.Id == changingRoom.Id, changingRoom, new ReplaceOptions {IsUpsert = true});
+        var rooms = GetCollection();
+        rooms.ReplaceOne(room => room.Id == changingRoom.Id, changingRoom);
     }
 
-    public Room? GetRoom(string location)
+    public void Activate(string location)
     {
-        var rooms = GetRooms();
-        return rooms.Find(room => room.Location == location).FirstOrDefault();
+        var rooms = GetCollection();
+        rooms.UpdateOne(room => room.Location == location, Builders<Room>.Update.Set("Active", true));
     }
 
-    public Room? GetRoom(ObjectId id)
+    public void Deactivate(string location)
     {
-        var rooms = GetRooms();
-        return rooms.Find(room => room.Id == id).FirstOrDefault();
+        // TODO: check if room still exists by this time... or stop delete if renovating
+        var rooms = GetCollection();
+        rooms.UpdateOne(room => room.Location == location, Builders<Room>.Update.Set("Active", false));
     }
-
-    // todo: update
 }
