@@ -186,36 +186,48 @@ public class DoctorUI : ConsoleUI
 
     public void StartCheckup(Checkup checkup)
     {
+        bool exit = false;
         Patient patient =  ShowPatientInfo(checkup);
         Console.WriteLine("\n\nCheckup started.\n");
-        Console.Write("\nCheckup options:\n\n1. Add Anamnesis\n2. Edit Medical Record\n3. Write referral\n4. Back\n\n");
-        Console.Write(">>");
-        var input = Console.ReadLine();
-        switch (input)
+        while (!exit)
         {
-        case "1":
+            Console.Write("\nCheckup options:\n\n1. Add Anamnesis\n2. Edit Medical Record\n3. Write referral\n4. Back\n\n");
+            Console.Write(">>");
+            var input = Console.ReadLine();
+            switch (input)
             {
-                Console.Write("\nEnter Anamnesis >> ");
-                String anamnesis = Console.ReadLine();
-                patient.MedicalRecord.AnamnesisHistory.Add(anamnesis);
-                _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                break;
-            }
-            case "2":
-            {
-                EditMedicalRecord(patient);
-                break;
-            }
-            case "3":
-            {
-                WriteReferral(patient);
-                break;
-            }
-            case "4":
-            {
-                break;
-            }
+            case "1":
+                {
+                    Console.Write("\nEnter Anamnesis >> ");
+                    String anamnesis = Console.ReadLine();
+                    patient.MedicalRecord.AnamnesisHistory.Add(anamnesis);
+                    _hospital.PatientRepo.AddOrUpdatePatient(patient);
+                    Console.Write("\nDo you want to add a prescription? [y/n] >> ");
+                    String? choice = Console.ReadLine().ToLower();
+                    if (choice == "y")
+                    {
+                        CreatePrescription(patient);
+                    }
+                    break;
+                }
+                case "2":
+                {
+                    EditMedicalRecord(patient);
+                    break;
+                }
+                case "3":
+                {
+                    WriteReferral(patient);
+                    break;
+                }
+                case "4":
+                {
+                    exit = true;
+                    break;
+                }
+            } 
         }
+        
     }
 
     public void EditMedicalRecord(Patient patient)
@@ -294,7 +306,7 @@ public class DoctorUI : ConsoleUI
             }
         }
     }
-        public void WriteReferral(Patient patient)
+    public void WriteReferral(Patient patient)
     {
         Console.Write("\nRefferal by specialty or doctor [s/d] >> ");
         string? option = Console.ReadLine();
@@ -379,4 +391,67 @@ public class DoctorUI : ConsoleUI
             }
         }
     }
+    public void CreatePrescription(Patient patient)
+    {
+        bool exit = false;
+        while (!exit)
+        {
+            Console.Write("\nEnter medicine name >> ");
+            string? name = Console.ReadLine();
+            Medicine medicine = _hospital.MedicineRepo.GetByName(name);
+            if (patient.IsAllergicToMedicine(medicine)) 
+            {
+                Console.WriteLine("Patient is allergic to given medicine. Cancelling prescription.");
+                exit = true;
+            }
+            Console.Write("\nEnter amount of times the medicine should be taken a day >> ");
+            int amount = Int32.Parse(Console.ReadLine());
+            Console.Write("\nEnter amount of hours inbetween medicine intake >> ");
+            int hours = Int32.Parse(Console.ReadLine());
+            Console.Write("\nWhen to take in medicine:\n1. Before Meal\n2. After Meal\n3. With Meal\n4. Anytime\n>> ");
+            string? bestTaken = Console.ReadLine();
+            switch (bestTaken)
+            {
+                case "1":
+                {
+                    Prescription prescription = new Prescription(medicine, amount, MedicineBestTaken.BEFORE_MEAL, hours);
+                    patient.MedicalRecord.Prescriptions.Add(prescription);
+                    break;
+                }
+                case "2":
+                {
+                    Prescription prescription = new Prescription(medicine, amount, MedicineBestTaken.AFTER_MEAL, hours);
+                    patient.MedicalRecord.Prescriptions.Add(prescription);
+                    break;
+                }
+                case "3":
+                {
+                    Prescription prescription = new Prescription(medicine, amount, MedicineBestTaken.WITH_MEAL, hours);
+                    patient.MedicalRecord.Prescriptions.Add(prescription);
+                    break;
+                }
+                case "4":
+                {
+                    Prescription prescription = new Prescription(medicine, amount, MedicineBestTaken.ANY_TIME, hours);
+                    patient.MedicalRecord.Prescriptions.Add(prescription);
+                    break;
+                }
+            }
+            _hospital.PatientRepo.AddOrUpdatePatient(patient);
+            string? choice = "n";
+            while (choice != "y")
+            {
+                Console.Write("\nDo you want to prescribe another medicine [y/n] >>");
+                choice = Console.ReadLine();
+                if (choice == "n")
+                {
+                    break;
+                }
+            }
+            if (choice == "n") break;
+        }
+    }
+
+    
+
 }

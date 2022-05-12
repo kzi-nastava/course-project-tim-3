@@ -11,15 +11,21 @@ namespace Hospital
             this._dbClient = _dbClient;
         }
 
-        public IMongoCollection<Checkup> GetAll()
+        public IMongoCollection<Medicine> GetAll()
         {
-            return _dbClient.GetDatabase("hospital").GetCollection<Checkup>("medicines");
+            return _dbClient.GetDatabase("hospital").GetCollection<Medicine>("medicines");
         }
 
-        public void AddOrUpdateCheckup(Checkup newCheckup)
+        public void AddOrUpdate(Medicine newMedicine)
         {
-            var checkups = GetAll();
-            checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
+            var medicines = GetAll();
+            medicines.ReplaceOne(medicine => medicine.Id == newMedicine.Id, newMedicine, new ReplaceOptions {IsUpsert = true});
+        }
+
+        public Medicine GetByName(string name)
+        {
+            var medicines = GetAll();
+            return medicines.Find(medicine => medicine.Name == name).FirstOrDefault();
         }
     }
 }
