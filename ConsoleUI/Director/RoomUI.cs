@@ -211,7 +211,12 @@ public class RoomUI : ConsoleUI
 
         if (endTime - startTime < TimeSpan.FromSeconds(60))
         {
-            throw new InvalidInputException("NOPE, RENOVATION CAN'T LAST LESS THAN ONE MINUTE!");
+            throw new InvalidInputException("NOPE, CAN'T LAST LESS THAN ONE MINUTE!");
+        }
+
+        if (startTime < DateTime.Now)
+        {
+            throw new InvalidInputException("NOPE, CAN'T SCHEDULE IN THE PAST!");
         }
 
         return (startTime, endTime);
