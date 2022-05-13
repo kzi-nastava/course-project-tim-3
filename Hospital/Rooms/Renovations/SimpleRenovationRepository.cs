@@ -74,7 +74,10 @@ public class SimpleRenovationRepository
     {
         foreach (var renovation in GetAll())
         {
-            Schedule(renovation);
+            if (!renovation.IsDone)
+            {
+                Schedule(renovation);
+            }
         }
     }
 }

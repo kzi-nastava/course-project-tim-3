@@ -79,7 +79,10 @@ public class SplitRenovationRepository
     {
         foreach (var renovation in GetAll())
         {
-            Schedule(renovation);
+            if (!renovation.IsDone)
+            {
+                Schedule(renovation);
+            }
         }
     }
 }

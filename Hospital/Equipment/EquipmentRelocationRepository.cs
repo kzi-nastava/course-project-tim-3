@@ -68,7 +68,10 @@ public class EquipmentRelocationRepository
     {
         foreach (var relocation in GetAll())
         {
-            Schedule(relocation);
+            if (!relocation.IsDone)
+            {
+                Schedule(relocation);
+            }
         }
     }
 }
