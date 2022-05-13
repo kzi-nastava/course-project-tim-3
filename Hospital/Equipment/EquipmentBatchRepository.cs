@@ -22,12 +22,12 @@ public class EquipmentBatchRepository
         return GetCollection().AsQueryable();
     }
 
-    public IQueryable<EquipmentBatch> GetAllInRoom(Room room)
+    public IQueryable<EquipmentBatch> GetAllIn(string roomLocation)
     {
         var batches = GetAll();
         var matches = 
             from batch in batches
-            where batch.RoomLocation == room.Location
+            where batch.RoomLocation == roomLocation
             select batch;
         return matches;
     }
@@ -64,12 +64,12 @@ public class EquipmentBatchRepository
         }
     }
 
-    public void DeleteInRoom(Room room)
+    public void DeleteAllInRoom(Room room)
     {
         GetCollection().DeleteMany(batch => batch.RoomLocation == room.Location);
     }
 
-    private void Replace(EquipmentBatch newBatch) // EXPECTS EXISTING EQUIPMENTBATCH!
+    public void Replace(EquipmentBatch newBatch) // EXPECTS EXISTING EQUIPMENTBATCH!
     {
         GetCollection().ReplaceOne(batch => batch.Id == newBatch.Id, newBatch);
     }

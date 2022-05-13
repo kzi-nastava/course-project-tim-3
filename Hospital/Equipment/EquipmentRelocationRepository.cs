@@ -53,12 +53,25 @@ public class EquipmentRelocationRepository
         Replace(relocation);
     }
 
+    public void MoveAll(string fromLocation, string toLocation)
+    {
+        foreach (var batch in _equipmentRepo.GetAllIn(fromLocation))
+        {
+            _equipmentRepo.Remove(batch);
+            batch.RoomLocation = toLocation;
+            _equipmentRepo.Add(batch);
+        }
+    }
+
     // TODO: move this and some others to service
     public void ScheduleAll()
     {
         foreach (var relocation in GetAll())
         {
-            Schedule(relocation);
+            if (!relocation.IsDone)
+            {
+                Schedule(relocation);
+            }
         }
     }
 }
