@@ -28,6 +28,7 @@ public class RoomUI : ConsoleUI
                 [delete room|delete|dr|d] Delete a room
                 [renovate room|renovate|rr|r] Renovate a room
                 [split renovation|split|sr|s] Renovate a room by splitting it in two
+                [merge renovation|merge|mr|m] Renovate a rooms by merging two of them
                 [quit|q] Quit to main menu
                 [exit|x] Exit program
             ");
@@ -55,6 +56,10 @@ public class RoomUI : ConsoleUI
                 else if (choice == "s" || choice == "sr" || choice == "split" || choice == "split renovation")
                 {
                     DoSplitRenovation();
+                }
+                else if (choice == "m" || choice == "mr" || choice == "merge" || choice == "merge renovation")
+                {
+                    DoMergeRenovation();
                 }
                 else if (choice == "q" || choice == "quit")
                 {
