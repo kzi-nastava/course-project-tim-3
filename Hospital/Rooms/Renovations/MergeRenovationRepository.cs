@@ -17,7 +17,7 @@ public class MergeRenovationRepository
 
     private IMongoCollection<MergeRenovation> GetCollection()
     {
-        return _dbClient.GetDatabase("hospital").GetCollection<MergeRenovation>("split_renovations");
+        return _dbClient.GetDatabase("hospital").GetCollection<MergeRenovation>("merge_renovations");
     }
 
     public IQueryable<MergeRenovation> GetAll()
