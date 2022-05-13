@@ -11,7 +11,7 @@ public class DoctorUI : ConsoleUI
         bool quit = false;
         while (!quit)
         {
-            Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. quit");
+            Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Create checkup\n4. Quit");
             Console.Write("\n>>");
             var option = Console.ReadLine().Trim();
             switch (option)
@@ -27,6 +27,31 @@ public class DoctorUI : ConsoleUI
                     break;
                 }
                 case "3":
+                {
+                    Console.WriteLine("Creating new Checkup appointment...");
+                    Console.Write("\nEnter date >>");
+                    string? date = Console.ReadLine();
+                    Console.Write("\nEnter time >>");
+                    string? time = Console.ReadLine();
+                    DateTime dateTime = DateTime.Parse(date + " " + time);
+                    Console.Write("\nEnter patient name >>");
+                    string? name = Console.ReadLine();
+                    Console.Write("\nEnter patient surname >>");
+                    string? surname = Console.ReadLine();
+                    Patient patient = _hospital.PatientRepo.GetPatientByFullName(name,surname);
+                    Doctor doctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)_user.Person.Id);
+                    if (_hospital.AppointmentRepo.IsDoctorAvailable(dateTime, doctor))
+                    {
+                        Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
+                        _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Doctor is not available at that time");
+                    }
+                    break;
+                }
+                case "4":
                 {
                     quit = true;
                     break;
@@ -53,7 +78,7 @@ public class DoctorUI : ConsoleUI
         bool quit = false;
         while (!quit)
         {
-            Console.Write("\nOptions:\n\n1. See patient info for checkup\n2. Start checkup\n3. Update checkup\n4. Delete checkup\n5. Add checkup\n6. Back\n");
+            Console.Write("\nOptions:\n\n1. See patient info for checkup\n2. Start checkup\n3. Update checkup\n4. Delete checkup\n5. Back\n");
             Console.Write(">>");
             var input = Console.ReadLine().Trim();
             switch (input)
@@ -137,23 +162,6 @@ public class DoctorUI : ConsoleUI
                     break;
                 }
                 case "5":
-                {
-                    Console.WriteLine("Creating new Checkup appointment...");
-                    Console.Write("\nEnter date >>");
-                    string? date = Console.ReadLine();
-                    Console.Write("\nEnter time >>");
-                    string? time = Console.ReadLine();
-                    DateTime dateTime = DateTime.Parse(date + " " + time);
-                    Console.Write("\nEnter patient name >>");
-                    string? name = Console.ReadLine();
-                    Console.Write("\nEnter patient surname >>");
-                    string? surname = Console.ReadLine();
-                    Patient patient = _hospital.PatientRepo.GetPatientByFullName(name,surname);
-                    Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
-                    _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
-                    break;
-                }
-                case "6":
                 {
                     quit = true;
                     break;
