@@ -93,6 +93,7 @@ public class EquipmentUI : ConsoleUI
         var endTime = DateTime.Parse(rawDate);
 
         List<Room> rooms = _hospital.RoomRepo.GetAll().ToList();
+        rooms.RemoveAll(room => room.Location == equipmentBatch.RoomLocation);
         var roomUI = new RoomUI(_hospital, rooms);  // TODO: this ugly...
         roomUI.DisplayRooms();
         System.Console.Write("INPUT ROOM NUMBER >> ");
