@@ -31,7 +31,7 @@
             RelocationRepo = new (_dbClient, EquipmentRepo);
             CheckupChangeRequestRepo = new (_dbClient);
             SimpleRenovationRepo = new (_dbClient, RoomRepo);
-            SplitRenovationRepo = new (_dbClient, RoomRepo);
+            SplitRenovationRepo = new (_dbClient, RoomRepo, RelocationRepo);
         }
 
         public User? Login(string email, string password)

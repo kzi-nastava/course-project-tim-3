@@ -165,14 +165,14 @@ public class RoomUI : ConsoleUI
     {
         System.Console.Write("INPUT NUMBER >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
-        if (_hospital.EquipmentRepo.GetAllInRoom(_loadedRooms[number]).Any())
+        if (_hospital.EquipmentRepo.GetAllIn(_loadedRooms[number].Location).Any())
         {
             // TODO: make into a moving equipment submenu
             System.Console.Write("THIS ROOM HAS EQUIPMENT IN IT. THIS OPERATION WILL DELETE IT ALL. ARE YOU SURE? [y/N] >> ");
             var answer = ReadSanitizedLine();
             if (answer != "y")
                 throw new AbortException("NOT A YES. ABORTING.");
-            _hospital.EquipmentRepo.DeleteInRoom(_loadedRooms[number]);
+            _hospital.EquipmentRepo.DeleteAllInRoom(_loadedRooms[number]);
         }
         _hospital.RoomRepo.Delete(_loadedRooms[number].Location);
         System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
@@ -180,29 +180,13 @@ public class RoomUI : ConsoleUI
 
     private void DoSimpleRenovation()
     {
-        System.Console.WriteLine("WARNING! Doing this will make any equipment inside inaccessible. ");
+        System.Console.WriteLine("WARNING! Doing this will make any equipment inside inaccessible during renovation. ");
         System.Console.WriteLine("Move it first if you so desire");
         System.Console.Write("INPUT NUMBER >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
         // TODO: add check if room has checkups or operations before allowing
 
-        System.Console.Write("INPUT DATE-TIME WHEN IT STARTS >> ");
-        var rawDate = ReadSanitizedLine();
-        var startTime = DateTime.Parse(rawDate);
-
-        System.Console.Write("INPUT DATE-TIME WHEN IT IS DONE >> ");
-        rawDate = ReadSanitizedLine();
-        var endTime = DateTime.Parse(rawDate);
-
-        if (endTime < startTime)
-        {
-            throw new InvalidInputException("NOPE, CAN NOT END BEFORE IT STARTS!");
-        }
-
-        if (endTime - startTime < TimeSpan.FromSeconds(60))
-        {
-            throw new InvalidInputException("NOPE, RENOVATION CAN'T LAST LESS THAN ONE MINUTE!");
-        }
+        (var startTime, var endTime) = InputInterval();
 
         var renovation = new SimpleRenovation(_loadedRooms[number].Location, startTime, endTime);
         _hospital.SimpleRenovationRepo.Add(renovation);
@@ -210,14 +194,8 @@ public class RoomUI : ConsoleUI
         System.Console.Write("SUCCESSFULLY SCHEDULED SIMPLE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
     }
 
-    private void DoSplitRenovation()
+    private (DateTime, DateTime) InputInterval()
     {
-        System.Console.WriteLine("WARNING! Doing this will make any equipment inside inaccessible. ");
-        System.Console.WriteLine("Move it first if you so desire");
-        System.Console.Write("INPUT NUMBER TO SPLIT >> ");
-        var number = ReadInt(0, _loadedRooms.Count - 1);
-        // TODO: add check if room has checkups or operations before allowing
-
         System.Console.Write("INPUT DATE-TIME WHEN IT STARTS >> ");
         var rawDate = ReadSanitizedLine();
         var startTime = DateTime.Parse(rawDate);
@@ -236,14 +214,33 @@ public class RoomUI : ConsoleUI
             throw new InvalidInputException("NOPE, RENOVATION CAN'T LAST LESS THAN ONE MINUTE!");
         }
 
+        return (startTime, endTime);
+    }
+
+    private void DoSplitRenovation()
+    {
+        System.Console.WriteLine("WARNING! Doing this will make any equipment inside inaccessible during renovation");
+        System.Console.WriteLine("This will move all equipment present at the beginning of the renovation into the first room");
+        System.Console.WriteLine("Move it first if you so desire");
+        System.Console.Write("INPUT NUMBER TO SPLIT >> ");
+        var number = ReadInt(0, _loadedRooms.Count - 1);
+        var originalRoom = _loadedRooms[number];
+        // TODO: add check if room has checkups or operations before allowing
+
+        (var startTime, var endTime) = InputInterval();
+
         System.Console.WriteLine("INPUT THE FIRST ROOM THAT WILL SPLIT OFF:");
         var firstRoom = InputRoom();
 
         System.Console.WriteLine("INPUT THE SECOND ROOM THAT WILL SPLIT OFF:");
         var secondRoom = InputRoom();
 
-        var renovation = new SplitRenovation(_loadedRooms[number].Location, startTime, endTime, firstRoom, secondRoom);
-        _hospital.SplitRenovationRepo.Add(renovation, firstRoom, secondRoom);
+        var renovation = new SplitRenovation(originalRoom.Location, startTime, endTime, firstRoom, secondRoom);
+
+        // TODO: put this below in a service
+        _hospital.RoomRepo.AddInactive(firstRoom);
+        _hospital.RoomRepo.AddInactive(secondRoom);
+        _hospital.SplitRenovationRepo.Add(renovation);
         _hospital.SplitRenovationRepo.Schedule(renovation);
         System.Console.Write("SUCCESSFULLY SCHEDULED SPLIT RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
     }

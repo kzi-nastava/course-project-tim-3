@@ -38,6 +38,14 @@ public class RoomRepository
         rooms.InsertOne(newRoom);
     }
 
+    public void AddInactive(Room newRoom)
+    {
+        newRoom.Active = false;
+        var rooms = GetCollection();
+        rooms.ReplaceOne(room => room.Location == newRoom.Location && !room.Deleted && !room.Active, 
+            newRoom, new ReplaceOptions {IsUpsert = true});
+    }
+
     public bool DoesExist(string location)
     {
         return GetCollection().Find(room => room.Location == location && !room.Deleted).Any();

@@ -6,11 +6,13 @@ public class SplitRenovationRepository
 {
     private MongoClient _dbClient;
     private RoomRepository _roomRepo;  // TODO: extract to service!
+    private EquipmentRelocationRepository _relocationRepo;  // TODO: extract to service!
 
-    public SplitRenovationRepository(MongoClient dbClient, RoomRepository roomRepo)
+    public SplitRenovationRepository(MongoClient dbClient, RoomRepository roomRepo, EquipmentRelocationRepository relocationRepo)
     {
         _dbClient = dbClient;
         _roomRepo = roomRepo;
+        _relocationRepo = relocationRepo;
     }
 
     private IMongoCollection<SplitRenovation> GetCollection()
@@ -23,13 +25,9 @@ public class SplitRenovationRepository
         return GetCollection().AsQueryable();
     }
 
-    public void Add(SplitRenovation renovation, Room firstNewRoom, Room secondNewRoom)
+    public void Add(SplitRenovation renovation)
     // todo: load these on start in scheduler when making service
     {
-        firstNewRoom.Active = false;
-        secondNewRoom.Active = false;
-        _roomRepo.Add(firstNewRoom);
-        _roomRepo.Add(secondNewRoom);
         GetCollection().InsertOne(renovation);
     }
 
@@ -56,14 +54,12 @@ public class SplitRenovationRepository
         if (renovation.EndTime <= DateTime.Now)
         {
             FinishRenovation(renovation);
-            _roomRepo.Delete(renovation.SplitRoomLocation);
         }
         else
         {
             Scheduler.Schedule(renovation.EndTime, () => 
             {
                 FinishRenovation(renovation);
-                _roomRepo.Delete(renovation.SplitRoomLocation);
             });
         }
     }
@@ -74,6 +70,8 @@ public class SplitRenovationRepository
         Replace(renovation);
         _roomRepo.Activate(renovation.SplitToFirstLocation);
         _roomRepo.Activate(renovation.SplitToSecondLocation);
+        _relocationRepo.MoveAll(renovation.SplitRoomLocation, renovation.SplitToFirstLocation);
+        _roomRepo.Delete(renovation.SplitRoomLocation);
     }
 
     // TODO: move this and some others to service
