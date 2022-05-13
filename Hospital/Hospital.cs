@@ -18,6 +18,7 @@
         public SimpleRenovationRepository SimpleRenovationRepo { get; set; }
         public SplitRenovationRepository SplitRenovationRepo { get; set; }
         public MergeRenovationRepository MergeRenovationRepo { get; set; }
+        public MedicineRepository MedicineRepo {get; set;}
 
         public Hospital()
         {
@@ -34,6 +35,7 @@
             SimpleRenovationRepo = new (_dbClient, RoomRepo);
             SplitRenovationRepo = new (_dbClient, RoomRepo, RelocationRepo);
             MergeRenovationRepo = new (_dbClient, RoomRepo, RelocationRepo);
+            MedicineRepo = new (_dbClient);
         }
 
         public User? Login(string email, string password)

@@ -46,11 +46,31 @@ namespace Hospital
             List<Checkup> patientCheckups = checkups.Find(appointment => appointment.Patient.Id == id).ToList();
             return patientCheckups;
         }
+       
+
+        public List<Checkup>  SearchPastCheckups(ObjectId patientId, string anamnesisKeyword)
+        {
+            var checkups = GetCheckups();
+            //might not be the best way to indent
+            List<Checkup> filteredCheckups = checkups.Find(
+                                                    checkup => checkup.Anamnesis.ToLower().Contains(anamnesisKeyword.ToLower())
+                                                    && checkup.StartTime < DateTime.Now 
+                                                    && checkup.Patient.Id == patientId
+                                                    ).ToList();
+            return filteredCheckups;
+        }
+
+        public List<Checkup> GetFutureCheckupsByPatient(ObjectId id)
+        {
+            var checkups = GetCheckups();
+            List<Checkup> patientCheckups = checkups.Find(checkup => checkup.StartTime > DateTime.Now && checkup.Patient.Id == id).ToList();
+            return patientCheckups;
+        }
 
         public List<Operation> GetOperationsByPatient(ObjectId id)
         {
             var operations = GetOperations();
-            List<Operation> patientOperations = operations.Find(appointment => appointment.Doctor.Id == id).ToList();
+            List<Operation> patientOperations = operations.Find(appointment => appointment.Patient.Id == id).ToList();
             return patientOperations;
         }
         
@@ -68,6 +88,12 @@ namespace Hospital
             return checkupsByDay;
         }
 
+        public List<Checkup> GetPastCheckupsByPatient(ObjectId id)
+        {
+            var checkups = GetCheckups();
+            List<Checkup> selectedCheckups = checkups.Find(checkup => checkup.StartTime < DateTime.Now && checkup.Patient.Id == id).ToList();
+            return selectedCheckups;
+        }
 
         public Checkup GetCheckupById(ObjectId id)
         {

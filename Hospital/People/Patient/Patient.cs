@@ -18,5 +18,14 @@ namespace Hospital
         {
             return FirstName + " " + LastName ;
         }
+
+        public bool IsAllergicToMedicine(Medicine medicine)
+        {
+            foreach (string ingredient in medicine.Ingredients)
+            {
+                if (MedicalRecord.Allergies.Contains(ingredient)) return true;
+            }
+            return false;
+        }
     }
 }

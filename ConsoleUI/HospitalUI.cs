@@ -27,8 +27,8 @@ public class HospitalUI : ConsoleUI
         _hospital.SplitRenovationRepo.ScheduleAll();
         _hospital.MergeRenovationRepo.ScheduleAll();
 
-        bool exit = false;
-        while (!exit)
+        bool quit = false;
+        while (!quit)
         {
         // _hospital.UserRepo.AddUser("email1", "password", "firstName", "firstName", Role.PATIENT); //TEST      
         var success = false;
