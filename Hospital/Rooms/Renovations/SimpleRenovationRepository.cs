@@ -37,29 +37,14 @@ public class SimpleRenovationRepository
 
     public void Schedule(SimpleRenovation renovation)
     {
-        // stupid way, but must be done like this (or mb better?) to avoid errors
-        if (renovation.StartTime <= DateTime.Now)
+        Scheduler.Schedule(renovation.StartTime, () =>
         {
             _roomRepo.Deactivate(renovation.RoomLocation);
-        }
-        else
-        {
-            Scheduler.Schedule(renovation.StartTime, () =>
-            {
-                _roomRepo.Deactivate(renovation.RoomLocation);
-            });
-        }
-        if (renovation.EndTime <= DateTime.Now)
+        });
+        Scheduler.Schedule(renovation.EndTime, () => 
         {
             FinishRenovation(renovation);
-        }
-        else
-        {
-            Scheduler.Schedule(renovation.EndTime, () => 
-            {
-                FinishRenovation(renovation);
-            });
-        }
+        });
     }
 
     private void FinishRenovation(SimpleRenovation renovation)

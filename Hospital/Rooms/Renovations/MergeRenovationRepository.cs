@@ -39,32 +39,15 @@ public class MergeRenovationRepository
 
     public void Schedule(MergeRenovation renovation)
     {
-        // stupid way, but must be done like this (or mb better?) to avoid errors
-        // TODO: clean this everywhere, can do better
-        if (renovation.StartTime <= DateTime.Now)
+        Scheduler.Schedule(renovation.StartTime, () =>
         {
             _roomRepo.Deactivate(renovation.FirstLocation);
             _roomRepo.Deactivate(renovation.SecondLocation);
-        }
-        else
-        {
-            Scheduler.Schedule(renovation.StartTime, () =>
-            {
-                _roomRepo.Deactivate(renovation.FirstLocation);
-                _roomRepo.Deactivate(renovation.SecondLocation);
-            });
-        }
-        if (renovation.EndTime <= DateTime.Now)
+        });
+        Scheduler.Schedule(renovation.EndTime, () => 
         {
             FinishRenovation(renovation);
-        }
-        else
-        {
-            Scheduler.Schedule(renovation.EndTime, () => 
-            {
-                FinishRenovation(renovation);
-            });
-        }
+        });
     }
 
     private void FinishRenovation(MergeRenovation renovation)
