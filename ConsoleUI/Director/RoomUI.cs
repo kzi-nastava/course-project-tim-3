@@ -244,4 +244,40 @@ public class RoomUI : ConsoleUI
         _hospital.SplitRenovationRepo.Schedule(renovation);
         System.Console.Write("SUCCESSFULLY SCHEDULED SPLIT RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
     }
+    
+    private void DoMergeRenovation()
+    {
+        System.Console.WriteLine("WARNING! Doing this will make any equipment inside inaccessible during renovation");
+        System.Console.Write("This will move all equipment present at the beginning of the renovation ");
+        System.Console.WriteLine("in first and second room into the merging room");
+        System.Console.WriteLine("Move it first if you so desire");
+
+        System.Console.Write("INPUT FIRST NUMBER TO MERGE >> ");
+        var firstNumber = ReadInt(0, _loadedRooms.Count - 1);
+        var firstRoom = _loadedRooms[firstNumber];
+
+        System.Console.Write("INPUT FIRST NUMBER TO MERGE >> ");
+        var secondNumber = ReadInt(0, _loadedRooms.Count - 1);
+        var secondRoom = _loadedRooms[secondNumber];
+
+        if (secondNumber == firstNumber)
+        {
+            throw new InvalidCastException("NOPE, CAN'T MERGE A ROOM WITH ITSELF");
+        }
+
+        // TODO: add check if room has checkups or operations before allowing
+
+        (var startTime, var endTime) = InputInterval();
+
+        System.Console.WriteLine("INPUT THE ROOM THAT THESE WILL MERGE INTO:");
+        var mergingRoom = InputRoom();
+
+        var renovation = new MergeRenovation(startTime, endTime, firstRoom.Location, secondRoom.Location, mergingRoom.Location);
+
+        // TODO: put this below in a service
+        _hospital.RoomRepo.AddInactive(mergingRoom);
+        _hospital.MergeRenovationRepo.Add(renovation);
+        _hospital.MergeRenovationRepo.Schedule(renovation);
+        System.Console.Write("SUCCESSFULLY SCHEDULED MERGE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
+    }
 }

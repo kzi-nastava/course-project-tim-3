@@ -2,53 +2,56 @@ using MongoDB.Driver;
 
 namespace Hospital;
 
-public class SplitRenovationRepository
+public class MergeRenovationRepository
 {
     private MongoClient _dbClient;
     private RoomRepository _roomRepo;  // TODO: extract to service!
     private EquipmentRelocationRepository _relocationRepo;  // TODO: extract to service!
 
-    public SplitRenovationRepository(MongoClient dbClient, RoomRepository roomRepo, EquipmentRelocationRepository relocationRepo)
+    public MergeRenovationRepository(MongoClient dbClient, RoomRepository roomRepo, EquipmentRelocationRepository relocationRepo)
     {
         _dbClient = dbClient;
         _roomRepo = roomRepo;
         _relocationRepo = relocationRepo;
     }
 
-    private IMongoCollection<SplitRenovation> GetCollection()
+    private IMongoCollection<MergeRenovation> GetCollection()
     {
-        return _dbClient.GetDatabase("hospital").GetCollection<SplitRenovation>("split_renovations");
+        return _dbClient.GetDatabase("hospital").GetCollection<MergeRenovation>("split_renovations");
     }
 
-    public IQueryable<SplitRenovation> GetAll()
+    public IQueryable<MergeRenovation> GetAll()
     {
         return GetCollection().AsQueryable();
     }
 
-    public void Add(SplitRenovation renovation)
+    public void Add(MergeRenovation renovation)
     // todo: load these on start in scheduler when making service
     {
         GetCollection().InsertOne(renovation);
     }
 
     // NOTE: expects existing!!
-    public void Replace(SplitRenovation replacing)
+    public void Replace(MergeRenovation replacing)
     {
         GetCollection().ReplaceOne(renovation => renovation.Id == replacing.Id, replacing);
     }
 
-    public void Schedule(SplitRenovation renovation)
+    public void Schedule(MergeRenovation renovation)
     {
         // stupid way, but must be done like this (or mb better?) to avoid errors
+        // TODO: clean this everywhere, can do better
         if (renovation.StartTime <= DateTime.Now)
         {
-            _roomRepo.Deactivate(renovation.SplitRoomLocation);
+            _roomRepo.Deactivate(renovation.FirstLocation);
+            _roomRepo.Deactivate(renovation.SecondLocation);
         }
         else
         {
             Scheduler.Schedule(renovation.StartTime, () =>
             {
-                _roomRepo.Deactivate(renovation.SplitRoomLocation);
+                _roomRepo.Deactivate(renovation.FirstLocation);
+                _roomRepo.Deactivate(renovation.SecondLocation);
             });
         }
         if (renovation.EndTime <= DateTime.Now)
@@ -64,12 +67,13 @@ public class SplitRenovationRepository
         }
     }
 
-    private void FinishRenovation(SplitRenovation renovation)
+    private void FinishRenovation(MergeRenovation renovation)
     {
-        _roomRepo.Activate(renovation.SplitToFirstLocation);
-        _roomRepo.Activate(renovation.SplitToSecondLocation);
-        _relocationRepo.MoveAll(renovation.SplitRoomLocation, renovation.SplitToFirstLocation);
-        _roomRepo.Delete(renovation.SplitRoomLocation);
+        _roomRepo.Activate(renovation.MergeToLocation);
+        _relocationRepo.MoveAll(renovation.FirstLocation, renovation.MergeToLocation);
+        _relocationRepo.MoveAll(renovation.SecondLocation, renovation.MergeToLocation);
+        _roomRepo.Delete(renovation.FirstLocation);
+        _roomRepo.Delete(renovation.SecondLocation);
         renovation.IsDone = true;
         Replace(renovation);
     }
