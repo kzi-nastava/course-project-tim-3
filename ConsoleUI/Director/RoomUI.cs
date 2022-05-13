@@ -245,6 +245,11 @@ public class RoomUI : ConsoleUI
         System.Console.WriteLine("INPUT THE SECOND ROOM THAT WILL SPLIT OFF:");
         var secondRoom = InputRoom();
 
+        if (firstRoom.Location == secondRoom.Location)
+        {
+            throw new InvalidInputException("NOPE, CAN'T HAVE SAME LOCATION FOR BOTH!");
+        }
+
         var renovation = new SplitRenovation(originalRoom.Location, startTime, endTime, firstRoom, secondRoom);
 
         // TODO: put this below in a service
