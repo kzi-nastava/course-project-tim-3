@@ -34,7 +34,7 @@ public class SplitRenovationRepository
     // NOTE: expects existing!!
     public void Replace(SplitRenovation replacing)
     {
-        GetCollection().ReplaceOne(relocation => relocation.Id == replacing.Id, replacing);
+        GetCollection().ReplaceOne(renovation => renovation.Id == replacing.Id, replacing);
     }
 
     public void Schedule(SplitRenovation renovation)
