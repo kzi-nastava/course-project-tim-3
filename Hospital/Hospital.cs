@@ -15,9 +15,9 @@
         public EquipmentBatchRepository EquipmentRepo { get; }
         public EquipmentRelocationRepository RelocationRepo { get; }
         public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
-        public SimpleRenovationRepository SimpleRenovationRepo { get; set; }
-        public SplitRenovationRepository SplitRenovationRepo { get; set; }
-        public MergeRenovationRepository MergeRenovationRepo { get; set; }
+        public SimpleRenovationRepository SimpleRenovationRepo { get; }
+        public SplitRenovationRepository SplitRenovationRepo { get; }
+        public MergeRenovationRepository MergeRenovationRepo { get; }
         public MedicineRepository MedicineRepo {get; set;}
 
         public Hospital()
