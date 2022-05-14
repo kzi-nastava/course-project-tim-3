@@ -5,7 +5,7 @@ using MongoDB.Driver;
 
 namespace Hospital
 {
-    public class Medicine
+    public class Medication
     {
         [BsonId]
         public ObjectId Id {get; set;}
@@ -13,7 +13,7 @@ namespace Hospital
         public List<string> Ingredients {get; set;}
 
         [BsonConstructor]
-        public Medicine(string name, List<string> ingredients)
+        public Medication(string name, List<string> ingredients)
         {
             Id = ObjectId.GenerateNewId();
             Name = name;

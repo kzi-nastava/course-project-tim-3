@@ -158,6 +158,14 @@ public static class TestGenerator
         }
     }
 
+    private static void GenerateMedication(Hospital.Hospital hospital)
+    {
+        hospital.MedicationRepo.AddOrUpdate(new Medication("ibuprofen", new List<string> {"Lactose", "Maize Starch", "Hypromellose", "Sodium Starch Glycollate", "Colloidal Anhydrous Silica", "Magnesium Stearate", "Sucrose", "Talc", "Titanium Dioxide (E171)", "Carnauba Wax"}));
+        hospital.MedicationRepo.AddOrUpdate(new Medication("probiotic", new List<string> {"Lactobacillus"}));
+        hospital.MedicationRepo.AddOrUpdate(new Medication("amoxicillin", new List<string> {"Penicillin","Magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}));
+        hospital.MedicationRepo.AddOrUpdate(new Medication("oxacillin", new List<string> {"Penicillin"}));
+    }
+
     private static void WriteDatabaseToFile(MongoClient dbClient)
     {
         Dictionary<String, List<Object>> allCollections = new();

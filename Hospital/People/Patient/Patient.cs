@@ -19,7 +19,7 @@ namespace Hospital
             return FirstName + " " + LastName ;
         }
 
-        public bool IsAllergicToMedicine(Medicine medicine)
+        public bool IsAllergicToMedicine(Medication medicine)
         {
             foreach (string ingredient in medicine.Ingredients)
             {

@@ -9,14 +9,14 @@ namespace Hospital
     }
     public class Prescription
     {
-        public Medicine Medicine {get; set;}
+        public Medication Medication {get; set;}
         public int TimesADay {get; set;}
         public MedicineBestTaken BestTaken {get; set;}
         public int HoursBetweenIntakes {get; set;}
 
-        public Prescription(Medicine medicine, int timesADay, MedicineBestTaken bestTaken, int hoursbetweenIntakes)
+        public Prescription(Medication medication, int timesADay, MedicineBestTaken bestTaken, int hoursbetweenIntakes)
         {
-            Medicine = medicine;
+            Medication = medication;
             TimesADay = timesADay;
             BestTaken = bestTaken;
             HoursBetweenIntakes = hoursbetweenIntakes;

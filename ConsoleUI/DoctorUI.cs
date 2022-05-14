@@ -492,34 +492,34 @@ public class DoctorUI : ConsoleUI
         bool quit = false;
         while (true)
         {
-            Console.Write("\nEnter medicine name >> ");
+            Console.Write("\nEnter medication name >> ");
             string? name = Console.ReadLine();
-            Medicine medicine = _hospital.MedicineRepo.GetByName(name);
+            Medication medication = _hospital.MedicationRepo.GetByName(name.ToLower());
 
-            if (medicine == null)
+            if (medication == null)
             {
-                Console.WriteLine("No such medicine found in database");
+                Console.WriteLine("No such medication found in database");
                 break;
             }
-            if (patient.IsAllergicToMedicine(medicine)) 
+            if (patient.IsAllergicToMedicine(medication)) 
             {
                 Console.WriteLine("Patient is allergic to given medicine. Cancelling prescription.");
                 break;
             }
 
-            Console.Write("\nEnter amount of times the medicine should be taken a day >> ");
+            Console.Write("\nEnter amount of times the medication should be taken a day >> ");
             int amount = Int32.Parse(Console.ReadLine());
-            Console.Write("\nEnter amount of hours inbetween medicine intake >> ");
+            Console.Write("\nEnter amount of hours inbetween medication intake >> ");
             int hours = Int32.Parse(Console.ReadLine());
-            Console.Write("\nWhen to take in medicine:\n1. Before Meal\n2. After Meal\n3. With Meal\n4. Anytime\n>> ");
+            Console.Write("\nWhen to take in medication:\n1. Before Meal\n2. After Meal\n3. With Meal\n4. Anytime\n>> ");
             string? bestTaken = Console.ReadLine();
 
-            WritePrescription(medicine, amount, bestTaken, hours, patient);
+            WritePrescription(medication, amount, bestTaken, hours, patient);
             
             string? choice = "n";
             while (choice != "y")
             {
-                Console.Write("\nDo you want to prescribe another medicine [y/n] >>");
+                Console.Write("\nDo you want to prescribe another medication [y/n] >>");
                 choice = Console.ReadLine();
                 if (choice == "n")
                 {
@@ -530,36 +530,36 @@ public class DoctorUI : ConsoleUI
         }
     }
 
-    public void WritePrescription(Medicine medicine, int amount, string bestTaken, int hours, Patient patient)
+    public void WritePrescription(Medication medication, int amount, string bestTaken, int hours, Patient patient)
     {
         switch (bestTaken)
         {
             case "1":
             {
-                AddPrescription(medicine, amount, MedicineBestTaken.BEFORE_MEAL, hours, patient);
+                AddPrescription(medication, amount, MedicineBestTaken.BEFORE_MEAL, hours, patient);
                 break;
             }
             case "2":
             {
-                AddPrescription(medicine, amount, MedicineBestTaken.AFTER_MEAL, hours, patient);
+                AddPrescription(medication, amount, MedicineBestTaken.AFTER_MEAL, hours, patient);
                 break;
             }
             case "3":
             {
-                AddPrescription(medicine, amount, MedicineBestTaken.WITH_MEAL, hours, patient);
+                AddPrescription(medication, amount, MedicineBestTaken.WITH_MEAL, hours, patient);
                 break;
             }
             case "4":
             {
-                AddPrescription(medicine, amount, MedicineBestTaken.ANY_TIME, hours, patient);
+                AddPrescription(medication, amount, MedicineBestTaken.ANY_TIME, hours, patient);
                 break;
             }
         }         
     }
 
-    public void AddPrescription(Medicine medicine, int amount, MedicineBestTaken bestTaken, int hours, Patient patient)
+    public void AddPrescription(Medication medication, int amount, MedicineBestTaken bestTaken, int hours, Patient patient)
     {
-        Prescription prescription = new Prescription(medicine, amount, MedicineBestTaken.ANY_TIME, hours);
+        Prescription prescription = new Prescription(medication, amount, MedicineBestTaken.ANY_TIME, hours);
         patient.MedicalRecord.Prescriptions.Add(prescription);
         _hospital.PatientRepo.AddOrUpdatePatient(patient);
     }
