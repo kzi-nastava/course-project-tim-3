@@ -21,7 +21,7 @@ public class SecretaryUI : ConsoleUI
     }
 
     public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
-    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", "Back"};
+    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", "Select blocked", "Back"};
 
     public void printCommands(List<string> commands)
     {
@@ -97,6 +97,9 @@ public class SecretaryUI : ConsoleUI
             else if (selectedOption == "delete"){
                 DeleteUserPatient();
             }
+            else if (selectedOption == "selectblocked"){
+                SelectBlockedPatients();
+            }
             else if (selectedOption == "back")
             {
                 Console.Clear();
@@ -121,8 +124,12 @@ public class SecretaryUI : ConsoleUI
         var matchingUsers = from user in usersGet.AsQueryable() select user;
 
         foreach(var p in matchingUsers){
-            users.Add(p);
+            if (p.Role == Role.PATIENT){
+                users.Add(p);
+            }
         }
+
+        Console.WriteLine(users.Count().ToString()); 
 
         int usersListSize = users.Count();
         int startIndex = 0;
@@ -349,6 +356,13 @@ public class SecretaryUI : ConsoleUI
         ur.DeleteUser(email);
         Console.Clear();
         printCommands(CRUDCommands);
+    }
+
+        public void SelectBlockedPatients(){
+        // Console.Clear();
+        // UserRepository ur = _hospital.UserRepo;
+        // List<User> blockedUsers = ur.GetBlockedUsers();
+        // System.Console.WriteLine(blockedUsers.Count().ToString());
     }
 }
 
