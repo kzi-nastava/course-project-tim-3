@@ -86,6 +86,22 @@ public class AppointmentRepository
         return unavailable;
     }
 
+    public bool IsRoomAvailableForRenovation(string roomLocation, DateTime renovationStartTime)
+    {
+        // Does some appointment end after Renovation starts? Then can't renovate
+        var checkupOvertakes = 
+            (from checkup in GetCheckups().AsQueryable()
+            where renovationStartTime < checkup.EndTime
+            select checkup).Any();
+        if (checkupOvertakes) return false;
+
+        var operationOvertakes = 
+            (from operation in GetOperations().AsQueryable()
+            where renovationStartTime < operation.EndTime
+            select operation).Any();
+        return !operationOvertakes;
+    }
+
     public List<Checkup> GetCheckupsByDoctor(ObjectId id)
     {
         var checkups = GetCheckups();
