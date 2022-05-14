@@ -1,6 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
-namespace Hospital;
+namespace HospitalSystem;
 
 public class DoctorUI : ConsoleUI
 {
@@ -43,7 +43,15 @@ public class DoctorUI : ConsoleUI
                     if (_hospital.AppointmentRepo.IsDoctorAvailable(dateTime, doctor))
                     {
                         Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
-                        _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+                        try
+                        {
+                            _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+                        }
+                        catch (NoAvailableRoomException e)
+                        {
+                            System.Console.WriteLine(e.Message);
+                            System.Console.WriteLine("Failed to create checkup");
+                        }
                     }
                     else
                     {
@@ -300,8 +308,16 @@ public class DoctorUI : ConsoleUI
                 DateTime newDateTime = DateTime.Parse(date + " " + time);
                 Console.Write(newDateTime);
                 checkup.StartTime = newDateTime;
-                _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
-                Console.WriteLine("Edit successfull");
+                try
+                {
+                    _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+                    Console.WriteLine("Edit successfull");
+                }
+                catch (NoAvailableRoomException e)
+                {
+                    System.Console.WriteLine(e.Message);
+                    System.Console.WriteLine("Failed edit");
+                }
                 break;
             }
             case "2":
@@ -311,8 +327,16 @@ public class DoctorUI : ConsoleUI
                 Console.Write("Enter new patient surname>> ");
                 string? newSurname = Console.ReadLine();
                 checkup.Patient = new MongoDB.Driver.MongoDBRef("patients", _hospital.PatientRepo.GetPatientByFullName(newName,newSurname).Id);
-                _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);                
-                Console.WriteLine("Edit successfull");
+                try
+                {
+                    _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);                
+                    Console.WriteLine("Edit successfull");
+                }
+                catch (NoAvailableRoomException e)
+                {
+                    System.Console.WriteLine(e.Message);
+                    System.Console.WriteLine("Failed edit");
+                }
                 break;
             }
         }

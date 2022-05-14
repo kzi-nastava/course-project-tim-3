@@ -1,4 +1,4 @@
-namespace Hospital;
+namespace HospitalSystem;
 using System.Globalization;
 using MongoDB.Bson;
 
@@ -377,8 +377,8 @@ public class PatientUI : ConsoleUI
             CheckupChangeRequest newRequest = new CheckupChangeRequest(
                 selectedCheckup,
                 CRUDOperation.UPDATE);
-                Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
-                _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
+            Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
+            _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
         }
         else
         {
@@ -435,7 +435,7 @@ public class PatientUI : ConsoleUI
         }
     }
 
-    public void showOperations()
+    public void ShowOperations()
     {
         List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(_loggedInPatient.Id);
         if (operations.Count == 0)
@@ -453,7 +453,7 @@ public class PatientUI : ConsoleUI
         Console.WriteLine("### Checkups ###");
         ShowCheckups(CheckupInTime.FUTURE);
         Console.WriteLine("### Operations ###");
-        showOperations();
+        ShowOperations();
 
     }
     public void StartAppointmentRUD()
