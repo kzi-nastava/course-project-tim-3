@@ -40,7 +40,7 @@ public class MedicalRecord {
     public override string ToString()
     {
         return "Height In Cm : " + HeightInCm + "\nWeight In Cm : " + WeightInKg + "\nAnamnesis History : " 
-        + string.Join( ",", AnamnesisHistory) + "\nAllergies : " + string.Join( ",", Allergies) + "\nReferrals : " + string.Join( ",", Referrals)
+        + string.Join( ",", AnamnesisHistory) + "\nAllergies : " + string.Join( ",", Allergies)
         + "\nPrescriptions : " + string.Join( ",", Prescriptions);
     }
 }

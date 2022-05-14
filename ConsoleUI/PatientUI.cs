@@ -38,7 +38,7 @@ public class PatientUI : ConsoleUI
 
     public void ShowCheckupsAnamnesis(Checkup checkup)
     {
-        Doctor doctor = _hospital.DoctorRepo.GetDoctorById( (ObjectId)checkup.Doctor.Id );
+        Doctor doctor = _hospital.DoctorRepo.GetById( (ObjectId)checkup.Doctor.Id );
         Console.WriteLine("[ " + checkup.StartTime + " " + doctor.ToString() + " ] ");
         Console.WriteLine(checkup.Anamnesis);
         Console.WriteLine();
@@ -46,15 +46,15 @@ public class PatientUI : ConsoleUI
 
     public int CompareByDoctorsName(Checkup checkup1, Checkup checkup2)
     {
-        string name1 = _hospital.DoctorRepo.GetDoctorById((ObjectId)checkup1.Doctor.Id).FirstName;
-        string name2 = _hospital.DoctorRepo.GetDoctorById((ObjectId)checkup2.Doctor.Id).FirstName;
+        string name1 = _hospital.DoctorRepo.GetById((ObjectId)checkup1.Doctor.Id).FirstName;
+        string name2 = _hospital.DoctorRepo.GetById((ObjectId)checkup2.Doctor.Id).FirstName;
         return String.Compare(name1, name2);
     }
 
     public int CompareByDoctorsSpecialty(Checkup checkup1, Checkup checkup2)
     {
-        string specialty1 = _hospital.DoctorRepo.GetDoctorById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
-        string specialty2 = _hospital.DoctorRepo.GetDoctorById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
+        string specialty1 = _hospital.DoctorRepo.GetById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
+        string specialty2 = _hospital.DoctorRepo.GetById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
         return String.Compare(specialty1, specialty2);
     }
 
@@ -294,10 +294,10 @@ public class PatientUI : ConsoleUI
         }
         Console.WriteLine ("You have selected " + ConvertAppointmentToString(selectedCheckup));
 
-        Doctor currentDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)selectedCheckup.Doctor.Id);
+        Doctor currentDoctor = _hospital.DoctorRepo.GetById((ObjectId)selectedCheckup.Doctor.Id);
         DateTime existingDate = selectedCheckup.StartTime;
         
-        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetDoctorsBySpecialty(currentDoctor.Specialty);
+        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetManyBySpecialty(currentDoctor.Specialty);
         alternativeDoctors.Remove(currentDoctor);
         Doctor newDoctor = currentDoctor;
         DateTime newDate = existingDate;
@@ -401,7 +401,7 @@ public class PatientUI : ConsoleUI
         string output = "";
 
         output += a.StartTime +" ";
-        Doctor doctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)a.Doctor.Id);
+        Doctor doctor = _hospital.DoctorRepo.GetById((ObjectId)a.Doctor.Id);
         output += doctor.ToString();
 
         return output;
@@ -605,7 +605,7 @@ public class PatientUI : ConsoleUI
 
     public Doctor? SelectDoctor(Specialty selectedSpecialty)
     {
-        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorsBySpecialty(selectedSpecialty);
+        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetManyBySpecialty(selectedSpecialty);
         if (suitableDoctors.Count == 0)
         {
             Console.WriteLine("No doctors found in selected specialty.");
@@ -659,7 +659,7 @@ public class PatientUI : ConsoleUI
                 continue;
             }
 
-            foreach (Doctor doctor in _hospital.DoctorRepo.GetDoctorsBySpecialty(speciality))
+            foreach (Doctor doctor in _hospital.DoctorRepo.GetManyBySpecialty(speciality))
             {
                 if (!_hospital.AppointmentRepo.IsDoctorAvailable(iterationDate,doctor))
                 {
@@ -840,7 +840,7 @@ public class PatientUI : ConsoleUI
         {
             Checkup result = recommendedCheckups[0];
             Console.WriteLine("Recommendation:");
-            Doctor referencedDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)result.Doctor.Id);
+            Doctor referencedDoctor = _hospital.DoctorRepo.GetById((ObjectId)result.Doctor.Id);
             Console.WriteLine(referencedDoctor.ToString()+" "+result.StartTime);
 
             Console.Write("Create checkup? Enter y for yes: ");
@@ -868,7 +868,7 @@ public class PatientUI : ConsoleUI
             for (int i=0; i<recommendedCheckups.Count; i++)
             {
                 Checkup result = recommendedCheckups[i];
-                Doctor referencedDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)result.Doctor.Id);
+                Doctor referencedDoctor = _hospital.DoctorRepo.GetById((ObjectId)result.Doctor.Id);
                 Console.WriteLine(i+" - "+referencedDoctor.ToString()+" "+result.StartTime);
             }
 

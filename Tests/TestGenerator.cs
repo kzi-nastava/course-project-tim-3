@@ -17,6 +17,7 @@ public static class TestGenerator
         GenerateRoomsAndEquipments(hospital);
         GenerateCheckupsAndOperations(hospital);
         GenerateCheckupChangeRequests(hospital);
+        GenerateMedication(hospital);
 
         System.Console.WriteLine("GENERATED TESTS IN DB");
 
@@ -29,7 +30,7 @@ public static class TestGenerator
     {
         for (int i = 0; i < 20; i++)
         {
-            Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1","surname1");
+            Doctor doctor = hospital.DoctorRepo.GetByFullName("name1","surname1");
             List<Checkup> checkups = hospital.AppointmentRepo.GetCheckupsByDoctor(doctor.Id);
 
             if (i % 2 == 0)
@@ -91,7 +92,7 @@ public static class TestGenerator
         {
             for (; i < 100; i++)
             {
-                Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1","surname1");
+                Doctor doctor = hospital.DoctorRepo.GetByFullName("name1","surname1");
                 Patient patient = hospital.PatientRepo.GetPatientByFullName("name2","surname2");
                 dateTime = dateTime.AddHours(1);
 
@@ -150,6 +151,14 @@ public static class TestGenerator
             }
             hospital.UserRepo.AddOrUpdateUser(user);                
         }
+    }
+
+    private static void GenerateMedication(Hospital hospital)
+    {
+        hospital.MedicationRepo.AddOrUpdate(new Medication("ibuprofen", new List<string> {"lactose", "Maize Starch", "Hypromellose", "sodium starch glycollate", "colloidal Anhydrous Silica", "magnesium Stearate", "sucrose", "talc", "titanium Dioxide (E171)", "carnauba Wax"}));
+        hospital.MedicationRepo.AddOrUpdate(new Medication("probiotic", new List<string> {"lactobacillus"}));
+        hospital.MedicationRepo.AddOrUpdate(new Medication("amoxicillin", new List<string> {"penicillin","magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}));
+        hospital.MedicationRepo.AddOrUpdate(new Medication("oxacillin", new List<string> {"penicillin"}));
     }
 
     private static void WriteDatabaseToFile(MongoClient dbClient)

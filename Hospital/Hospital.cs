@@ -1,6 +1,6 @@
- using MongoDB.Driver;
+using MongoDB.Driver;
 
- namespace HospitalSystem;
+namespace HospitalSystem;
 
 public class Hospital
 {
@@ -18,7 +18,7 @@ public class Hospital
     public SimpleRenovationRepository SimpleRenovationRepo { get; }
     public SplitRenovationRepository SplitRenovationRepo { get; }
     public MergeRenovationRepository MergeRenovationRepo { get; }
-    public MedicineRepository MedicineRepo {get; set;}
+    public MedicationRepository MedicationRepo {get; set;}
 
     public Hospital()
     {
@@ -35,7 +35,7 @@ public class Hospital
         SimpleRenovationRepo = new (_dbClient, RoomRepo);
         SplitRenovationRepo = new (_dbClient, RoomRepo, RelocationRepo);
         MergeRenovationRepo = new (_dbClient, RoomRepo, RelocationRepo);
-        MedicineRepo = new (_dbClient);
+        MedicationRepo = new (_dbClient);
     }
 
     public User? Login(string email, string password)
