@@ -28,35 +28,7 @@ public class DoctorUI : ConsoleUI
                 }
                 case "3":
                 {
-                    Console.WriteLine("Creating new Checkup appointment...");
-                    Console.Write("\nEnter date >>");
-                    string? date = Console.ReadLine();
-                    Console.Write("\nEnter time >>");
-                    string? time = Console.ReadLine();
-                    DateTime dateTime = DateTime.Parse(date + " " + time);
-                    Console.Write("\nEnter patient name >>");
-                    string? name = Console.ReadLine();
-                    Console.Write("\nEnter patient surname >>");
-                    string? surname = Console.ReadLine();
-                    Patient patient = _hospital.PatientRepo.GetPatientByFullName(name,surname);
-                    Doctor doctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)_user.Person.Id);
-                    if (_hospital.AppointmentRepo.IsDoctorAvailable(dateTime, doctor))
-                    {
-                        Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
-                        try
-                        {
-                            _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
-                        }
-                        catch (NoAvailableRoomException e)
-                        {
-                            System.Console.WriteLine(e.Message);
-                            System.Console.WriteLine("Failed to create checkup");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Doctor is not available at that time");
-                    }
+                    CreateCheckup();
                     break;
                 }
                 case "4":
@@ -65,6 +37,39 @@ public class DoctorUI : ConsoleUI
                     break;
                 }
             }
+        }
+    }
+
+    public bool CreateCheckup()
+    {
+        Console.WriteLine("Creating new Checkup appointment...");
+        Console.Write("\nEnter date >>");
+        string? date = Console.ReadLine();
+        Console.Write("\nEnter time >>");
+        string? time = Console.ReadLine();
+        DateTime dateTime = DateTime.Parse(date + " " + time);
+        Console.Write("\nEnter patient name >>");
+        string? name = Console.ReadLine();
+        Console.Write("\nEnter patient surname >>");
+        string? surname = Console.ReadLine();
+        Patient patient = _hospital.PatientRepo.GetPatientByFullName(name,surname);
+        if (patient == null)
+        {
+            Console.WriteLine("No such patient existst.");
+            return false;
+        }
+        Doctor doctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)_user.Person.Id);
+        if (_hospital.AppointmentRepo.IsDoctorAvailable(dateTime, doctor))
+        {
+            Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
+            _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+            Console.WriteLine("\nCheckup successfully added");
+            return true;
+        }
+        else
+        {
+            Console.WriteLine("Doctor is not available at that time");
+            return false;
         }
     }
 
@@ -83,6 +88,12 @@ public class DoctorUI : ConsoleUI
         checkups.AddRange(_hospital.AppointmentRepo.GetCheckupsByDay(DateTime.Today.AddDays(1)));
         checkups.AddRange(_hospital.AppointmentRepo.GetCheckupsByDay(DateTime.Today.AddDays(2)));
         PrintCheckups(checkups);
+
+        TimetableMenu(checkups);
+    }
+
+    public void TimetableMenu(List<Checkup> checkups)
+    {
         bool quit = false;
         while (!quit)
         {
@@ -93,80 +104,22 @@ public class DoctorUI : ConsoleUI
             {
                 case "1":
                 {
-                    Console.Write("\nEnter checkup number >> ");
-                    try
-                    {
-                        var checkupNumber = int.Parse(Console.ReadLine());
-                        ShowPatientInfo(checkups[checkupNumber-1]);
-                    } catch (IOException e)
-                    {
-                        Console.WriteLine("Wrong input.");
-                    } catch (ArgumentOutOfRangeException e)
-                    {
-                        Console.WriteLine("Wrong input.");
-                    } catch (NullReferenceException e)
-                    {
-                        Console.WriteLine("Wrong input.");
-                    }
+                    ShowInfoMenu(checkups);
                     break;
                 }
                 case "2":
                 {
-                    Console.Write("\nEnter checkup number >> ");
-                    try
-                    {
-                        var checkupNumber = int.Parse(Console.ReadLine());
-                        StartCheckup(checkups[checkupNumber]);
-                    } catch (IOException e)
-                    {
-                        Console.WriteLine("Wrong input.");
-                    } catch (ArgumentOutOfRangeException e)
-                    {
-                        Console.WriteLine("Wrong input.");
-                    } catch (NullReferenceException e)
-                    {
-                        Console.WriteLine("Wrong input.");
-                    }
+                    StartCheckupMenu(checkups);
                     break;
                 }
                 case "3":
                 {
-                    Console.Write("\nEnter checkup number >> ");
-                    try
-                    {
-                        var checkupNumber = int.Parse(Console.ReadLine());
-                        Checkup checkup = checkups[checkupNumber-1];
-                        EditCheckup(checkup);
-                    } catch (IOException e)
-                    {
-                        Console.WriteLine("Wrong input1.");
-                    } catch (ArgumentOutOfRangeException e)
-                    {
-                        Console.WriteLine("Wrong input2.");
-                    } catch (NullReferenceException e)
-                    {
-                        Console.WriteLine("Wrong input3.");
-                    }
+                    EditCheckupMenu(checkups);
                     break;
                 }
                 case "4":
                 {
-                    Console.Write("\nEnter checkup number >> ");
-                    try
-                    {
-                        var checkupNumber = int.Parse(Console.ReadLine());
-                        _hospital.AppointmentRepo.DeleteCheckup(checkups[checkupNumber-1]);
-                        Console.WriteLine("Deletion successfull");
-                    } catch (IOException e)
-                    {
-                        Console.WriteLine("Wrong input1.");
-                    } catch (ArgumentOutOfRangeException e)
-                    {
-                        Console.WriteLine("Wrong input2.");
-                    } catch (NullReferenceException e)
-                    {
-                        Console.WriteLine("Wrong input3.");
-                    }                    
+                    DeleteCheckupMenu(checkups);
                     break;
                 }
                 case "5":
@@ -175,6 +128,64 @@ public class DoctorUI : ConsoleUI
                     break;
                 }
             }
+        }
+    }
+
+    public void ShowInfoMenu(List<Checkup> checkups)
+    {
+        Console.Write("\nEnter checkup number >> ");
+        var isNumber = int.TryParse(Console.ReadLine(), out int checkupNumber);
+        if (isNumber == true && checkupNumber >= 0 && checkupNumber <= checkups.Count())
+        {
+            ShowPatientInfo(checkups[checkupNumber-1]);
+        }
+        else
+        {
+            Console.WriteLine("\nWrong input. Please enter one of the given checkups.");
+        }
+    }
+
+    public void StartCheckupMenu(List<Checkup> checkups)
+    {
+        Console.Write("\nEnter checkup number >> ");
+        var isNumber = int.TryParse(Console.ReadLine(), out int checkupNumber);
+        if (isNumber == true && checkupNumber >= 0 && checkupNumber <= checkups.Count())
+        {
+            StartCheckup(checkups[checkupNumber-1]);
+        }
+        else
+        {
+            Console.WriteLine("\nWrong input. Please enter one of the given checkups.");
+        }
+    }
+
+    public void EditCheckupMenu(List<Checkup> checkups)
+    {
+        Console.Write("\nEnter checkup number >> ");
+        var isNumber = int.TryParse(Console.ReadLine(), out int checkupNumber);
+        if (isNumber == true && checkupNumber >= 0 && checkupNumber <= checkups.Count())
+        {
+            Checkup checkup = checkups[checkupNumber-1];
+            EditCheckup(checkup);
+        }
+        else
+        {
+            Console.WriteLine("\nWrong input. Please enter one of the given checkups.");
+        }
+    }
+
+    public void DeleteCheckupMenu(List<Checkup> checkups)
+    {
+        Console.Write("\nEnter checkup number >> ");
+        var isNumber = int.TryParse(Console.ReadLine(), out int checkupNumber);
+        if (isNumber == true && checkupNumber >= 0 && checkupNumber <= checkups.Count())
+        {
+            _hospital.AppointmentRepo.DeleteCheckup(checkups[checkupNumber-1]);
+            Console.WriteLine("Deletion successfull"); 
+        }
+        else
+        {
+            Console.WriteLine("\nWrong input. Please enter one of the given checkups.");
         }
     }
 
@@ -215,8 +226,13 @@ public class DoctorUI : ConsoleUI
                 {
                     Console.Write("\nEnter Anamnesis >> ");
                     String anamnesis = Console.ReadLine();
+
                     patient.MedicalRecord.AnamnesisHistory.Add(anamnesis);
                     _hospital.PatientRepo.AddOrUpdatePatient(patient);
+
+                    checkup.Anamnesis = anamnesis;
+                    _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+
                     Console.Write("\nDo you want to add a prescription? [y/n] >> ");
                     String? choice = Console.ReadLine().ToLower();
                     if (choice == "y")
@@ -258,27 +274,18 @@ public class DoctorUI : ConsoleUI
         {
             case "1":
             {
-                Console.Write("\nEnter new height >>");
-                var height = double.Parse(Console.ReadLine());
-                patient.MedicalRecord.HeightInCm = height;
-                _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                Console.WriteLine("Edit successfull");
+                EditHeight(patient);
                 break;
             }
             case "2":
             {
-                Console.Write("\nEnter new weight >>");
-                var weight = double.Parse(Console.ReadLine());
-                patient.MedicalRecord.WeightInKg = weight;
-                _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                Console.WriteLine("Edit successfull");
-
+                EditWeight(patient);
                 break;
             }
             case "3":
             {
                 Console.Write("\nEnter new allergy >>");
-                var allergy = Console.ReadLine();
+                string allergy = Console.ReadLine();
                 patient.MedicalRecord.Allergies.Add(allergy);
                 _hospital.PatientRepo.AddOrUpdatePatient(patient);
                 Console.WriteLine("Edit successfull");
@@ -291,56 +298,97 @@ public class DoctorUI : ConsoleUI
         }
     }
 
+    public void EditWeight(Patient patient)
+    {
+        Console.Write("\nEnter new weight in kg >>");
+        var input = int.TryParse(Console.ReadLine(), out int weight);
+        if (input == true && weight > 10 && weight < 400)
+        {
+            patient.MedicalRecord.WeightInKg = weight;
+            _hospital.PatientRepo.AddOrUpdatePatient(patient);
+            Console.WriteLine("Edit successfull");
+        }
+        else
+        {
+            Console.WriteLine("Please enter a valid number");
+        }
+    }
+
+    public void EditHeight(Patient patient)
+    {
+        Console.Write("\nEnter new height in cm >>");
+        var input = int.TryParse(Console.ReadLine(), out int height);
+        if (input == true && height > 30 && height < 250)
+        {
+            patient.MedicalRecord.HeightInCm = height;
+            _hospital.PatientRepo.AddOrUpdatePatient(patient);
+            Console.WriteLine("Edit successfull");
+        }
+        else
+        {
+            Console.WriteLine("Please enter a valid number");
+        }
+    }
+
     public void EditCheckup(Checkup checkup)
     {
         Console.WriteLine("\n\nEdit checkup.\n");
-        Console.Write("\nEdit options:\n\n1. Edit date and time\n2. Edit Patient\n3. Back\n\n");
+        Console.Write("\nEdit options:\n\n1. Edit start date\n2. Edit Patient\n3. Back\n\n");
         Console.Write(">>");
         var editInput = Console.ReadLine();
         switch (editInput) 
         {
             case "1":
             {
-                Console.Write("Enter new date >> ");
-                string? date = Console.ReadLine();
-                Console.Write("Enter new time >> ");
-                string? time = Console.ReadLine();
-                DateTime newDateTime = DateTime.Parse(date + " " + time);
-                Console.Write(newDateTime);
-                checkup.StartTime = newDateTime;
-                try
-                {
-                    _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
-                    Console.WriteLine("Edit successfull");
-                }
-                catch (NoAvailableRoomException e)
-                {
-                    System.Console.WriteLine(e.Message);
-                    System.Console.WriteLine("Failed edit");
-                }
+                EditStartTime(checkup);
                 break;
             }
             case "2":
             {
-                Console.Write("Enter new patient name>> ");
-                string? newName = Console.ReadLine();
-                Console.Write("Enter new patient surname>> ");
-                string? newSurname = Console.ReadLine();
-                checkup.Patient = new MongoDB.Driver.MongoDBRef("patients", _hospital.PatientRepo.GetPatientByFullName(newName,newSurname).Id);
-                try
-                {
-                    _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);                
-                    Console.WriteLine("Edit successfull");
-                }
-                catch (NoAvailableRoomException e)
-                {
-                    System.Console.WriteLine(e.Message);
-                    System.Console.WriteLine("Failed edit");
-                }
+                EditCheckupPatient(checkup);
                 break;
             }
         }
     }
+
+    public void EditStartTime(Checkup checkup)
+    {
+        Console.Write("Enter new date >> ");
+        string? date = Console.ReadLine();
+        Console.Write("Enter new time >> ");
+        string? time = Console.ReadLine();
+        var newDateTime = DateTime.TryParse(date + " " + time, out DateTime newStartDate);
+        if (newDateTime == true)
+        {
+            checkup.StartTime = newStartDate;
+            _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+            Console.WriteLine("\nEdit successfull");
+        }
+        else
+        {
+            Console.WriteLine("\nPlease enter valid date and time");
+        }
+    }
+
+    public void EditCheckupPatient(Checkup checkup)
+    {
+        Console.Write("Enter new patient name>> ");
+        string? newName = Console.ReadLine();
+        Console.Write("Enter new patient surname>> ");
+        string? newSurname = Console.ReadLine();
+        Patient newPatient = _hospital.PatientRepo.GetPatientByFullName(newName,newSurname);
+        if (newPatient != null)
+        {
+           checkup.Patient = new MongoDB.Driver.MongoDBRef("patients", newPatient.Id);
+            _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);                
+            Console.WriteLine("Edit successfull"); 
+        }
+        else
+        {
+            Console.WriteLine("\nNo such patient found.");
+        }
+    }
+
     public void WriteReferral(Patient patient)
     {
         Console.Write("\nRefferal by specialty or doctor [s/d] >> ");
@@ -349,97 +397,116 @@ public class DoctorUI : ConsoleUI
         {
             case "s":
             {
-                Console.Write("\nChoose specialty:\n1. Dermatology\n2. Radiology\n3. Stomatology\n4. Ophthalmology\n5. Family medicine>> ");
-                string? specialty = Console.ReadLine();
-                switch (specialty)
-                {
-                    case "1":
-                    {
-                        Doctor doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.DERMATOLOGY);
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                        break;
-                    }
-                    case "2":
-                    {
-                        Doctor doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.RADIOLOGY);
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                        break;
-                    }
-                    case "3":
-                    {
-                        Doctor doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.STOMATOLOGY);
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                        break;
-                    }
-                    case "4":
-                    {
-                        Doctor doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.OPHTHALMOLOGY);
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                        break;
-                    }
-                    case "5":
-                    {
-                        Doctor doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.FAMILY_MEDICINE);
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        Console.WriteLine(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                        break;
-                    }
-                }
+                ReferralBySpecialtyMenu(patient);
                 break;
             }
             case "d":
             {
-                Console.Write("\nEnter doctor's first name >> ");
-                string? firstName = Console.ReadLine();
-                Console.Write("\nEnter doctor's last name >> ");
-                string? lastName = Console.ReadLine();
-                if (firstName != null && lastName != null)
-                {
-                    Doctor doctor = _hospital.DoctorRepo.GetDoctorByFullName(firstName, lastName);
-                    if (doctor != null)
-                    {
-                        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                        patient.MedicalRecord.Referrals.Add(referral);
-                        _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                    }
-                    else
-                    {
-                        Console.WriteLine("No such doctor exists");
-                    }
-                    
-                }
-                else 
-                {
-                    Console.WriteLine("Wrong input");
-                }
+                ReferralByDoctor(patient);
                 break;
             }
         }
     }
 
+    public void ReferralBySpecialtyMenu(Patient patient)
+    {
+        Doctor doctor = null;
+        Console.Write("\nChoose specialty:\n1. Dermatology\n2. Radiology\n3. Stomatology\n4. Ophthalmology\n5. Family medicine>> ");
+        string? specialty = Console.ReadLine();
+        switch (specialty)
+        {
+            case "1":
+            {
+                doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.DERMATOLOGY);
+                break;
+            }
+            case "2":
+            {
+                doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.RADIOLOGY);
+                break;
+            }
+            case "3":
+            {
+                doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.STOMATOLOGY);
+                break;
+            }
+            case "4":
+            {
+                doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.OPHTHALMOLOGY);
+                break;
+            }
+            case "5":
+            {
+                doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.FAMILY_MEDICINE);
+                break;
+            }
+            default:
+            {
+                Console.WriteLine("Wrong input");
+                break;
+            }
+        }
+        Console.WriteLine(doctor);
+        if (doctor != null)
+        {
+            Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
+            patient.MedicalRecord.Referrals.Add(referral);
+            _hospital.PatientRepo.AddOrUpdatePatient(patient);
+            Console.WriteLine("\nReferral succesfully added");
+        }
+        else
+        {
+            Console.WriteLine("No adequate doctor found.");
+        }
+    }
+
+    public void ReferralByDoctor(Patient patient)
+    {
+        Console.Write("\nEnter doctor's first name >> ");
+        string? firstName = Console.ReadLine();
+        Console.Write("\nEnter doctor's last name >> ");
+        string? lastName = Console.ReadLine();
+        if (firstName != null && lastName != null)
+        {
+            Doctor doctor = _hospital.DoctorRepo.GetDoctorByFullName(firstName, lastName);
+            if (doctor != null)
+            {
+                Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
+                patient.MedicalRecord.Referrals.Add(referral);
+                _hospital.PatientRepo.AddOrUpdatePatient(patient);
+                Console.WriteLine("\nReferral succesfully added");
+            }
+            else
+            {
+                Console.WriteLine("No such doctor exists");
+            } 
+        }
+        else 
+        {
+            Console.WriteLine("Wrong input");
+        }   
+    }
+
     public void PrescriptionMenu(Patient patient)
     {
         bool quit = false;
-        while (!quit)
+        while (true)
         {
             Console.Write("\nEnter medicine name >> ");
             string? name = Console.ReadLine();
             Medicine medicine = _hospital.MedicineRepo.GetByName(name);
+
+            if (medicine == null)
+            {
+                Console.WriteLine("No such medicine found in database");
+                break;
+            }
             if (patient.IsAllergicToMedicine(medicine)) 
             {
                 Console.WriteLine("Patient is allergic to given medicine. Cancelling prescription.");
-                quit = true;
+                break;
             }
+
             Console.Write("\nEnter amount of times the medicine should be taken a day >> ");
             int amount = Int32.Parse(Console.ReadLine());
             Console.Write("\nEnter amount of hours inbetween medicine intake >> ");
