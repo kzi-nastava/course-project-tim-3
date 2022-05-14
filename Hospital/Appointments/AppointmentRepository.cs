@@ -2,12 +2,27 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 
 namespace Hospital;
+
+[System.Serializable]
+public class NoAvailableRoomException : System.Exception
+{
+    public NoAvailableRoomException() { }
+    public NoAvailableRoomException(string message) : base(message) { }
+    public NoAvailableRoomException(string message, System.Exception inner) : base(message, inner) { }
+    protected NoAvailableRoomException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
 public class AppointmentRepository
 {
     private MongoClient _dbClient;
-    public AppointmentRepository(MongoClient _dbClient)
+    private RoomRepository _roomRepo;  // most of this should all be moved to service eventually anyway
+
+    public AppointmentRepository(MongoClient _dbClient, RoomRepository roomRepo)
     {
         this._dbClient = _dbClient;
+        this._roomRepo = roomRepo;
     }
 
     public IMongoCollection<Checkup> GetCheckups()
@@ -23,13 +38,29 @@ public class AppointmentRepository
     public void AddOrUpdateCheckup(Checkup newCheckup)
     {
         var checkups = GetCheckups();
+        newCheckup.RoomLocation = FindAvailableRoom(newCheckup, RoomType.CHECKUP).Location;
         checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
     }
 
     public void AddOrUpdateOperation(Operation newOperation)
     {
         var operations = GetOperations();
+        newOperation.RoomLocation = FindAvailableRoom(newOperation, RoomType.OPERATION).Location;
         operations.ReplaceOne(operation => operation.Id == newOperation.Id, newOperation, new ReplaceOptions {IsUpsert = true});
+    }
+
+    private Room FindAvailableRoom(Appointment appointment, RoomType type)
+    {
+        var available = 
+            from room in _roomRepo.GetAll()
+            where room.Type == type
+            select room;
+        if (!available.Any())
+        {
+            throw new NoAvailableRoomException("Uh-oh, no rooms available at time interval: " 
+                + appointment.StartTime + " - " + appointment.EndTime);
+        }
+        return available.First();  // bad way of finding, will result in some rooms getting swamped, but works
     }
 
     public List<Checkup> GetCheckupsByDoctor(ObjectId id)

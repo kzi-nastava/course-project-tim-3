@@ -14,6 +14,7 @@ namespace Hospital
         public MongoDBRef Doctor {get; set;}
         public TimeSpan Duration {get; set;} = new TimeSpan(0,0,15,0);
         public DateTime EndTime {get; set;}
+        public string? RoomLocation { get; set; }
 
         public Appointment(DateTime startTime, MongoDBRef patient, MongoDBRef doctor) 
         {
@@ -22,6 +23,7 @@ namespace Hospital
             Patient = patient;
             Doctor = doctor;
             EndTime = startTime.Add(Duration);
+            RoomLocation = null;
         }
         public string toString()
         {
