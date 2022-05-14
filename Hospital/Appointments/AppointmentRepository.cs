@@ -38,29 +38,52 @@ public class AppointmentRepository
     public void AddOrUpdateCheckup(Checkup newCheckup)
     {
         var checkups = GetCheckups();
-        newCheckup.RoomLocation = FindAvailableRoom(newCheckup, RoomType.CHECKUP).Location;
+        // THIS WILL REPLACE LOCATION EVEN ON UPDATE!
+        newCheckup.RoomLocation = GetAvailableRoom(newCheckup, RoomType.CHECKUP).Location;
         checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
     }
 
     public void AddOrUpdateOperation(Operation newOperation)
     {
         var operations = GetOperations();
-        newOperation.RoomLocation = FindAvailableRoom(newOperation, RoomType.OPERATION).Location;
+        // THIS WILL REPLACE LOCATION EVEN ON UPDATE!
+        newOperation.RoomLocation = GetAvailableRoom(newOperation, RoomType.OPERATION).Location;
         operations.ReplaceOne(operation => operation.Id == newOperation.Id, newOperation, new ReplaceOptions {IsUpsert = true});
     }
 
-    private Room FindAvailableRoom(Appointment appointment, RoomType type)
+    private Room GetAvailableRoom(Appointment newAppointment, RoomType type)
     {
+        var unavailable = GetUnavailableRoomLocations(newAppointment, type);
         var available = 
             from room in _roomRepo.GetAll()
-            where room.Type == type
+            where room.Type == type && !unavailable.Contains(room.Location)
             select room;
         if (!available.Any())
         {
             throw new NoAvailableRoomException("Uh-oh, no rooms available at time interval: " 
-                + appointment.StartTime + " - " + appointment.EndTime);
+                + newAppointment.StartTime + " - " + newAppointment.EndTime);
         }
         return available.First();  // bad way of finding, will result in some rooms getting swamped, but works
+    }
+
+    private HashSet<string> GetUnavailableRoomLocations(Appointment newAppointment, RoomType type)
+    {
+        HashSet<string> unavailable;
+        if (type == RoomType.CHECKUP)
+        {
+            unavailable = 
+                (from appo in GetCheckups().AsQueryable()
+                where appo.StartTime < newAppointment.EndTime && newAppointment.StartTime < appo.EndTime 
+                select appo.RoomLocation).ToHashSet();
+        }
+        else
+        {
+            unavailable = 
+                (from appo in GetOperations().AsQueryable()
+                where appo.StartTime < newAppointment.EndTime && newAppointment.StartTime < appo.EndTime 
+                select appo.RoomLocation).ToHashSet();
+        }
+        return unavailable;
     }
 
     public List<Checkup> GetCheckupsByDoctor(ObjectId id)
