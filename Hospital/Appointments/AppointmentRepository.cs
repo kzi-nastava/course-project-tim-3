@@ -38,7 +38,6 @@ public class AppointmentRepository
     public void AddOrUpdateCheckup(Checkup newCheckup)
     {
         var checkups = GetCheckups();
-        // THIS WILL REPLACE LOCATION EVEN ON UPDATE!
         newCheckup.RoomLocation = GetAvailableRoom(newCheckup, RoomType.CHECKUP).Location;
         checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
     }
@@ -46,7 +45,6 @@ public class AppointmentRepository
     public void AddOrUpdateOperation(Operation newOperation)
     {
         var operations = GetOperations();
-        // THIS WILL REPLACE LOCATION EVEN ON UPDATE!
         newOperation.RoomLocation = GetAvailableRoom(newOperation, RoomType.OPERATION).Location;
         operations.ReplaceOne(operation => operation.Id == newOperation.Id, newOperation, new ReplaceOptions {IsUpsert = true});
     }
