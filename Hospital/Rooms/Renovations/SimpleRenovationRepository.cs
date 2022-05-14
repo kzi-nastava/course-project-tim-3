@@ -13,26 +13,26 @@ public class SimpleRenovationRepository
         _roomRepo = roomRepo;
     }
 
-    private IMongoCollection<SimpleRenovation> GetCollection()
+    private IMongoCollection<SimpleRenovation> GetMongoCollection()
     {
         return _dbClient.GetDatabase("hospital").GetCollection<SimpleRenovation>("simple_renovations");
     }
 
     public IQueryable<SimpleRenovation> GetAll()
     {
-        return GetCollection().AsQueryable();
+        return GetMongoCollection().AsQueryable();
     }
 
     public void Add(SimpleRenovation renovation)
     // todo: load these on start in scheduler when making service
     {
-        GetCollection().InsertOne(renovation);
+        GetMongoCollection().InsertOne(renovation);
     }
 
     // NOTE: expects existing!!
     public void Replace(SimpleRenovation replacing)
     {
-        GetCollection().ReplaceOne(relocation => relocation.Id == replacing.Id, replacing);
+        GetMongoCollection().ReplaceOne(relocation => relocation.Id == replacing.Id, replacing);
     }
 
     public void Schedule(SimpleRenovation renovation)

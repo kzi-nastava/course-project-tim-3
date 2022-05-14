@@ -13,26 +13,26 @@ public class EquipmentRelocationRepository
         _equipmentRepo = equipmentRepo;
     }
 
-    private IMongoCollection<EquipmentRelocation> GetCollection()
+    private IMongoCollection<EquipmentRelocation> GetMongoCollection()
     {
         return _dbClient.GetDatabase("hospital").GetCollection<EquipmentRelocation>("relocations");
     }
 
     public IQueryable<EquipmentRelocation> GetAll()
     {
-        return GetCollection().AsQueryable();
+        return GetMongoCollection().AsQueryable();
     }
 
     public void Add(EquipmentRelocation relocation)
     // todo: load these on start in scheduler
     {
-        GetCollection().InsertOne(relocation);
+        GetMongoCollection().InsertOne(relocation);
     }
 
     // NOTE: expects existing!!
     public void Replace(EquipmentRelocation replacing)
     {
-        GetCollection().ReplaceOne(relocation => relocation.Id == replacing.Id, replacing);
+        GetMongoCollection().ReplaceOne(relocation => relocation.Id == replacing.Id, replacing);
     }
 
     public void Schedule(EquipmentRelocation relocation)

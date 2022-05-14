@@ -15,26 +15,26 @@ public class MergeRenovationRepository
         _relocationRepo = relocationRepo;
     }
 
-    private IMongoCollection<MergeRenovation> GetCollection()
+    private IMongoCollection<MergeRenovation> GetMongoCollection()
     {
         return _dbClient.GetDatabase("hospital").GetCollection<MergeRenovation>("merge_renovations");
     }
 
     public IQueryable<MergeRenovation> GetAll()
     {
-        return GetCollection().AsQueryable();
+        return GetMongoCollection().AsQueryable();
     }
 
     public void Add(MergeRenovation renovation)
     // todo: load these on start in scheduler when making service
     {
-        GetCollection().InsertOne(renovation);
+        GetMongoCollection().InsertOne(renovation);
     }
 
     // NOTE: expects existing!!
     public void Replace(MergeRenovation replacing)
     {
-        GetCollection().ReplaceOne(renovation => renovation.Id == replacing.Id, replacing);
+        GetMongoCollection().ReplaceOne(renovation => renovation.Id == replacing.Id, replacing);
     }
 
     public void Schedule(MergeRenovation renovation)

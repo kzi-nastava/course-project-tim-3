@@ -15,26 +15,26 @@ public class SplitRenovationRepository
         _relocationRepo = relocationRepo;
     }
 
-    private IMongoCollection<SplitRenovation> GetCollection()
+    private IMongoCollection<SplitRenovation> GetMongoCollection()
     {
         return _dbClient.GetDatabase("hospital").GetCollection<SplitRenovation>("split_renovations");
     }
 
     public IQueryable<SplitRenovation> GetAll()
     {
-        return GetCollection().AsQueryable();
+        return GetMongoCollection().AsQueryable();
     }
 
     public void Add(SplitRenovation renovation)
     // todo: load these on start in scheduler when making service
     {
-        GetCollection().InsertOne(renovation);
+        GetMongoCollection().InsertOne(renovation);
     }
 
     // NOTE: expects existing!!
     public void Replace(SplitRenovation replacing)
     {
-        GetCollection().ReplaceOne(renovation => renovation.Id == replacing.Id, replacing);
+        GetMongoCollection().ReplaceOne(renovation => renovation.Id == replacing.Id, replacing);
     }
 
     public void Schedule(SplitRenovation renovation)
