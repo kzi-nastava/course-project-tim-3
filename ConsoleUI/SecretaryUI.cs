@@ -21,7 +21,7 @@ public class SecretaryUI : ConsoleUI
     }
 
     public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
-    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", "Select blocked", "Back"};
+    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", "Select blocked", "Back", "Block Patient"};
 
     public void printCommands(List<string> commands)
     {
@@ -99,6 +99,9 @@ public class SecretaryUI : ConsoleUI
             }
             else if (selectedOption == "selectblocked"){
                 SelectBlockedPatients();
+            }
+            else if (selectedOption == "blockpatient"){
+                BlockUserPatients();
             }
             else if (selectedOption == "back")
             {
@@ -358,6 +361,18 @@ public class SecretaryUI : ConsoleUI
         printCommands(CRUDCommands);
     }
 
+    public void BlockUserPatients()
+    {
+        Console.Clear();
+        UserRepository ur = _hospital.UserRepo;
+        System.Console.Write("Enter the user mail to block: ");
+        string? email = Console.ReadLine();
+        if (email is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        ur.BlockUserPatient(email);
+    }
         public void SelectBlockedPatients(){
         // Console.Clear();
         // UserRepository ur = _hospital.UserRepo;

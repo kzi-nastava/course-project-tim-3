@@ -88,5 +88,21 @@ namespace Hospital
             if (deleted.DeletedCount == 0)
                 throw new UserDoesNotExistException("User " + email + " does not exist.");
         }
+
+        public void BlockUserPatient(string email)
+        {
+            var userToBlock = GetUser(email);
+            var users = GetUsers();
+            if (userToBlock.Role != Role.PATIENT)
+            {
+                throw new UserDoesNotExistException("User " + email + " is not a patient.");
+            }
+            if (userToBlock.BlockStatus != Block.UNBLOCKED){
+                throw new UserDoesNotExistException("User " + email + " is already blocked.");
+            }
+            userToBlock.BlockStatus = Block.BY_SECRETARY;
+
+            users.ReplaceOne(user => user.Email == email, userToBlock, new ReplaceOptions {IsUpsert = true});
+        }
     }
 } 
