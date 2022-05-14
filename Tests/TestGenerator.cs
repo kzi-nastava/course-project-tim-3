@@ -155,10 +155,10 @@ public static class TestGenerator
 
     private static void GenerateMedication(Hospital hospital)
     {
-        hospital.MedicationRepo.AddOrUpdate(new Medication("ibuprofen", new List<string> {"Lactose", "Maize Starch", "Hypromellose", "Sodium Starch Glycollate", "Colloidal Anhydrous Silica", "Magnesium Stearate", "Sucrose", "Talc", "Titanium Dioxide (E171)", "Carnauba Wax"}));
-        hospital.MedicationRepo.AddOrUpdate(new Medication("probiotic", new List<string> {"Lactobacillus"}));
-        hospital.MedicationRepo.AddOrUpdate(new Medication("amoxicillin", new List<string> {"Penicillin","Magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}));
-        hospital.MedicationRepo.AddOrUpdate(new Medication("oxacillin", new List<string> {"Penicillin"}));
+        hospital.MedicationRepo.AddOrUpdate(new Medication("ibuprofen", new List<string> {"lactose", "Maize Starch", "Hypromellose", "sodium starch glycollate", "colloidal Anhydrous Silica", "magnesium Stearate", "sucrose", "talc", "titanium Dioxide (E171)", "carnauba Wax"}));
+        hospital.MedicationRepo.AddOrUpdate(new Medication("probiotic", new List<string> {"lactobacillus"}));
+        hospital.MedicationRepo.AddOrUpdate(new Medication("amoxicillin", new List<string> {"penicillin","magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}));
+        hospital.MedicationRepo.AddOrUpdate(new Medication("oxacillin", new List<string> {"penicillin"}));
     }
 
     private static void WriteDatabaseToFile(MongoClient dbClient)

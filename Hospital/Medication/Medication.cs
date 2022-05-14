@@ -19,7 +19,10 @@ namespace HospitalSystem
             Name = name;
             Ingredients = ingredients;
         }
+        
+        public override string ToString()
+        {
+            return  Name;
+        }
     }
-
-    
 }

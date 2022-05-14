@@ -21,5 +21,10 @@ namespace HospitalSystem
             BestTaken = bestTaken;
             HoursBetweenIntakes = hoursbetweenIntakes;
         }
+
+        public override string ToString()
+        {
+            return Medication + "\n" + TimesADay + " times a day, every " + HoursBetweenIntakes + " hour/s\nBest taken " + BestTaken;
+        }
     }
 }

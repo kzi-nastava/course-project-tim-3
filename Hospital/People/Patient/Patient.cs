@@ -23,7 +23,7 @@ namespace HospitalSystem
         {
             foreach (string ingredient in medication.Ingredients)
             {
-                if (MedicalRecord.Allergies.Contains(ingredient)) return true;
+                if (MedicalRecord.Allergies.Contains(ingredient.ToLower())) return true;
             }
             return false;
         }
