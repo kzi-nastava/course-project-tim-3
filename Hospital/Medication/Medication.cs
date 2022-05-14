@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
 
-namespace Hospital
+namespace HospitalSystem
 {
     public class Medication
     {

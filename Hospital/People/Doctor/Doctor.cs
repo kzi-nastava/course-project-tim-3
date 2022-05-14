@@ -1,5 +1,5 @@
 using MongoDB.Bson.Serialization.Attributes;
-namespace Hospital
+namespace HospitalSystem
 {
     public enum Specialty
     {

@@ -1,6 +1,6 @@
 using Timer = System.Timers.Timer;
 
-namespace Hospital;
+namespace HospitalSystem;
 
 public delegate void Task();
 

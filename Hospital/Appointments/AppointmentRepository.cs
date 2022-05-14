@@ -1,7 +1,7 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
 
-namespace Hospital;
+namespace HospitalSystem;
 
 [System.Serializable]
 public class NoAvailableRoomException : System.Exception
@@ -84,6 +84,22 @@ public class AppointmentRepository
                 select appo.RoomLocation).ToHashSet();
         }
         return unavailable;
+    }
+
+    public bool IsRoomAvailableForRenovation(string roomLocation, DateTime renovationStartTime)
+    {
+        // Does some appointment end after Renovation starts? Then can't renovate
+        var checkupOvertakes = 
+            (from checkup in GetCheckups().AsQueryable()
+            where renovationStartTime < checkup.EndTime
+            select checkup).Any();
+        if (checkupOvertakes) return false;
+
+        var operationOvertakes = 
+            (from operation in GetOperations().AsQueryable()
+            where renovationStartTime < operation.EndTime
+            select operation).Any();
+        return !operationOvertakes;
     }
 
     public List<Checkup> GetCheckupsByDoctor(ObjectId id)

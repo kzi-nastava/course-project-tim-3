@@ -1,7 +1,7 @@
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
-namespace Hospital;
+namespace HospitalSystem;
 
 public class EquipmentBatchRepository
 {
@@ -12,14 +12,14 @@ public class EquipmentBatchRepository
         this._dbClient = _dbClient;
     }
 
-    private IMongoCollection<EquipmentBatch> GetCollection()
+    private IMongoCollection<EquipmentBatch> GetMongoCollection()
     {
         return _dbClient.GetDatabase("hospital").GetCollection<EquipmentBatch>("equipments");
     }
 
     public IQueryable<EquipmentBatch> GetAll()
     {
-        return GetCollection().AsQueryable();
+        return GetMongoCollection().AsQueryable();
     }
 
     public IQueryable<EquipmentBatch> GetAllIn(string roomLocation)
@@ -37,7 +37,7 @@ public class EquipmentBatchRepository
         var batch = Get(newBatch.RoomLocation, newBatch.Name);
         if (batch is null)
         {
-            GetCollection().InsertOne(newBatch);
+            GetMongoCollection().InsertOne(newBatch);
         }
         else
         {
@@ -60,23 +60,23 @@ public class EquipmentBatchRepository
             if (existingBatch.Count != 0)
                 Replace(existingBatch);
             else
-                GetCollection().DeleteOne(batch => batch.Id == existingBatch.Id);
+                GetMongoCollection().DeleteOne(batch => batch.Id == existingBatch.Id);
         }
     }
 
     public void DeleteAllInRoom(Room room)
     {
-        GetCollection().DeleteMany(batch => batch.RoomLocation == room.Location);
+        GetMongoCollection().DeleteMany(batch => batch.RoomLocation == room.Location);
     }
 
     public void Replace(EquipmentBatch newBatch) // EXPECTS EXISTING EQUIPMENTBATCH!
     {
-        GetCollection().ReplaceOne(batch => batch.Id == newBatch.Id, newBatch);
+        GetMongoCollection().ReplaceOne(batch => batch.Id == newBatch.Id, newBatch);
     }
 
     public EquipmentBatch? Get(string roomLocation, string name)
     {
-        var batches = GetCollection();
+        var batches = GetMongoCollection();
         return batches.Find(batch => batch.RoomLocation == roomLocation && batch.Name == name).FirstOrDefault();
     }
 

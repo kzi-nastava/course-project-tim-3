@@ -1,7 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Hospital;
+namespace HospitalSystem;
 
 public enum RoomType
 {

@@ -1,7 +1,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
-namespace Hospital
+namespace HospitalSystem
 {
     [BsonKnownTypes(typeof(Patient), typeof(Doctor), typeof(Secretary), typeof(Director))]
     public abstract class Person

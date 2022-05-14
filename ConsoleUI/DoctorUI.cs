@@ -1,6 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
-namespace Hospital;
+namespace HospitalSystem;
 
 public class DoctorUI : ConsoleUI
 {

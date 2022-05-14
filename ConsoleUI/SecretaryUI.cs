@@ -1,4 +1,4 @@
-namespace Hospital;
+namespace HospitalSystem;
 using MongoDB.Driver;
 using MongoDB.Bson;
 [System.Serializable]
