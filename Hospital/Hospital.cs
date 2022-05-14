@@ -25,10 +25,10 @@
             UserRepo = new (_dbClient);
             DoctorRepo = new (_dbClient);
             PatientRepo = new (_dbClient);
-            AppointmentRepo = new (_dbClient);
             DirectorRepo = new (_dbClient);
             SecretaryRepo = new (_dbClient);
             RoomRepo = new (_dbClient);
+            AppointmentRepo = new (_dbClient, RoomRepo);
             EquipmentRepo = new (_dbClient);
             RelocationRepo = new (_dbClient, EquipmentRepo);
             CheckupChangeRequestRepo = new (_dbClient);

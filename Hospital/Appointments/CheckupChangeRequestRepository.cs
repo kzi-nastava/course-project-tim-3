@@ -32,13 +32,6 @@ namespace Hospital
             return  GetAll().AsQueryable();
         }
 
-        public void AddOrUpdate(Checkup checkup, CRUDOperation crudOperation, RequestState state = RequestState.PENDING)
-        {
-            var newRequest = new CheckupChangeRequest(checkup, crudOperation, state);
-            var requests = GetAll();
-            requests.ReplaceOne(request => request.Id == newRequest.Id, newRequest, new ReplaceOptions {IsUpsert = true});
-        }
-
         public void AddOrUpdate(CheckupChangeRequest newRequest)
         {
             var requests = GetAll();

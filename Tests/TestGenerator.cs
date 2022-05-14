@@ -15,8 +15,8 @@ public static class TestGenerator
         System.Console.WriteLine("DROPPED EXISTING DATABASE HOSPITAL");
 
         GenerateUsers(hospital);
-        GenerateCheckupsAndOperations(hospital);
         GenerateRoomsAndEquipments(hospital);
+        GenerateCheckupsAndOperations(hospital);
         GenerateCheckupChangeRequests(hospital);
 
         System.Console.WriteLine("GENERATED TESTS IN DB");
@@ -87,21 +87,32 @@ public static class TestGenerator
     private static void GenerateCheckupsAndOperations(Hospital.Hospital hospital)
     {
         DateTime dateTime = new DateTime(2022, 5, 11, 4, 15, 0);
-        for (int i = 0; i < 100; i++)
+        int i = 0;
+        try
         {
-            Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1","surname1");
-            Patient patient = hospital.PatientRepo.GetPatientByFullName("name2","surname2");
-            dateTime = dateTime.AddHours(1);
-
-            if (i % 2 == 0)
-            {   
-                Checkup check = new Checkup(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "anamneza");
-                hospital.AppointmentRepo.AddOrUpdateCheckup(check);
-            } else if (i % 2 == 1) 
+            for (; i < 100; i++)
             {
-                Operation op = new Operation(dateTime, new MongoDBRef("patients",patient.Id), new MongoDBRef("doctors", doctor.Id), "report", new TimeSpan(1,15,0));
-                hospital.AppointmentRepo.AddOrUpdateOperation(op);
-            }    
+                Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1","surname1");
+                Patient patient = hospital.PatientRepo.GetPatientByFullName("name2","surname2");
+                dateTime = dateTime.AddHours(1);
+
+                if (i % 2 == 0)
+                {   
+                    Checkup check = new Checkup(dateTime, new MongoDBRef("patients",patient.Id),
+                        new MongoDBRef("doctors", doctor.Id), "anamneza");
+                    hospital.AppointmentRepo.AddOrUpdateCheckup(check);
+                } else if (i % 2 == 1) 
+                {
+                    Operation op = new Operation(dateTime, new MongoDBRef("patients",patient.Id),
+                        new MongoDBRef("doctors", doctor.Id), "report", new TimeSpan(1,15,0));
+                    hospital.AppointmentRepo.AddOrUpdateOperation(op);
+                }
+            }
+        }
+        catch (NoAvailableRoomException e)
+        {
+            System.Console.WriteLine(e.Message);
+            System.Console.WriteLine("Stopping appointment generation at " + i + " generated");
         }
     }
 
