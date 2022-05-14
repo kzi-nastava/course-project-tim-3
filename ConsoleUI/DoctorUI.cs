@@ -446,7 +446,6 @@ public class DoctorUI : ConsoleUI
                 break;
             }
         }
-        Console.WriteLine(doctor);
         if (doctor != null)
         {
             Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
@@ -501,9 +500,9 @@ public class DoctorUI : ConsoleUI
                 Console.WriteLine("No such medication found in database");
                 break;
             }
-            if (patient.IsAllergicToMedicine(medication)) 
+            if (patient.IsAllergicToMedication(medication)) 
             {
-                Console.WriteLine("Patient is allergic to given medicine. Cancelling prescription.");
+                Console.WriteLine("Patient is allergic to given Medication. Cancelling prescription.");
                 break;
             }
 
@@ -536,30 +535,30 @@ public class DoctorUI : ConsoleUI
         {
             case "1":
             {
-                AddPrescription(medication, amount, MedicineBestTaken.BEFORE_MEAL, hours, patient);
+                AddPrescription(medication, amount, MedicationBestTaken.BEFORE_MEAL, hours, patient);
                 break;
             }
             case "2":
             {
-                AddPrescription(medication, amount, MedicineBestTaken.AFTER_MEAL, hours, patient);
+                AddPrescription(medication, amount, MedicationBestTaken.AFTER_MEAL, hours, patient);
                 break;
             }
             case "3":
             {
-                AddPrescription(medication, amount, MedicineBestTaken.WITH_MEAL, hours, patient);
+                AddPrescription(medication, amount, MedicationBestTaken.WITH_MEAL, hours, patient);
                 break;
             }
             case "4":
             {
-                AddPrescription(medication, amount, MedicineBestTaken.ANY_TIME, hours, patient);
+                AddPrescription(medication, amount, MedicationBestTaken.ANY_TIME, hours, patient);
                 break;
             }
         }         
     }
 
-    public void AddPrescription(Medication medication, int amount, MedicineBestTaken bestTaken, int hours, Patient patient)
+    public void AddPrescription(Medication medication, int amount, MedicationBestTaken bestTaken, int hours, Patient patient)
     {
-        Prescription prescription = new Prescription(medication, amount, MedicineBestTaken.ANY_TIME, hours);
+        Prescription prescription = new Prescription(medication, amount, MedicationBestTaken.ANY_TIME, hours);
         patient.MedicalRecord.Prescriptions.Add(prescription);
         _hospital.PatientRepo.AddOrUpdatePatient(patient);
     }

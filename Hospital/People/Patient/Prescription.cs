@@ -1,6 +1,6 @@
 namespace Hospital
 {
-    public enum MedicineBestTaken
+    public enum MedicationBestTaken
     {
         BEFORE_MEAL,
         AFTER_MEAL,
@@ -11,10 +11,10 @@ namespace Hospital
     {
         public Medication Medication {get; set;}
         public int TimesADay {get; set;}
-        public MedicineBestTaken BestTaken {get; set;}
+        public MedicationBestTaken BestTaken {get; set;}
         public int HoursBetweenIntakes {get; set;}
 
-        public Prescription(Medication medication, int timesADay, MedicineBestTaken bestTaken, int hoursbetweenIntakes)
+        public Prescription(Medication medication, int timesADay, MedicationBestTaken bestTaken, int hoursbetweenIntakes)
         {
             Medication = medication;
             TimesADay = timesADay;

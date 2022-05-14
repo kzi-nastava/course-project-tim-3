@@ -18,6 +18,7 @@ public static class TestGenerator
         GenerateRoomsAndEquipments(hospital);
         GenerateCheckupsAndOperations(hospital);
         GenerateCheckupChangeRequests(hospital);
+        GenerateMedication(hospital);
 
         System.Console.WriteLine("GENERATED TESTS IN DB");
 

@@ -19,9 +19,9 @@ namespace Hospital
             return FirstName + " " + LastName ;
         }
 
-        public bool IsAllergicToMedicine(Medication medicine)
+        public bool IsAllergicToMedication(Medication medication)
         {
-            foreach (string ingredient in medicine.Ingredients)
+            foreach (string ingredient in medication.Ingredients)
             {
                 if (MedicalRecord.Allergies.Contains(ingredient)) return true;
             }
