@@ -1,17 +1,18 @@
 using MongoDB.Driver;
 
-namespace Hospital
+namespace HospitalSystem
 {
     public class Operation : Appointment
     {
        public string Report {get; set;}
-       public Operation(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor, string report) : base(timeAndDate, patient, doctor)
+       public Operation(DateTime startTime, MongoDBRef patient, MongoDBRef doctor, string report, TimeSpan duration) : base(startTime, patient, doctor)
        {
+           Duration = duration;
            Report = report;
        }
        public override string ToString()
         {
-            return TimeAndDate + " " + Patient.Id + " " + Doctor.Id + " " + Duration + " " + Report;
+            return StartTime + " " + Patient.Id + " " + Doctor.Id + " " + Duration + " " + Report;
         }
     }
 }

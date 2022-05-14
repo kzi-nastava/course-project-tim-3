@@ -455,3 +455,4 @@ $RECYCLE.BIN/
 
 # db and trash files
 *.json
+*.pdf

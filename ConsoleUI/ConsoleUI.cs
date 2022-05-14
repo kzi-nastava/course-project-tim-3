@@ -1,4 +1,4 @@
-namespace Hospital;
+namespace HospitalSystem;
 
 [System.Serializable]
 public class QuitToMainMenuException : System.Exception
@@ -18,6 +18,17 @@ public class InvalidInputException : System.Exception
     public InvalidInputException(string message) : base(message) { }
     public InvalidInputException(string message, System.Exception inner) : base(message, inner) { }
     protected InvalidInputException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
+[System.Serializable]
+public class AbortException : System.Exception
+{
+    public AbortException() { }
+    public AbortException(string message) : base(message) { }
+    public AbortException(string message, System.Exception inner) : base(message, inner) { }
+    protected AbortException(
         System.Runtime.Serialization.SerializationInfo info,
         System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
@@ -43,5 +54,22 @@ public abstract class ConsoleUI
         else
             sanitized = raw.ToLower();
         return sanitized;
+    }
+
+    // the bounds are both inclusive
+    public int ReadInt(int lowerBound = Int32.MinValue, int upperBound = Int32.MaxValue,
+                       string errorMessageBounds = "NUMBER OUT OF BOUNDS!",
+                       string errorMessageWrongInput = "NUMBER NOT RECOGNIZED!")
+    {
+        var rawNumber = ReadSanitizedLine();
+        bool success = Int32.TryParse(rawNumber, out int number);
+        
+        if (!success)
+            throw new InvalidInputException(errorMessageWrongInput);
+
+        if (number < lowerBound || number > upperBound)
+            throw new InvalidInputException(errorMessageBounds);
+
+        return number;
     }
 }

@@ -1,6 +1,6 @@
 using MongoDB.Driver;
 
-namespace Hospital
+namespace HospitalSystem
 {
     public class SecretaryRepository
     {
@@ -16,5 +16,11 @@ namespace Hospital
             return _dbClient.GetDatabase("hospital").GetCollection<Secretary>("secretaries");
         }
 
+         public void AddOrUpdateSecretary(Secretary secretary)
+        {
+            var newSecretary = secretary;
+            var secretaries = GetSecretaries();
+            secretaries.ReplaceOne(secretary => secretary.Id == newSecretary.Id, newSecretary, new ReplaceOptions {IsUpsert = true});
+        }
     }
 } 

@@ -1,7 +1,7 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
 
-namespace Hospital
+namespace HospitalSystem
 {
     public class DoctorRepository
     {
@@ -12,28 +12,15 @@ namespace Hospital
             this._dbClient = _dbClient;
         }
 
-        public IMongoCollection<Doctor> GetDoctors()
+        public IMongoCollection<Doctor> GetAll()
         {
             return _dbClient.GetDatabase("hospital").GetCollection<Doctor>("doctors");
         }
 
-        public void AddDoctor(string firstName, string lastName, Specialty specialty)
-        {
-            var newDoctor = new Doctor(firstName, lastName, specialty);
-            var doctors = GetDoctors();
-            doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
-        }
-
-        public void AddDoctor(Doctor newDoctor)
-        {
-            var doctors = GetDoctors();
-            doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
-        }
-
         // this should return an empty list if there are no doctors in selected specialty
-        public List<Doctor> GetDoctorBySpecialty(Specialty specialty)
+        public List<Doctor> GetManyBySpecialty(Specialty specialty)
         {
-            var doctors = GetDoctors();
+            var doctors = GetAll();
             var specizedDoctors =
                 from doctor in doctors.AsQueryable<Doctor>()
                 where doctor.Specialty == specialty
@@ -42,23 +29,29 @@ namespace Hospital
             return specizedDoctors.ToList();
         }
 
-        public void AddOrUpdateDoctor(Doctor doctor)
-
+        public Doctor GetOneBySpecialty(Specialty specialty)
         {
-            var newDoctor = doctor;
-            var doctors = GetDoctors();
-            doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
-        }
-        public Doctor GetDoctorByName(string name)
-        {
-            var doctors = GetDoctors();
-            var foundDoctor = doctors.Find(doctor => doctor.FirstName == name).FirstOrDefault();
+            var doctors = GetAll();
+            var foundDoctor = doctors.Find(doctor => doctor.Specialty == specialty).FirstOrDefault();
             return foundDoctor;
         }
 
-        public Doctor GetDoctorById(ObjectId id)
+        public void AddOrUpdateDoctor(Doctor doctor)
         {
-            var doctors = GetDoctors();
+            var newDoctor = doctor;
+            var doctors = GetAll();
+            doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
+        }
+        public Doctor GetByFullName(string firstName, string lastName)
+        {
+            var doctors = GetAll();
+            var foundDoctor = doctors.Find(doctor => doctor.FirstName == firstName && doctor.LastName == lastName).FirstOrDefault();
+            return foundDoctor;
+        }
+
+        public Doctor GetById(ObjectId id)
+        {
+            var doctors = GetAll();
             var foundDoctor = doctors.Find(doctor => doctor.Id == id).FirstOrDefault();
             return foundDoctor;
         }

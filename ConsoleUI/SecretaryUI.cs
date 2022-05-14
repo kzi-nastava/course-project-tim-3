@@ -1,7 +1,18 @@
-namespace Hospital;
+namespace HospitalSystem;
 using MongoDB.Driver;
 using MongoDB.Bson;
 [System.Serializable]
+
+public class NotMatchingtException : System.Exception
+{
+    public NotMatchingtException() { }
+    public NotMatchingtException(string message) : base(message) { }
+    public NotMatchingtException(string message, System.Exception inner) : base(message, inner) { }
+    protected NotMatchingtException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
 public class NullInputException : System.Exception
 {
     public NullInputException() { }
@@ -21,7 +32,8 @@ public class SecretaryUI : ConsoleUI
     }
 
     public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
-    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", "Back"};
+    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", 
+    "Select blocked", "Block Patient", "Check Requests", "Back"};
 
     public void printCommands(List<string> commands)
     {
@@ -97,6 +109,15 @@ public class SecretaryUI : ConsoleUI
             else if (selectedOption == "delete"){
                 DeleteUserPatient();
             }
+            else if (selectedOption == "selectblocked"){
+                SelectBlockedPatients();
+            }
+            else if (selectedOption == "blockpatient"){
+                BlockUserPatients();
+            }
+            else if (selectedOption == "cr"){
+                CheckRequests();
+            }
             else if (selectedOption == "back")
             {
                 Console.Clear();
@@ -121,8 +142,12 @@ public class SecretaryUI : ConsoleUI
         var matchingUsers = from user in usersGet.AsQueryable() select user;
 
         foreach(var p in matchingUsers){
-            users.Add(p);
+            if (p.Role == Role.PATIENT){
+                users.Add(p);
+            }
         }
+
+        Console.WriteLine(users.Count().ToString()); 
 
         int usersListSize = users.Count();
         int startIndex = 0;
@@ -261,7 +286,7 @@ public class SecretaryUI : ConsoleUI
             Console.Clear();
             Patient patient = new Patient(email, lastName, new MedicalRecord());
             _hospital.PatientRepo.AddOrUpdatePatient(patient);
-            ur.AddUser(email, password, patient, Role.PATIENT);
+            ur.AddOrUpdateUser(new User(email, password,patient,Role.PATIENT));
         }
         printCommands(CRUDCommands);
     }
@@ -347,6 +372,86 @@ public class SecretaryUI : ConsoleUI
             throw new NullInputException("Null value as input");
         }
         ur.DeleteUser(email);
+        Console.Clear();
+        printCommands(CRUDCommands);
+    }
+
+    public void BlockUserPatients()
+    {
+        Console.Clear();
+        UserRepository ur = _hospital.UserRepo;
+        System.Console.Write("Enter the user mail to block: ");
+        string? email = Console.ReadLine();
+        if (email is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        ur.BlockUserPatient(email);
+        Console.Clear();
+        printCommands(CRUDCommands);
+    }
+    public void SelectBlockedPatients()
+    {
+        Console.Clear();
+        UserRepository ur = _hospital.UserRepo;
+        List<User> blockedUsers = ur.GetBlockedUsers();
+        System.Console.WriteLine("Blocked users(email): ");
+        foreach(var b in blockedUsers){
+            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) b.Person.Id);
+            System.Console.WriteLine(" << User: " + pat.FirstName.ToString() + " " + pat.LastName.ToString() + ", Email: " + b.Email.ToString() + " >> ");
+        }
+        System.Console.WriteLine();
+        System.Console.Write("Enter the user mail to unblock: ");
+        string? email = Console.ReadLine();
+        if (email is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+         ur.UnblockUserPatient(email);
+        Console.Clear();
+        printCommands(CRUDCommands);
+    }
+
+    //MAKE BETTER CONSOLE INTERFACE
+    public void CheckRequests(){
+        Console.Clear();
+        CheckupChangeRequestRepository cr = _hospital.CheckupChangeRequestRepo;
+        var requestsGet = cr.GetAll();
+        List<User> requests = new List<User>();
+        var matchingRequests = from request in requestsGet.AsQueryable() select request;
+
+        int buffer = 1;
+        foreach(var m in matchingRequests){
+            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) m.Checkup.Patient.Id);
+            Doctor doc = _hospital.DoctorRepo.GetDoctorById((ObjectId) m.Checkup.Doctor.Id);
+            System.Console.WriteLine("Index ID: " + buffer);
+            System.Console.WriteLine("ID: " + m.Id.ToString());
+            System.Console.WriteLine("Patient: " +  pat.FirstName + " " + pat.LastName);
+            System.Console.WriteLine("Doctor: " +  doc.FirstName + " " + doc.LastName);
+            System.Console.WriteLine("Start time: " + m.Checkup.StartTime);
+            System.Console.WriteLine("End time: " + m.Checkup.EndTime);
+            System.Console.WriteLine("Duration: " + m.Checkup.Duration);
+            System.Console.WriteLine("RequestState: " + m.RequestState);
+            System.Console.WriteLine("--------------------------------------------------------------------");
+            System.Console.WriteLine();
+            buffer = buffer + 1;
+        }
+        System.Console.Write("Enter id: ");
+        string? stringId = Console.ReadLine();
+        int indexId = Int16.Parse(stringId);
+        System.Console.Write("Enter state(approved, denied): ");
+        string? stringState = Console.ReadLine();
+        if (stringState is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        if (stringState == "approved")
+        {
+            cr.UpdateRequest(indexId, RequestState.APPROVED);
+        }
+        if (stringState == "denied"){
+        cr.UpdateRequest(indexId, RequestState.DENIED);
+        }
         Console.Clear();
         printCommands(CRUDCommands);
     }

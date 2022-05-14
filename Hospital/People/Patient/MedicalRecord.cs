@@ -1,16 +1,20 @@
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Hospital;
+namespace HospitalSystem;
+
 [BsonIgnoreExtraElements]
 public class MedicalRecord {
     [BsonElement]
-    public double HeightInCm {get; set;}
+    public double HeightInCm { get; set; }
     [BsonElement]
-    public double WeightInKg {get; set;}
+    public double WeightInKg { get; set; }
     [BsonElement]
-    public List<string> AnamnesisHistory {get;} 
+    public List<string> AnamnesisHistory { get; } 
     [BsonElement]
-    public List<string> Allergies {get;} 
+    public List<string> Allergies { get; } 
+    public List<Referral> Referrals { get; set; }
+    public List<Prescription> Prescriptions { get; set; }
+
     [BsonConstructor]
     public MedicalRecord() 
     {
@@ -18,18 +22,25 @@ public class MedicalRecord {
         WeightInKg = 70.0;
         AnamnesisHistory = new List<string>();
         Allergies = new List<string>();
+        Referrals = new List<Referral>();
+        Prescriptions = new List<Prescription>();
     }
+
     [BsonConstructor]
-    public MedicalRecord(double heightInCm, double weightInKg, List<string> anamnesisHistory, List<string> allergies)
+    public MedicalRecord(double heightInCm, double weightInKg, List<string> anamnesisHistory, List<string> allergies, List<Referral> referrals, List<Prescription> prescriptions)
     {
         HeightInCm = heightInCm;
         WeightInKg = weightInKg;
         AnamnesisHistory = anamnesisHistory;
         Allergies = allergies;
+        Referrals = referrals;
+        Prescriptions = prescriptions;
     }
+
     public override string ToString()
     {
         return "Height In Cm : " + HeightInCm + "\nWeight In Cm : " + WeightInKg + "\nAnamnesis History : " 
-        + string.Join( ",", AnamnesisHistory) + "\nAllergies : " + string.Join( ",", Allergies);
+        + string.Join( ",", AnamnesisHistory) + "\nAllergies : " + string.Join( ",", Allergies)
+        + "\nPrescriptions : " + string.Join( ",", Prescriptions);
     }
 }

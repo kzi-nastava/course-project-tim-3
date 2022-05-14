@@ -1,5 +1,5 @@
 using MongoDB.Bson.Serialization.Attributes;
-namespace Hospital
+namespace HospitalSystem
 {
     public enum Specialty
     {
@@ -21,7 +21,7 @@ namespace Hospital
         
         public override string ToString() 
         {
-            return Id + " " +FirstName +" "+ LastName +" "+ Specialty;
+            return FirstName +" "+ LastName +" "+ Specialty;
         }
     }
 }

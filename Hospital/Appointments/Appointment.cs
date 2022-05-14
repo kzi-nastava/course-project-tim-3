@@ -2,27 +2,32 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
-namespace Hospital
+namespace HospitalSystem
 {
     [BsonIgnoreExtraElements]
     public class Appointment {
         [BsonId]
         public ObjectId Id { get; set; }
-        public DateTime TimeAndDate {get; set;}
+        public DateTime StartTime {get; set;}
+
         public MongoDBRef Patient {get; set;}
         public MongoDBRef Doctor {get; set;}
         public TimeSpan Duration {get; set;} = new TimeSpan(0,0,15,0);
+        public DateTime EndTime {get; set;}
+        public string? RoomLocation { get; set; }
 
-        public Appointment(DateTime timeAndDate, MongoDBRef patient, MongoDBRef doctor) 
+        public Appointment(DateTime startTime, MongoDBRef patient, MongoDBRef doctor) 
         {
             Id = ObjectId.GenerateNewId();
-            TimeAndDate = timeAndDate;
+            StartTime = startTime;
             Patient = patient;
             Doctor = doctor;
+            EndTime = startTime.Add(Duration);
+            RoomLocation = null;
         }
         public string toString()
         {
-            return TimeAndDate + " " + Patient.Id + " " + Doctor.Id + " " + Duration;
+            return StartTime + " " + Patient.Id + " " + Doctor.Id + " " + Duration;
         }
     
     }
