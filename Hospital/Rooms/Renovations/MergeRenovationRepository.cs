@@ -26,7 +26,6 @@ public class MergeRenovationRepository
     }
 
     public void Add(MergeRenovation renovation)
-    // todo: load these on start in scheduler when making service
     {
         GetMongoCollection().InsertOne(renovation);
     }

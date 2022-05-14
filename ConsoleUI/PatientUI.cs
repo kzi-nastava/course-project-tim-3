@@ -435,7 +435,7 @@ public class PatientUI : ConsoleUI
         }
     }
 
-    public void showOperations()
+    public void ShowOperations()
     {
         List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(_loggedInPatient.Id);
         if (operations.Count == 0)
@@ -453,7 +453,7 @@ public class PatientUI : ConsoleUI
         Console.WriteLine("### Checkups ###");
         ShowCheckups(CheckupInTime.FUTURE);
         Console.WriteLine("### Operations ###");
-        showOperations();
+        ShowOperations();
 
     }
     public void StartAppointmentRUD()

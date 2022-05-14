@@ -24,7 +24,6 @@ public class EquipmentRelocationRepository
     }
 
     public void Add(EquipmentRelocation relocation)
-    // todo: load these on start in scheduler
     {
         GetMongoCollection().InsertOne(relocation);
     }

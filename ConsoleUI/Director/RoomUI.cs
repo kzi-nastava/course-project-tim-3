@@ -288,7 +288,6 @@ public class RoomUI : ConsoleUI
             throw new InvalidCastException("NOPE, CAN'T MERGE A ROOM WITH ITSELF");
         }
 
-
         (var startTime, var endTime) = InputInterval();
 
         if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(firstRoom.Location, startTime))

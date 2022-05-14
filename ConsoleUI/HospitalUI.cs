@@ -1,4 +1,5 @@
 namespace Hospital;
+
 public class HospitalUI : ConsoleUI
 {
     public HospitalUI(Hospital _hospital) : base(_hospital) {}
@@ -30,46 +31,40 @@ public class HospitalUI : ConsoleUI
         bool quit = false;
         while (!quit)
         {
-        // _hospital.UserRepo.AddUser("email1", "password", "firstName", "firstName", Role.PATIENT); //TEST      
-        var success = false;
-        while (!success)
-        {
-            success = TryLogin();
-        }
-        Console.Clear();
-        System.Console.WriteLine("Welcome, " + _user?.Email + "!");
-        // TODO: spawn UIs below
-        switch (_user?.Role)
-        {
-            case Role.DIRECTOR:
-                DirectorUI dirUI = new DirectorUI(_hospital);
-                dirUI.Start();
-                break;
-            case Role.DOCTOR:
-                DoctorUI doctorUI = new DoctorUI(_hospital, _user);
-                doctorUI.Start();
-                break;
-            case Role.PATIENT:
+            var success = false;
+            while (!success)
             {
-                var ui = new PatientUI(this._hospital, this._user);
-                ui.Start();
-                break;
+                success = TryLogin();
             }
-            case Role.SECRETARY:
+            Console.Clear();
+            System.Console.WriteLine("Welcome, " + _user?.Email + "!");
+            // TODO: spawn UIs below
+            switch (_user?.Role)
             {
-                var secUI = new SecretaryUI(this._hospital, this._user);
-                secUI.Start();
-                break;
-            }   
-            default:
-                System.Console.WriteLine("SOMETHING WENT HORRIBLY WRONG. TERMINATING");
-                break;
+                case Role.DIRECTOR:
+                    DirectorUI dirUI = new DirectorUI(_hospital);
+                    dirUI.Start();
+                    break;
+                case Role.DOCTOR:
+                    DoctorUI doctorUI = new DoctorUI(_hospital, _user);
+                    doctorUI.Start();
+                    break;
+                case Role.PATIENT:
+                {
+                    var ui = new PatientUI(this._hospital, this._user);
+                    ui.Start();
+                    break;
+                }
+                case Role.SECRETARY:
+                {
+                    var secUI = new SecretaryUI(this._hospital, this._user);
+                    secUI.Start();
+                    break;
+                }   
+                default:
+                    System.Console.WriteLine("SOMETHING WENT HORRIBLY WRONG. TERMINATING");
+                    break;
+            }
         }
-        }
-    }
-
-    public void AddUser(string email, string password, Person person, Role role)
-    { // TODO: DELETE
-        _hospital.UserRepo.AddOrUpdateUser(new User(email, password, person, role));
     }
 }

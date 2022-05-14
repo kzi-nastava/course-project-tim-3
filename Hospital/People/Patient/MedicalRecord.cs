@@ -1,18 +1,20 @@
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Hospital;
+
 [BsonIgnoreExtraElements]
 public class MedicalRecord {
     [BsonElement]
-    public double HeightInCm {get; set;}
+    public double HeightInCm { get; set; }
     [BsonElement]
-    public double WeightInKg {get; set;}
+    public double WeightInKg { get; set; }
     [BsonElement]
-    public List<string> AnamnesisHistory {get;} 
+    public List<string> AnamnesisHistory { get; } 
     [BsonElement]
-    public List<string> Allergies {get;} 
-    public List<Referral> Referrals {get; set;}
-    public List<Prescription> Prescriptions {get; set;}
+    public List<string> Allergies { get; } 
+    public List<Referral> Referrals { get; set; }
+    public List<Prescription> Prescriptions { get; set; }
+
     [BsonConstructor]
     public MedicalRecord() 
     {
