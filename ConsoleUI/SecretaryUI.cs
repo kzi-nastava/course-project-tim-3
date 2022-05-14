@@ -372,12 +372,31 @@ public class SecretaryUI : ConsoleUI
             throw new NullInputException("Null value as input");
         }
         ur.BlockUserPatient(email);
+        Console.Clear();
+        printCommands(CRUDCommands);
     }
-        public void SelectBlockedPatients(){
-        // Console.Clear();
-        // UserRepository ur = _hospital.UserRepo;
-        // List<User> blockedUsers = ur.GetBlockedUsers();
-        // System.Console.WriteLine(blockedUsers.Count().ToString());
+    public void SelectBlockedPatients()
+    {
+        Console.Clear();
+        UserRepository ur = _hospital.UserRepo;
+        List<User> blockedUsers = ur.GetBlockedUsers();
+        System.Console.WriteLine("Blocked users(email): ");
+        foreach(var b in blockedUsers){
+            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) b.Person.Id);
+            System.Console.WriteLine(" << User: " + pat.FirstName.ToString() + " " + pat.LastName.ToString() + ", Email: " + b.Email.ToString() + " >> ");
+        }
+        System.Console.WriteLine();
+        System.Console.Write("Enter the user mail to unblock: ");
+        string? email = Console.ReadLine();
+        if (email is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+         ur.UnblockUserPatient(email);
+        Console.Clear();
+        printCommands(CRUDCommands);
+
+
     }
 }
 

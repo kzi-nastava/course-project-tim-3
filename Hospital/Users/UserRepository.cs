@@ -104,5 +104,24 @@ namespace Hospital
 
             users.ReplaceOne(user => user.Email == email, userToBlock, new ReplaceOptions {IsUpsert = true});
         }
+
+        public List<User> GetBlockedUsers(){
+            var users = GetUsers();
+            List<User> blockedUsers = new List<User>();
+            var matchingUsers = from user in users.AsQueryable() select user;
+            foreach(var p in matchingUsers){
+                if (p.BlockStatus != Block.UNBLOCKED){
+                    blockedUsers.Add(p);
+                }
+            }
+            return blockedUsers;
+        }
+
+        public void UnblockUserPatient(string email){
+            var userToUnblock = GetUser(email);
+            var users = GetUsers();
+            userToUnblock.BlockStatus = Block.UNBLOCKED;
+            users.ReplaceOne(user => user.Email == email, userToUnblock, new ReplaceOptions {IsUpsert = true});
+        }
     }
 } 
