@@ -58,7 +58,7 @@ public class DoctorUI : ConsoleUI
             Console.WriteLine("No such patient existst.");
             return false;
         }
-        Doctor doctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)_user.Person.Id);
+        Doctor doctor = _hospital.DoctorRepo.GetById((ObjectId)_user.Person.Id);
         if (_hospital.AppointmentRepo.IsDoctorAvailable(dateTime, doctor))
         {
             Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
@@ -417,27 +417,27 @@ public class DoctorUI : ConsoleUI
         {
             case "1":
             {
-                doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.DERMATOLOGY);
+                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.DERMATOLOGY);
                 break;
             }
             case "2":
             {
-                doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.RADIOLOGY);
+                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.RADIOLOGY);
                 break;
             }
             case "3":
             {
-                doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.STOMATOLOGY);
+                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.STOMATOLOGY);
                 break;
             }
             case "4":
             {
-                doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.OPHTHALMOLOGY);
+                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.OPHTHALMOLOGY);
                 break;
             }
             case "5":
             {
-                doctor = _hospital.DoctorRepo.GetDoctorBySpecialty(Specialty.FAMILY_MEDICINE);
+                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.FAMILY_MEDICINE);
                 break;
             }
             default:
@@ -468,7 +468,7 @@ public class DoctorUI : ConsoleUI
         string? lastName = Console.ReadLine();
         if (firstName != null && lastName != null)
         {
-            Doctor doctor = _hospital.DoctorRepo.GetDoctorByFullName(firstName, lastName);
+            Doctor doctor = _hospital.DoctorRepo.GetByFullName(firstName, lastName);
             if (doctor != null)
             {
                 Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));

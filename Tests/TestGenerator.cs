@@ -30,7 +30,7 @@ public static class TestGenerator
     {
         for (int i = 0; i < 20; i++)
         {
-            Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1","surname1");
+            Doctor doctor = hospital.DoctorRepo.GetByFullName("name1","surname1");
             List<Checkup> checkups = hospital.AppointmentRepo.GetCheckupsByDoctor(doctor.Id);
 
             if (i % 2 == 0)
@@ -92,7 +92,7 @@ public static class TestGenerator
         {
             for (; i < 100; i++)
             {
-                Doctor doctor = hospital.DoctorRepo.GetDoctorByFullName("name1","surname1");
+                Doctor doctor = hospital.DoctorRepo.GetByFullName("name1","surname1");
                 Patient patient = hospital.PatientRepo.GetPatientByFullName("name2","surname2");
                 dateTime = dateTime.AddHours(1);
 
