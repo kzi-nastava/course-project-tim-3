@@ -15,8 +15,8 @@ public static class TestGenerator
         System.Console.WriteLine("DROPPED EXISTING DATABASE HOSPITAL");
 
         GenerateUsers(hospital);
-        GenerateCheckupsAndOperations(hospital);
         GenerateRoomsAndEquipments(hospital);
+        GenerateCheckupsAndOperations(hospital);
         GenerateCheckupChangeRequests(hospital);
 
         System.Console.WriteLine("GENERATED TESTS IN DB");
