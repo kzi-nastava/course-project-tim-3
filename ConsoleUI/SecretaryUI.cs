@@ -2,6 +2,17 @@ namespace Hospital;
 using MongoDB.Driver;
 using MongoDB.Bson;
 [System.Serializable]
+
+public class NotMatchingtException : System.Exception
+{
+    public NotMatchingtException() { }
+    public NotMatchingtException(string message) : base(message) { }
+    public NotMatchingtException(string message, System.Exception inner) : base(message, inner) { }
+    protected NotMatchingtException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
 public class NullInputException : System.Exception
 {
     public NullInputException() { }
@@ -21,7 +32,8 @@ public class SecretaryUI : ConsoleUI
     }
 
     public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
-    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", "Select blocked", "Back", "Block Patient"};
+    public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", 
+    "Select blocked", "Block Patient", "Check Requests", "Back"};
 
     public void printCommands(List<string> commands)
     {
@@ -102,6 +114,9 @@ public class SecretaryUI : ConsoleUI
             }
             else if (selectedOption == "blockpatient"){
                 BlockUserPatients();
+            }
+            else if (selectedOption == "cr"){
+                CheckRequests();
             }
             else if (selectedOption == "back")
             {
@@ -395,8 +410,50 @@ public class SecretaryUI : ConsoleUI
          ur.UnblockUserPatient(email);
         Console.Clear();
         printCommands(CRUDCommands);
+    }
 
+    //MAKE BETTER CONSOLE INTERFACE
+    public void CheckRequests(){
+        Console.Clear();
+        CheckupChangeRequestRepository cr = _hospital.CheckupChangeRequestRepo;
+        var requestsGet = cr.GetAll();
+        List<User> requests = new List<User>();
+        var matchingRequests = from request in requestsGet.AsQueryable() select request;
 
+        int buffer = 1;
+        foreach(var m in matchingRequests){
+            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) m.Checkup.Patient.Id);
+            Doctor doc = _hospital.DoctorRepo.GetDoctorById((ObjectId) m.Checkup.Doctor.Id);
+            System.Console.WriteLine("Index ID: " + buffer);
+            System.Console.WriteLine("ID: " + m.Id.ToString());
+            System.Console.WriteLine("Patient: " +  pat.FirstName + " " + pat.LastName);
+            System.Console.WriteLine("Doctor: " +  doc.FirstName + " " + doc.LastName);
+            System.Console.WriteLine("Start time: " + m.Checkup.StartTime);
+            System.Console.WriteLine("End time: " + m.Checkup.EndTime);
+            System.Console.WriteLine("Duration: " + m.Checkup.Duration);
+            System.Console.WriteLine("RequestState: " + m.RequestState);
+            System.Console.WriteLine("--------------------------------------------------------------------");
+            System.Console.WriteLine();
+            buffer = buffer + 1;
+        }
+        System.Console.Write("Enter id: ");
+        string? stringId = Console.ReadLine();
+        int indexId = Int16.Parse(stringId);
+        System.Console.Write("Enter state(approved, denied): ");
+        string? stringState = Console.ReadLine();
+        if (stringState is null)
+        {
+            throw new NullInputException("Null value as input");
+        }
+        if (stringState == "approved")
+        {
+            cr.UpdateRequest(indexId, RequestState.APPROVED);
+        }
+        if (stringState == "denied"){
+        cr.UpdateRequest(indexId, RequestState.DENIED);
+        }
+        Console.Clear();
+        printCommands(CRUDCommands);
     }
 }
 
