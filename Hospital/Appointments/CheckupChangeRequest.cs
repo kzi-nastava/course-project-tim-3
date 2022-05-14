@@ -34,7 +34,7 @@ namespace HospitalSystem
         //TODO: Implement better tostring
         public override string ToString ()
         {
-            return Checkup + " " + CRUDOperation + " " +RequestState;
+            return Checkup + " " + CRUDOperation + " " + RequestState;
         }
     }
 

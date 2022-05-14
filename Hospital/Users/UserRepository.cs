@@ -27,6 +27,43 @@ public class UserRepository
         return _dbClient.GetDatabase("hospital").GetCollection<User>("users");
     }
 
+    public void BlockUserPatient(string email)
+    {
+        var userToBlock = GetUser(email);
+        var users = GetUsers();
+        if (userToBlock.Role != Role.PATIENT)
+        {
+            throw new UserDoesNotExistException("User " + email + " is not a patient.");
+        }
+        if (userToBlock.BlockStatus != Block.UNBLOCKED){
+            throw new UserDoesNotExistException("User " + email + " is already blocked.");
+        }
+        userToBlock.BlockStatus = Block.BY_SECRETARY;
+
+        users.ReplaceOne(user => user.Email == email, userToBlock, new ReplaceOptions {IsUpsert = true});
+    }
+
+    public List<User> GetBlockedUsers()
+    {
+        var users = GetUsers();
+        List<User> blockedUsers = new List<User>();
+        var matchingUsers = from user in users.AsQueryable() select user;
+        foreach(var p in matchingUsers){
+            if (p.BlockStatus != Block.UNBLOCKED){
+                blockedUsers.Add(p);
+            }
+        }
+        return blockedUsers;
+    }
+
+    public void UnblockUserPatient(string email)
+    {
+        var userToUnblock = GetUser(email);
+        var users = GetUsers();
+        userToUnblock.BlockStatus = Block.UNBLOCKED;
+        users.ReplaceOne(user => user.Email == email, userToUnblock, new ReplaceOptions {IsUpsert = true});
+    }
+
     public User? Login(string email, string password)
     {
         var users = GetUsers();
@@ -45,6 +82,7 @@ public class UserRepository
         var users = GetUsers();
         users.ReplaceOne(user => user.Id == newUser.Id, newUser, new ReplaceOptions {IsUpsert = true});
     }
+
     public User GetUser(string email)
     {
         var users = GetUsers();
