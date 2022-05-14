@@ -1,4 +1,4 @@
-namespace Hospital;
+namespace HospitalSystem;
 
 [System.Serializable]
 public class QuitToMainMenuException : System.Exception

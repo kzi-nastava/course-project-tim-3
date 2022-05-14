@@ -1,6 +1,6 @@
 using MongoDB.Driver;
 
-namespace Hospital;
+namespace HospitalSystem;
 
 [System.Serializable]
 public class UserDoesNotExistException : System.Exception

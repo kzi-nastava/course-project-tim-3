@@ -1,4 +1,4 @@
-namespace Hospital
+namespace HospitalSystem
 {
     public class Secretary : Person
     {

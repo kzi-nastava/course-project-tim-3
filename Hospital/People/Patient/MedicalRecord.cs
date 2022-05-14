@@ -1,6 +1,6 @@
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Hospital;
+namespace HospitalSystem;
 
 [BsonIgnoreExtraElements]
 public class MedicalRecord {

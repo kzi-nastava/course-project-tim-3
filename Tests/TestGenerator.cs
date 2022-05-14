@@ -1,13 +1,12 @@
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
-using Hospital;
-// TODO: rename namespace Hospital to something else...
+using HospitalSystem;
 
 public static class TestGenerator
 {
     // THIS WILL DELETE YOUR EXISTING DATABASE!!
-    public static void Generate(Hospital.Hospital hospital)
+    public static void Generate(Hospital hospital)
     {
         // TODO: split to functions
         var dbClient = new MongoClient("mongodb://root:root@localhost:27017");  // TODO: unhardcode
@@ -26,7 +25,7 @@ public static class TestGenerator
         System.Console.WriteLine("WROTE TESTS TO FILE");
     }
 
-    private static void GenerateCheckupChangeRequests(Hospital.Hospital hospital)
+    private static void GenerateCheckupChangeRequests(Hospital hospital)
     {
         for (int i = 0; i < 20; i++)
         {
@@ -57,7 +56,7 @@ public static class TestGenerator
         }
     }
 
-    private static void GenerateRoomsAndEquipments(Hospital.Hospital hospital)
+    private static void GenerateRoomsAndEquipments(Hospital hospital)
     {
         for (int i = 0; i < 10; i++)
         {
@@ -84,7 +83,7 @@ public static class TestGenerator
         }
     }
 
-    private static void GenerateCheckupsAndOperations(Hospital.Hospital hospital)
+    private static void GenerateCheckupsAndOperations(Hospital hospital)
     {
         DateTime dateTime = new DateTime(2022, 5, 11, 4, 15, 0);
         int i = 0;
@@ -116,7 +115,7 @@ public static class TestGenerator
         }
     }
 
-    private static void GenerateUsers(Hospital.Hospital hospital)
+    private static void GenerateUsers(Hospital hospital)
     {
         int doctorSpecialtynumber = 0;
         for (int i = 0; i < 100; i++)

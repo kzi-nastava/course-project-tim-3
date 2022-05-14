@@ -1,4 +1,4 @@
-namespace Hospital;
+namespace HospitalSystem;
 using System.Globalization;
 using MongoDB.Bson;
 
