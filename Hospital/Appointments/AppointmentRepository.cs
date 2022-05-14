@@ -74,6 +74,7 @@ public class AppointmentRepository
             unavailable = 
                 (from appo in GetCheckups().AsQueryable()
                 where appo.StartTime < newAppointment.EndTime && newAppointment.StartTime < appo.EndTime 
+                where appo.Id != newAppointment.Id
                 select appo.RoomLocation).ToHashSet();
         }
         else
@@ -81,6 +82,7 @@ public class AppointmentRepository
             unavailable = 
                 (from appo in GetOperations().AsQueryable()
                 where appo.StartTime < newAppointment.EndTime && newAppointment.StartTime < appo.EndTime 
+                where appo.Id != newAppointment.Id
                 select appo.RoomLocation).ToHashSet();
         }
         return unavailable;
