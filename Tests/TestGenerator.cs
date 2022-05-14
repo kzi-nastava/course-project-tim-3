@@ -124,37 +124,32 @@ public static class TestGenerator
             User user;
             if (i % 4 == 0)
             {
-                Director director = new Director("name" + i, "surname" + i);
+                var director = new Director("name" + i, "surname" + i);
                 user = new User("a" + i, "a" + i, director, Role.DIRECTOR);
                 hospital.DirectorRepo.AddOrUpdateDirector(director);
-                hospital.UserRepo.AddOrUpdateUser(user);
             }
             else if (i % 4 == 1)
             {
-                Doctor doctor;
                 int namesCount = Enum.GetNames(typeof(Specialty)).Length;
                 Specialty doctorsSpecialty = (Specialty)(doctorSpecialtynumber%namesCount);
                 doctorSpecialtynumber++; 
-                doctor = new Doctor("name" + i,"surname" + i, doctorsSpecialty);
+                var doctor = new Doctor("name" + i,"surname" + i, doctorsSpecialty);
                 user = new User("a" + i, "a" + i, doctor, Role.DOCTOR);
                 hospital.DoctorRepo.AddOrUpdateDoctor(doctor);
-                hospital.UserRepo.AddOrUpdateUser(user);
             }
             else if (i % 4 == 2) 
             {
-                Patient patient;
-                patient = new Patient("name" + i, "surname" + i, new MedicalRecord());
+                var patient = new Patient("name" + i, "surname" + i, new MedicalRecord());
                 hospital.PatientRepo.AddOrUpdatePatient(patient);
                 user = new User("a" + i, "a" + i, patient, Role.PATIENT);
-                hospital.UserRepo.AddOrUpdateUser(user);                
             }  
             else
             {
-                Secretary secretary = new Secretary("name" + i, "surname" + i);
+                var secretary = new Secretary("name" + i, "surname" + i);
                 user = new User("a" + i, "a" + i, secretary, Role.SECRETARY);
                 hospital.SecretaryRepo.AddOrUpdateSecretary(secretary);
-                hospital.UserRepo.AddOrUpdateUser(user);
             }
+            hospital.UserRepo.AddOrUpdateUser(user);                
         }
     }
 
