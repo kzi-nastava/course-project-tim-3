@@ -1,7 +1,6 @@
 using MongoDB.Driver;
-using MongoDB.Bson;
 
-namespace Hospital;
+namespace HospitalSystem;
 
 public class RoomRepository
 {

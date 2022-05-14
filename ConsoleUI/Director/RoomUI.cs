@@ -1,4 +1,4 @@
-namespace Hospital;
+namespace HospitalSystem;
 
 public class RoomUI : ConsoleUI
 {
@@ -189,9 +189,13 @@ public class RoomUI : ConsoleUI
         System.Console.WriteLine("Move it first if you so desire");
         System.Console.Write("INPUT NUMBER >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
-        // TODO: add check if room has checkups or operations before allowing
 
         (var startTime, var endTime) = InputInterval();
+
+        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(_loadedRooms[number].Location, startTime))
+        {
+            throw new InvalidInputException("THAT ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE");
+        }
 
         var renovation = new SimpleRenovation(_loadedRooms[number].Location, startTime, endTime);
         _hospital.SimpleRenovationRepo.Add(renovation);
@@ -235,9 +239,13 @@ public class RoomUI : ConsoleUI
         System.Console.Write("INPUT NUMBER TO SPLIT >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
         var originalRoom = _loadedRooms[number];
-        // TODO: add check if room has checkups or operations before allowing
 
         (var startTime, var endTime) = InputInterval();
+
+        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(originalRoom.Location, startTime))
+        {
+            throw new InvalidInputException("THAT ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE");
+        }
 
         System.Console.WriteLine("INPUT THE FIRST ROOM THAT WILL SPLIT OFF:");
         var firstRoom = InputRoom();
@@ -280,9 +288,18 @@ public class RoomUI : ConsoleUI
             throw new InvalidCastException("NOPE, CAN'T MERGE A ROOM WITH ITSELF");
         }
 
-        // TODO: add check if room has checkups or operations before allowing
-
         (var startTime, var endTime) = InputInterval();
+
+        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(firstRoom.Location, startTime))
+        {  
+            // TODO: change exception type
+            throw new InvalidInputException("FIRST ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE.");
+        }
+
+        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(secondRoom.Location, startTime))
+        {  
+            throw new InvalidInputException("SECOND ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE.");
+        }
 
         System.Console.WriteLine("INPUT THE ROOM THAT THESE WILL MERGE INTO:");
         var mergingRoom = InputRoom();

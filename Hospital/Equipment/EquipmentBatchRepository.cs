@@ -1,7 +1,7 @@
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
-namespace Hospital;
+namespace HospitalSystem;
 
 public class EquipmentBatchRepository
 {

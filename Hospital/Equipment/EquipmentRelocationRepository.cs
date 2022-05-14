@@ -1,6 +1,6 @@
 using MongoDB.Driver;
 
-namespace Hospital;
+namespace HospitalSystem;
 
 public class EquipmentRelocationRepository
 {
@@ -24,7 +24,6 @@ public class EquipmentRelocationRepository
     }
 
     public void Add(EquipmentRelocation relocation)
-    // todo: load these on start in scheduler
     {
         GetMongoCollection().InsertOne(relocation);
     }
