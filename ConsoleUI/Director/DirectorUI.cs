@@ -13,6 +13,8 @@ public class DirectorUI : ConsoleUI
         {
             try
             {
+                // REVIEW: Store command mappins in a string-action dictionary 
+
                 System.Console.Clear();
                 System.Console.WriteLine(@"
                 INPUT OPTION:
@@ -23,6 +25,11 @@ public class DirectorUI : ConsoleUI
                 ");  // TODO: add the rest of the features
                 System.Console.Write(">> ");
                 var choice = ReadSanitizedLine();
+
+                // REVIEW: Don't split functionallity into rooms, equipment etc.
+                // It makes navigation difficult
+                // Think how this would be done in UNIX.
+
                 if (choice == "mr" || choice == "manage rooms")
                 {
                     var roomUI = new RoomUI(_hospital);

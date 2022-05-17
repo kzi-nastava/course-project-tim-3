@@ -35,8 +35,10 @@ public class AbortException : System.Exception
 
 public abstract class ConsoleUI
 {
+
+    // REVIEW: Create a helper wrapper class for input, avoid messy code elsewhere.
     protected Hospital _hospital;
-    protected User? _user;
+    protected User? _user; // REVIER: Classes are always nullable?
 
     public abstract void Start();
 

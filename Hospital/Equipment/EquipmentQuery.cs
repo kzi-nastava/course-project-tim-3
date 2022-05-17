@@ -12,6 +12,8 @@ public struct EquipmentQuery
     public EquipmentQuery(string query)
     {
         // TODO: make it so repeated same will throw error
+
+        // TODO: instead of null, use -1 since it's count
         MinCount = null;
         MaxCount = null;
         Type = null;

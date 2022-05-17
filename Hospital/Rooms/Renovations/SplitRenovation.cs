@@ -7,6 +7,9 @@ public class SplitRenovation
 {
     [BsonId]
     public ObjectId Id { get; set; }
+
+    // REVIEW: Have renovation use an Interval class
+    // that way we don't have to check if endTime < startTime inside the ctor for this class
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public string SplitRoomLocation { get; set; }

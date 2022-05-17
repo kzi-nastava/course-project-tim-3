@@ -13,7 +13,7 @@ public class DoctorUI : ConsoleUI
         {
             Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Create checkup\n4. Quit");
             Console.Write("\n>>");
-            var option = Console.ReadLine().Trim();
+            var option = Console.ReadLine()?.Trim();
             switch (option)
             {
                 case "1":
@@ -88,7 +88,7 @@ public class DoctorUI : ConsoleUI
         {
             Console.Write("\nOptions:\n\n1. See patient info for checkup\n2. Start checkup\n3. Update checkup\n4. Delete checkup\n5. Back\n");
             Console.Write(">>");
-            var input = Console.ReadLine().Trim();
+            var input = Console.ReadLine()?.Trim();
             switch (input)
             {
                 case "1":
@@ -96,15 +96,15 @@ public class DoctorUI : ConsoleUI
                     Console.Write("\nEnter checkup number >> ");
                     try
                     {
-                        var checkupNumber = int.Parse(Console.ReadLine());
+                        var checkupNumber = ReadInt(1, checkups.Count()); //int.Parse(Console.ReadLine());
                         ShowPatientInfo(checkups[checkupNumber-1]);
-                    } catch (IOException e)
+                    } catch (IOException)
                     {
                         Console.WriteLine("Wrong input.");
-                    } catch (ArgumentOutOfRangeException e)
+                    } catch (ArgumentOutOfRangeException)
                     {
                         Console.WriteLine("Wrong input.");
-                    } catch (NullReferenceException e)
+                    } catch (NullReferenceException)
                     {
                         Console.WriteLine("Wrong input.");
                     }
@@ -496,4 +496,18 @@ public class DoctorUI : ConsoleUI
         patient.MedicalRecord.Prescriptions.Add(prescription);
         _hospital.PatientRepo.AddOrUpdatePatient(patient);
     }
+
+
+    /*
+
+        1) Razdvojiti UI od Logike
+            "Da li bi istu logiku korisitli i da koristimo CLI i GUI?"
+
+
+                MODEL                                          CONTROLLER/SERVICE          REPOSITORY
+            [   CLI    ]  ---> Struktura{string, int, ...} --->     Metodi()              ----> modifikuje bazu
+            [   GUI    ]  ---> Struktura ---> Ostalo je identicno
+
+
+    */
 }

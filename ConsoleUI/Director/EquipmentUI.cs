@@ -16,7 +16,7 @@ public class EquipmentUI : ConsoleUI
         while (true)
         {
             System.Console.Clear();
-            System.Console.WriteLine("--- EQUIPMENTS ---");
+            System.Console.WriteLine("--- EQUIPMENT ---");
             DisplayBatches(_loadedBatches);
             System.Console.WriteLine(@"
             INPUT OPTION:

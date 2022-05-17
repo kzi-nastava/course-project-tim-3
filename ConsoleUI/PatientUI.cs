@@ -24,6 +24,8 @@ public class PatientUI : ConsoleUI
 {
     //there might be a better way to set opening time, only time will be used
     //those times should be stored somewhere else
+
+    // REVIEW: Interval
     private DateTime _openingTime = new DateTime(2000, 10, 20, 9, 0, 0);
     private DateTime _closingTime = new DateTime(2000, 10, 20, 17, 0, 0);
     private DateTime _now = DateTime.Now;
@@ -46,6 +48,7 @@ public class PatientUI : ConsoleUI
 
     public int CompareByDoctorsName(Checkup checkup1, Checkup checkup2)
     {
+        
         string name1 = _hospital.DoctorRepo.GetDoctorById((ObjectId)checkup1.Doctor.Id).FirstName;
         string name2 = _hospital.DoctorRepo.GetDoctorById((ObjectId)checkup2.Doctor.Id).FirstName;
         return String.Compare(name1, name2);
@@ -167,6 +170,7 @@ public class PatientUI : ConsoleUI
         }
     }
 
+    // REVIEW: Rename this
     public bool WillNextCRUDOperationBlock(CRUDOperation crudOperation)
     {
         int limit;
@@ -237,6 +241,11 @@ public class PatientUI : ConsoleUI
 
     public void DeleteCheckup ()
     {
+        // REVIEW: Have it be like this ovako nekako...
+        // checkup = SelectCheckup()
+        // _hospital.AppointmentRepo.DeleteCheckup(checkup);
+
+
         bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.DELETE);
         if (nextWillBlock)
         {
@@ -276,7 +285,9 @@ public class PatientUI : ConsoleUI
 
     }
 
-    public void UpdateCheckup(){
+    public void UpdateCheckup() {
+
+        // REVIEW: Clean functions please
 
         bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.UPDATE);
         if (nextWillBlock)
@@ -579,6 +590,7 @@ public class PatientUI : ConsoleUI
             throw new InvalidInputException("Wrong date entered.");  
         }
 
+        // REVIEW: result.Date < _now.Date ?
         if (DateTime.Compare(result.Date, _now.Date) == -1 )
         {
             throw new InvalidInputException("The date entered is in past.");

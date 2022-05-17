@@ -82,6 +82,7 @@ public class EquipmentBatchRepository
 
     public IQueryable<EquipmentBatch> Search(EquipmentQuery query)  // TODO: probably have to move this
     {
+        // REVIEW: Split this or make it more generic, linq can be expensive.
         var batches = GetAll();
         var matches = 
             from batch in batches

@@ -10,13 +10,15 @@ public class HospitalUI : ConsoleUI
         var email = Console.ReadLine();
         System.Console.Write("input password >> ");
         var password = Console.ReadLine();
-        if (email is null || password is null) throw new Exception("AAAAAA"); // TODO: make better exception
+        if (email is null || password is null) return false;//throw new Exception("AAAAAA"); // TODO: make better exception
         _user = _hospital.Login(email, password);
         if (_user is null)
         {
             System.Console.WriteLine("NO SUCH USER!! PLEASE TRY AGAIN"); 
         }
         return _user is not null;
+
+        // REVIEW: let user quit while logging in
     }
 
     public override void Start()

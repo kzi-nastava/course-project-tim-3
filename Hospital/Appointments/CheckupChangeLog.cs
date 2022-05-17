@@ -2,6 +2,15 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
+// REVIEW: Use namespaces
+// Entity
+// Repository
+// Service
+// Model
+//      CLI
+//      GUI
+
+
 namespace Hospital
 {
     public enum CRUDOperation

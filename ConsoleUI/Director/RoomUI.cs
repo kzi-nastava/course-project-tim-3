@@ -67,10 +67,12 @@ public class RoomUI : ConsoleUI
                 }
                 else if (choice == "x" || choice == "exit")
                 {
+                    // REVIEW: Avoid this.
                     System.Environment.Exit(0);
                 }
                 else
                 {
+                    // REVIEW: Should this be an exception?
                     System.Console.WriteLine("INVALID INPUT - READ THE AVAILABLE COMMANDS!");
                     System.Console.Write("INPUT ANYTHING TO CONTINUE >> ");
                 }
@@ -201,6 +203,9 @@ public class RoomUI : ConsoleUI
 
     private (DateTime, DateTime) InputInterval()
     {
+
+        // REVIEW: Use Interval class with Intersection(), Contains(), etc.
+        
         System.Console.Write("INPUT DATE-TIME WHEN IT STARTS >> ");
         var rawDate = ReadSanitizedLine();
         var startTime = DateTime.Parse(rawDate);

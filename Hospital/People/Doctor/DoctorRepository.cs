@@ -3,6 +3,13 @@ using MongoDB.Bson;
 
 namespace Hospital
 {
+
+
+    // Have abstract Repository class
+    // Repository.Get()
+    // Add(), Remove(), GetById(), ...
+
+
     public class DoctorRepository
     {
         private MongoClient _dbClient;
