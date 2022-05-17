@@ -306,7 +306,7 @@ public class PatientUI : ConsoleUI
         Console.WriteLine ("You have selected " + ConvertAppointmentToString(selectedCheckup));
 
         Doctor currentDoctor = _hospital.DoctorRepo.GetDoctorById((ObjectId)selectedCheckup.Doctor.Id);
-        DateTime existingDate = selectedCheckup.StartTime;
+        DateTime existingDate = selectedCheckup.StartTime; // currentDateTime
         
         List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetDoctorsBySpecialty(currentDoctor.Specialty);
         alternativeDoctors.Remove(currentDoctor);
