@@ -25,7 +25,8 @@ namespace Hospital
             EndTime = startTime.Add(Duration);
             RoomLocation = null;
         }
-        public string toString()
+
+        public override string ToString()
         {
             return StartTime + " " + Patient.Id + " " + Doctor.Id + " " + Duration;
         }

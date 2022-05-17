@@ -2,6 +2,9 @@ namespace Hospital;
 using MongoDB.Driver;
 using MongoDB.Bson;
 [System.Serializable]
+
+// REVIEW: bolje ovo staviti negde van secretaryui jer ga koriste i ostali
+// ili ovo uopste ne treba jer postoji InvalidInputException u ConsoleUI?
 public class NullInputException : System.Exception
 {
     public NullInputException() { }
@@ -20,6 +23,9 @@ public class SecretaryUI : ConsoleUI
         
     }
 
+
+    // REVIEW: Bolje da se ovo koristi ne samo za ispis mogucih komandi vec i za mapiranje ka pozivima funkcije
+    // Jer je "razdvojeno" od koda koji zapravo proverava te komande, pa je sklono greskama.
     public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
     public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", "Back"};
 
@@ -131,6 +137,10 @@ public class SecretaryUI : ConsoleUI
         header();
         userPages(users, startIndex, endIndex);   
 
+        // REVIEW:
+        // if left ---> odvojena metoda
+        // if right --> odvjoena metoda
+
         while(true){
             string selectedOption = selectOption();
             Console.Clear();
@@ -183,6 +193,7 @@ public class SecretaryUI : ConsoleUI
 
     public void header()
     {
+        // REVIEW: Da li je ovo ok? Sta ako je first name AHJSKHASKJAHSJKAHSKJASHAKJSHAKJSHAJKSHAKJS, nece stati.
         System.Console.WriteLine("__________________________________________________________________________________________");
         System.Console.WriteLine("|                       |                      |                                          |");
         System.Console.WriteLine("|       First Name      |      Last Name       |                   Email                  |");
@@ -211,7 +222,11 @@ public class SecretaryUI : ConsoleUI
 
     public void CreateUserPatient()
     {   
+
+        // REVIEW: Ovo treba na "generickiji" nacin
+        
         Console.Clear();
+
         UserRepository ur = _hospital.UserRepo;
         System.Console.WriteLine("Enter the following data: ");
         System.Console.Write("email >> ");

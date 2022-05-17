@@ -288,6 +288,7 @@ public class PatientUI : ConsoleUI
     public void UpdateCheckup() {
 
         // REVIEW: Clean functions please
+        // Ima par celina koje se mogu izdvojiti u zasebne funkcije.
 
         bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.UPDATE);
         if (nextWillBlock)
@@ -319,6 +320,7 @@ public class PatientUI : ConsoleUI
 
         string changeDoctorOpinion = ReadSanitizedLine().Trim();
 
+        // REVIEW: What it it's Yes
         if (changeDoctorOpinion !="yes" && changeDoctorOpinion!="no")
         {
             Console.WriteLine("Wrong command. Aborting...");
@@ -459,7 +461,7 @@ public class PatientUI : ConsoleUI
             Console.WriteLine(i+" - "+ConvertAppointmentToString(operations[i]));
         }
     }
-    public void ShowAppointments()
+    private void ShowAppointments()
     {   
         Console.WriteLine("### Checkups ###");
         ShowCheckups(CheckupInTime.FUTURE);
@@ -467,6 +469,8 @@ public class PatientUI : ConsoleUI
         showOperations();
 
     }
+
+    // REVIEW: Ono sto koristis samo ovde bolje da je private
     public void StartAppointmentRUD()
     {
         while (true)
@@ -536,6 +540,11 @@ public class PatientUI : ConsoleUI
         Console.Write("Please enter a speciality: ");
         string input = ReadSanitizedLine().Trim().ToUpper();
 
+        // REVIEW:
+        // Switch mozda moze ovako:
+        // Enum.GetValues<Specialty>().Cast<Specialty>().ToList().Where(e => e.ToString() == input);
+        // ako je null onda mozes bacici exception.
+    
         switch (input)
         {
             case "DERMATOLOGY":
@@ -579,6 +588,7 @@ public class PatientUI : ConsoleUI
     {
         string inputDate = ReadSanitizedLine().Trim();
 
+        // REVIEW: Success cega? Clean names
         bool success = DateTime.TryParseExact(inputDate, 
                        "dd-MM-yyyy", 
                        CultureInfo.InvariantCulture, 
@@ -615,6 +625,7 @@ public class PatientUI : ConsoleUI
         return result;
     }
 
+    // REVIEW: Da li treba Doctor?, klase su nullable uvek.
     public Doctor? SelectDoctor(Specialty selectedSpecialty)
     {
         List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetDoctorsBySpecialty(selectedSpecialty);
@@ -650,6 +661,8 @@ public class PatientUI : ConsoleUI
         List<Checkup> checkups = new List<Checkup>();
         DateTime iterationDate = RoundUp(DateTime.Now,TimeSpan.FromMinutes(15));
 
+
+        // REVIEW: Ovde bi dobro doslo imati Interval klasu koja bi skratila citav kod.
         while ( checkups.Count < numberOfCheckups)
         {
             if (iterationDate.TimeOfDay >=_closingTime.TimeOfDay)
@@ -696,6 +709,7 @@ public class PatientUI : ConsoleUI
         }
         return checkups;
     }
+
 
     public List<Checkup> GetFirstFewFreeCheckups(Doctor doctor, int numberOfCheckups)
     {
