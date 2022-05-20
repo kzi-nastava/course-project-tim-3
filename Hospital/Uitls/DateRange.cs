@@ -1,8 +1,11 @@
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace HospitalSystem.Utils;
 
 public class DateRange
 {
     // the minimum allowed range (makes scheduling easy)
+    [BsonIgnore]
     private static TimeSpan _minDuration = TimeSpan.FromSeconds(60);  
     public DateTime Starts { get; set; }
     public DateTime Ends { get; set; }
@@ -32,5 +35,30 @@ public class DateRange
     public override string ToString()
     {
         return Starts + " - " + Ends;
+    }
+
+    public bool Contains(DateTime date)
+    {
+        return Starts <= date && date <= Ends;
+    }
+
+    public bool Overlaps(DateRange range)
+    {
+        return Starts <= range.Ends && range.Starts <= Ends;
+    }
+
+    public TimeSpan GetDuration()
+    {
+        return Ends - Starts;
+    }
+
+    public bool HasPassed()
+    {
+        return Ends < DateTime.Now;
+    }
+
+    public bool IsFuture()
+    {
+        return Starts > DateTime.Now;
     }
 }

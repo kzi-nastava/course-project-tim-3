@@ -2,6 +2,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using HospitalSystem;
+using HospitalSystem.Utils;
 
 public static class TestGenerator
 {
@@ -40,11 +41,12 @@ public static class TestGenerator
                     state = RequestState.APPROVED;
                 }
                 Checkup alteredCheckup = checkups[i];
-                DateTime newDateAndTime =  new DateTime (2077,10,10);
-                alteredCheckup.StartTime = newDateAndTime;
+                DateTime newDateAndTime =  new DateTime(2077,10,10);
+                alteredCheckup.DateRange = new DateRange(newDateAndTime, newDateAndTime.Add(Checkup.DefaultDuration));
                 CheckupChangeRequest request = new CheckupChangeRequest(alteredCheckup,CRUDOperation.UPDATE,state);
                 hospital.CheckupChangeRequestRepo.AddOrUpdate(request);
-            } else if (i % 2 == 1) 
+            }
+            else if (i % 2 == 1) 
             {
                 RequestState state = RequestState.PENDING;
                 if (i % 3 == 0)
@@ -98,13 +100,16 @@ public static class TestGenerator
 
                 if (i % 2 == 0)
                 {   
-                    Checkup check = new Checkup(dateTime, new MongoDBRef("patients",patient.Id),
+                    // doing this to allow writing to the past
+                    var range = new DateRange(dateTime, dateTime.Add(Checkup.DefaultDuration), allowPast: true);
+                    Checkup check = new Checkup(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "anamneza");
                     hospital.AppointmentRepo.AddOrUpdateCheckup(check);
                 } else if (i % 2 == 1) 
                 {
-                    Operation op = new Operation(dateTime, new MongoDBRef("patients",patient.Id),
-                        new MongoDBRef("doctors", doctor.Id), "report", new TimeSpan(1,15,0));
+                    var range = new DateRange(dateTime, dateTime.Add(new TimeSpan(1, 15, 0)), allowPast: true);
+                    Operation op = new Operation(range, new MongoDBRef("patients",patient.Id),
+                        new MongoDBRef("doctors", doctor.Id), "report");
                     hospital.AppointmentRepo.AddOrUpdateOperation(op);
                 }
             }

@@ -1,5 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
+using HospitalSystem.Utils;
+
 namespace HospitalSystem;
 
 public class DoctorUI : ConsoleUI
@@ -59,9 +61,9 @@ public class DoctorUI : ConsoleUI
             return false;
         }
         Doctor doctor = _hospital.DoctorRepo.GetById((ObjectId)_user.Person.Id);
-        if (_hospital.AppointmentRepo.IsDoctorAvailable(dateTime, doctor))
+        Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
+        if (_hospital.AppointmentRepo.IsDoctorAvailable(checkup.DateRange, doctor))
         {
-            Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
             _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
             Console.WriteLine("\nCheckup successfully added");
             return true;
@@ -191,14 +193,13 @@ public class DoctorUI : ConsoleUI
 
     public void PrintCheckups(List<Checkup> checkups)
     {
-        Console.WriteLine(String.Format("{0,5} {1,12} {2,12} {3,25}", "Nr.", "Date", "Time", "Patient"));
+        Console.WriteLine(String.Format("{0,5} {2,24} {3,25}", "Nr.", "Date & Time", "Patient"));
         int i = 1;
         foreach (Checkup checkup in checkups)
         {
             Patient patient = _hospital.PatientRepo.GetPatientById((ObjectId)checkup.Patient.Id);
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 60)));
-            Console.WriteLine(String.Format("{0,5} {1,12} {2,12} {3,25}", i, checkup.StartTime.ToString("dd.MM.yyyy"), 
-            checkup.StartTime.ToString("HH:mm"), patient));
+            Console.WriteLine(String.Format("{0,5} {1,24} {2,25}", i, checkup.DateRange, patient));
             i++;
         }
     }
@@ -360,7 +361,7 @@ public class DoctorUI : ConsoleUI
         var newDateTime = DateTime.TryParse(date + " " + time, out DateTime newStartDate);
         if (newDateTime == true)
         {
-            checkup.StartTime = newStartDate;
+            checkup.DateRange = new DateRange(newStartDate, checkup.DateRange.Ends);
             _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
             Console.WriteLine("\nEdit successfull");
         }

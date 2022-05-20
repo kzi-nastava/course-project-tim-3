@@ -428,9 +428,9 @@ public class SecretaryUI : ConsoleUI
             System.Console.WriteLine("ID: " + m.Id.ToString());
             System.Console.WriteLine("Patient: " +  pat.FirstName + " " + pat.LastName);
             System.Console.WriteLine("Doctor: " +  doc.FirstName + " " + doc.LastName);
-            System.Console.WriteLine("Start time: " + m.Checkup.StartTime);
-            System.Console.WriteLine("End time: " + m.Checkup.EndTime);
-            System.Console.WriteLine("Duration: " + m.Checkup.Duration);
+            System.Console.WriteLine("Start time: " + m.Checkup.DateRange.Starts);
+            System.Console.WriteLine("End time: " + m.Checkup.DateRange.Ends);
+            System.Console.WriteLine("Duration: " + m.Checkup.DateRange.GetDuration());
             System.Console.WriteLine("RequestState: " + m.RequestState);
             System.Console.WriteLine("--------------------------------------------------------------------");
             System.Console.WriteLine();
