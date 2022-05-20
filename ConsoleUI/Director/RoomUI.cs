@@ -1,3 +1,5 @@
+using HospitalSystem.Utils;
+
 namespace HospitalSystem;
 
 public class RoomUI : ConsoleUI
@@ -190,45 +192,17 @@ public class RoomUI : ConsoleUI
         System.Console.Write("INPUT NUMBER >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
 
-        (var startTime, var endTime) = InputInterval();
+        var range = InputDateRange();
 
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(_loadedRooms[number].Location, startTime))
+        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(_loadedRooms[number].Location, range.Starts))
         {
             throw new InvalidInputException("THAT ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE");
         }
 
-        var renovation = new SimpleRenovation(_loadedRooms[number].Location, startTime, endTime);
+        var renovation = new SimpleRenovation(_loadedRooms[number].Location, range);
         _hospital.SimpleRenovationRepo.Add(renovation);
         _hospital.SimpleRenovationRepo.Schedule(renovation);
         System.Console.Write("SUCCESSFULLY SCHEDULED SIMPLE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
-    }
-
-    private (DateTime, DateTime) InputInterval()
-    {
-        System.Console.Write("INPUT DATE-TIME WHEN IT STARTS >> ");
-        var rawDate = ReadSanitizedLine();
-        var startTime = DateTime.Parse(rawDate);
-
-        System.Console.Write("INPUT DATE-TIME WHEN IT IS DONE >> ");
-        rawDate = ReadSanitizedLine();
-        var endTime = DateTime.Parse(rawDate);
-
-        if (endTime < startTime)
-        {
-            throw new InvalidInputException("NOPE, CAN NOT END BEFORE IT STARTS!");
-        }
-
-        if (endTime - startTime < TimeSpan.FromSeconds(60))
-        {
-            throw new InvalidInputException("NOPE, CAN'T LAST LESS THAN ONE MINUTE!");
-        }
-
-        if (startTime < DateTime.Now)
-        {
-            throw new InvalidInputException("NOPE, CAN'T SCHEDULE IN THE PAST!");
-        }
-
-        return (startTime, endTime);
     }
 
     private void DoSplitRenovation()
@@ -240,9 +214,9 @@ public class RoomUI : ConsoleUI
         var number = ReadInt(0, _loadedRooms.Count - 1);
         var originalRoom = _loadedRooms[number];
 
-        (var startTime, var endTime) = InputInterval();
+        var range = InputDateRange();
 
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(originalRoom.Location, startTime))
+        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(originalRoom.Location, range.Starts))
         {
             throw new InvalidInputException("THAT ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE");
         }
@@ -258,7 +232,7 @@ public class RoomUI : ConsoleUI
             throw new InvalidInputException("NOPE, CAN'T HAVE SAME LOCATION FOR BOTH!");
         }
 
-        var renovation = new SplitRenovation(originalRoom.Location, startTime, endTime, firstRoom, secondRoom);
+        var renovation = new SplitRenovation(originalRoom.Location, range, firstRoom, secondRoom);
 
         // TODO: put this below in a service
         _hospital.RoomRepo.AddInactive(firstRoom);
@@ -288,15 +262,15 @@ public class RoomUI : ConsoleUI
             throw new InvalidCastException("NOPE, CAN'T MERGE A ROOM WITH ITSELF");
         }
 
-        (var startTime, var endTime) = InputInterval();
+        var range = InputDateRange();
 
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(firstRoom.Location, startTime))
+        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(firstRoom.Location, range.Starts))
         {  
             // TODO: change exception type
             throw new InvalidInputException("FIRST ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE.");
         }
 
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(secondRoom.Location, startTime))
+        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(secondRoom.Location, range.Starts))
         {  
             throw new InvalidInputException("SECOND ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE.");
         }
@@ -304,7 +278,7 @@ public class RoomUI : ConsoleUI
         System.Console.WriteLine("INPUT THE ROOM THAT THESE WILL MERGE INTO:");
         var mergingRoom = InputRoom();
 
-        var renovation = new MergeRenovation(startTime, endTime, firstRoom.Location, secondRoom.Location, mergingRoom.Location);
+        var renovation = new MergeRenovation(range, firstRoom.Location, secondRoom.Location, mergingRoom.Location);
 
         // TODO: put this below in a service
         _hospital.RoomRepo.AddInactive(mergingRoom);

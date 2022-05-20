@@ -39,11 +39,11 @@ public class SplitRenovationRepository
 
     public void Schedule(SplitRenovation renovation)
     {
-        Scheduler.Schedule(renovation.StartTime, () =>
+        Scheduler.Schedule(renovation.BusyRange.Starts, () =>
         {
             _roomRepo.Deactivate(renovation.SplitRoomLocation);
         });
-        Scheduler.Schedule(renovation.EndTime, () => 
+        Scheduler.Schedule(renovation.BusyRange.Ends, () => 
         {
             FinishRenovation(renovation);
         });

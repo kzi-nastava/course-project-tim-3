@@ -38,12 +38,12 @@ public class MergeRenovationRepository
 
     public void Schedule(MergeRenovation renovation)
     {
-        Scheduler.Schedule(renovation.StartTime, () =>
+        Scheduler.Schedule(renovation.BusyRange.Starts, () =>
         {
             _roomRepo.Deactivate(renovation.FirstLocation);
             _roomRepo.Deactivate(renovation.SecondLocation);
         });
-        Scheduler.Schedule(renovation.EndTime, () => 
+        Scheduler.Schedule(renovation.BusyRange.Ends, () => 
         {
             FinishRenovation(renovation);
         });

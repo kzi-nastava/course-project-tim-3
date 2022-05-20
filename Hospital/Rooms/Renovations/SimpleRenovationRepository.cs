@@ -37,11 +37,11 @@ public class SimpleRenovationRepository
 
     public void Schedule(SimpleRenovation renovation)
     {
-        Scheduler.Schedule(renovation.StartTime, () =>
+        Scheduler.Schedule(renovation.BusyRange.Starts, () =>
         {
             _roomRepo.Deactivate(renovation.RoomLocation);
         });
-        Scheduler.Schedule(renovation.EndTime, () => 
+        Scheduler.Schedule(renovation.BusyRange.Ends, () => 
         {
             FinishRenovation(renovation);
         });

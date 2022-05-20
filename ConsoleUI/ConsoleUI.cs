@@ -1,3 +1,5 @@
+using HospitalSystem.Utils;
+
 namespace HospitalSystem;
 
 [System.Serializable]
@@ -72,4 +74,18 @@ public abstract class ConsoleUI
 
         return number;
     }
+
+    protected DateRange InputDateRange()
+    {
+        System.Console.Write("Input date-time when it starts >> ");
+        var rawDate = ReadSanitizedLine();
+        var starts = DateTime.Parse(rawDate);
+
+        System.Console.Write("Input date-time when it ends >> ");
+        rawDate = ReadSanitizedLine();
+        var ends = DateTime.Parse(rawDate);
+
+        return new DateRange(starts, ends);
+    }
+
 }
