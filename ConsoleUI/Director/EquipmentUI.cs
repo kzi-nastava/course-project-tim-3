@@ -16,7 +16,7 @@ public class EquipmentUI : ConsoleUI
         while (true)
         {
             System.Console.Clear();
-            System.Console.WriteLine("--- EQUIPMENTS ---");
+            System.Console.WriteLine("--- EQUIPMENT ---");
             DisplayBatches(_loadedBatches);
             System.Console.WriteLine(@"
             INPUT OPTION:
@@ -40,7 +40,7 @@ public class EquipmentUI : ConsoleUI
                 }
                 else if (choice == "q" || choice == "quit")
                 {
-                    throw new QuitToMainMenuException("From StartManageEquipments");
+                    throw new QuitToMainMenuException("From StartManageEquipment");
                 }
                 else if (choice == "x" || choice == "exit")
                 {

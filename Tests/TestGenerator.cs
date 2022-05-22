@@ -15,7 +15,7 @@ public static class TestGenerator
         System.Console.WriteLine("DROPPED EXISTING DATABASE HOSPITAL");
 
         GenerateUsers(hospital);
-        GenerateRoomsAndEquipments(hospital);
+        GenerateRoomsAndEquipment(hospital);
         GenerateCheckupsAndOperations(hospital);
         GenerateCheckupChangeRequests(hospital);
         GenerateMedication(hospital);
@@ -59,7 +59,7 @@ public static class TestGenerator
         }
     }
 
-    private static void GenerateRoomsAndEquipments(Hospital hospital)
+    private static void GenerateRoomsAndEquipment(Hospital hospital)
     {
         for (int i = 0; i < 10; i++)
         {

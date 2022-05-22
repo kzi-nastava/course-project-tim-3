@@ -14,7 +14,7 @@ public class EquipmentBatchRepository
 
     private IMongoCollection<EquipmentBatch> GetMongoCollection()
     {
-        return _dbClient.GetDatabase("hospital").GetCollection<EquipmentBatch>("equipments");
+        return _dbClient.GetDatabase("hospital").GetCollection<EquipmentBatch>("equipment");
     }
 
     public IQueryable<EquipmentBatch> GetAll()
