@@ -70,7 +70,7 @@ public static class TestGenerator
                 for (int j = 0; j < 4; j++)
                 {
                     var newEquipmentBatch = new EquipmentBatch(newRoom.Location, "scalpel", 3, EquipmentType.OPERATION);
-                    hospital.EquipmentRepo.Add(newEquipmentBatch);
+                    hospital.EquipmentService.Add(newEquipmentBatch);
                 }
             } 
             else if (i % 3 == 1)

@@ -5,12 +5,12 @@ namespace HospitalSystem;
 public class EquipmentRelocationRepository
 {
     private MongoClient _dbClient;
-    private EquipmentBatchRepository _equipmentRepo;  // TODO: extract to service!!
+    private EquipmentBatchService _equipmentService;  // TODO: extract to service!!
 
-    public EquipmentRelocationRepository(MongoClient dbClient, EquipmentBatchRepository equipmentRepo)
+    public EquipmentRelocationRepository(MongoClient dbClient, EquipmentBatchService equipmentService)
     {
         _dbClient = dbClient;
-        _equipmentRepo = equipmentRepo;
+        _equipmentService = equipmentService;
     }
 
     private IMongoCollection<EquipmentRelocation> GetMongoCollection()
@@ -46,19 +46,19 @@ public class EquipmentRelocationRepository
     {
         var removing = new EquipmentBatch(relocation.FromRoomLocation, relocation.Name, relocation.Count, relocation.Type);
         var adding = new EquipmentBatch(relocation.ToRoomLocation, relocation.Name, relocation.Count, relocation.Type);
-        _equipmentRepo.Remove(removing);
-        _equipmentRepo.Add(adding);
+        _equipmentService.Remove(removing);
+        _equipmentService.Add(adding);
         relocation.IsDone = true;
         Replace(relocation);
     }
 
     public void MoveAll(string fromLocation, string toLocation)
     {
-        foreach (var batch in _equipmentRepo.GetAllIn(fromLocation))
+        foreach (var batch in _equipmentService.GetAllIn(fromLocation))
         {
-            _equipmentRepo.Remove(batch);
+            _equipmentService.Remove(batch);
             batch.RoomLocation = toLocation;
-            _equipmentRepo.Add(batch);
+            _equipmentService.Add(batch);
         }
     }
 

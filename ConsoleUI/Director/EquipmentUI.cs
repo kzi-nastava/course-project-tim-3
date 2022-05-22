@@ -8,7 +8,7 @@ public class EquipmentUI : ConsoleUI
 
     public EquipmentUI(Hospital hospital) : base(hospital)
     {
-        _loadedBatches = _hospital.EquipmentRepo.GetAll().ToList();
+        _loadedBatches = _hospital.EquipmentService.GetAll().ToList();
     }
 
     public override void Start()
@@ -121,6 +121,6 @@ public class EquipmentUI : ConsoleUI
         var search = ReadSanitizedLine();
         query.NameContains = new Regex(search);
 
-        _loadedBatches = _hospital.EquipmentRepo.Search(query).ToList();
+        _loadedBatches = _hospital.EquipmentService.Search(query).ToList();
     }
 }

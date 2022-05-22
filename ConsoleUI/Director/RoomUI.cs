@@ -172,14 +172,14 @@ public class RoomUI : ConsoleUI
     {
         System.Console.Write("INPUT NUMBER >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
-        if (_hospital.EquipmentRepo.GetAllIn(_loadedRooms[number].Location).Any())
+        if (_hospital.EquipmentService.GetAllIn(_loadedRooms[number].Location).Any())
         {
             // TODO: make into a moving equipment submenu
             System.Console.Write("THIS ROOM HAS EQUIPMENT IN IT. THIS OPERATION WILL DELETE IT ALL. ARE YOU SURE? [y/N] >> ");
             var answer = ReadSanitizedLine();
             if (answer != "y")
                 throw new AbortException("NOT A YES. ABORTING.");
-            _hospital.EquipmentRepo.DeleteAllInRoom(_loadedRooms[number]);
+            _hospital.EquipmentService.DeleteAllInRoom(_loadedRooms[number]);
         }
         _hospital.RoomRepo.Delete(_loadedRooms[number].Location);
         System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
