@@ -6,14 +6,14 @@ namespace HospitalSystem;
 public class SplitRenovationRepository
 {
     private MongoClient _dbClient;
-    private RoomRepository _roomRepo;  // TODO: extract to service!
+    private RoomService _roomService;
     private EquipmentRelocationService _relocationService;
 
-    public SplitRenovationRepository(MongoClient dbClient, RoomRepository roomRepo,
+    public SplitRenovationRepository(MongoClient dbClient, RoomService roomService,
         EquipmentRelocationService relocationService)
     {
         _dbClient = dbClient;
-        _roomRepo = roomRepo;
+        _roomService = roomService;
         _relocationService = relocationService;
     }
 
@@ -43,7 +43,7 @@ public class SplitRenovationRepository
     {
         Scheduler.Schedule(renovation.BusyRange.Starts, () =>
         {
-            _roomRepo.Deactivate(renovation.SplitRoomLocation);
+            _roomService.Deactivate(renovation.SplitRoomLocation);
         });
         Scheduler.Schedule(renovation.BusyRange.Ends, () => 
         {
@@ -53,10 +53,10 @@ public class SplitRenovationRepository
 
     private void FinishRenovation(SplitRenovation renovation)
     {
-        _roomRepo.Activate(renovation.SplitToFirstLocation);
-        _roomRepo.Activate(renovation.SplitToSecondLocation);
+        _roomService.Activate(renovation.SplitToFirstLocation);
+        _roomService.Activate(renovation.SplitToSecondLocation);
         _relocationService.MoveAll(renovation.SplitRoomLocation, renovation.SplitToFirstLocation);
-        _roomRepo.Delete(renovation.SplitRoomLocation);
+        _roomService.Delete(renovation.SplitRoomLocation);
         renovation.IsDone = true;
         Replace(renovation);
     }

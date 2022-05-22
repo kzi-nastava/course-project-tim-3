@@ -6,12 +6,12 @@ namespace HospitalSystem;
 public class SimpleRenovationRepository
 {
     private MongoClient _dbClient;
-    private RoomRepository _roomRepo;  // TODO: extract to service!
+    private RoomService _roomService;
 
-    public SimpleRenovationRepository(MongoClient dbClient, RoomRepository roomRepo)
+    public SimpleRenovationRepository(MongoClient dbClient, RoomService roomService)
     {
         _dbClient = dbClient;
-        _roomRepo = roomRepo;
+        _roomService = roomService;
     }
 
     private IMongoCollection<SimpleRenovation> GetMongoCollection()
@@ -40,7 +40,7 @@ public class SimpleRenovationRepository
     {
         Scheduler.Schedule(renovation.BusyRange.Starts, () =>
         {
-            _roomRepo.Deactivate(renovation.RoomLocation);
+            _roomService.Deactivate(renovation.RoomLocation);
         });
         Scheduler.Schedule(renovation.BusyRange.Ends, () => 
         {
@@ -52,7 +52,7 @@ public class SimpleRenovationRepository
     {
         renovation.IsDone = true;
         Replace(renovation);
-        _roomRepo.Activate(renovation.RoomLocation);
+        _roomService.Activate(renovation.RoomLocation);
     }
 
     // TODO: move this and some others to service

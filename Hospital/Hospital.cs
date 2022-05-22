@@ -11,7 +11,7 @@ public class Hospital
     public AppointmentRepository AppointmentRepo { get; }
     public DirectorRepository DirectorRepo { get; }
     public SecretaryRepository SecretaryRepo { get; }
-    public RoomRepository RoomRepo { get; }
+    public RoomService RoomService { get; }
     public EquipmentBatchService EquipmentService { get; }
     public EquipmentRelocationService RelocationService { get; }
     public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
@@ -27,14 +27,14 @@ public class Hospital
         PatientRepo = new (_dbClient);
         DirectorRepo = new (_dbClient);
         SecretaryRepo = new (_dbClient);
-        RoomRepo = new (_dbClient);
-        AppointmentRepo = new (_dbClient, RoomRepo);
+        RoomService = new (new RoomRepository(_dbClient));
+        AppointmentRepo = new (_dbClient, RoomService);
         EquipmentService = new (new EquipmentBatchRepository(_dbClient));
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
         CheckupChangeRequestRepo = new (_dbClient);
-        SimpleRenovationRepo = new (_dbClient, RoomRepo);
-        SplitRenovationRepo = new (_dbClient, RoomRepo, RelocationService);
-        MergeRenovationRepo = new (_dbClient, RoomRepo, RelocationService);
+        SimpleRenovationRepo = new (_dbClient, RoomService);
+        SplitRenovationRepo = new (_dbClient, RoomService, RelocationService);
+        MergeRenovationRepo = new (_dbClient, RoomService, RelocationService);
         MedicationRepo = new (_dbClient);
     }
 

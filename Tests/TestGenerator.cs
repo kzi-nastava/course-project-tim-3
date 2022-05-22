@@ -66,7 +66,7 @@ public static class TestGenerator
             if (i % 3 == 0)
             {   
                 var newRoom = new Room("90" + i, "NA" + i, RoomType.STOCK);
-                hospital.RoomRepo.Add(newRoom);
+                hospital.RoomService.Insert(newRoom);
                 for (int j = 0; j < 4; j++)
                 {
                     var newEquipmentBatch = new EquipmentBatch(newRoom.Location, "scalpel", 3, EquipmentType.OPERATION);
@@ -76,12 +76,12 @@ public static class TestGenerator
             else if (i % 3 == 1)
             {
                 var newRoom = new Room("10" + i, "NA" + i, RoomType.OPERATION);
-                hospital.RoomRepo.Add(newRoom);
+                hospital.RoomService.Insert(newRoom);
             } 
             else
             {
                 var newRoom = new Room("55" + i, "NA" + i, RoomType.CHECKUP);
-                hospital.RoomRepo.Add(newRoom);
+                hospital.RoomService.Insert(newRoom);
             }
         }
     }

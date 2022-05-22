@@ -8,7 +8,7 @@ public class RoomUI : ConsoleUI
 
     public RoomUI(Hospital hospital) : base(hospital)
     {
-        _loadedRooms = _hospital.RoomRepo.GetAll().ToList();
+        _loadedRooms = _hospital.RoomService.GetAll().ToList();
     }
 
     public RoomUI(Hospital hospital, List<Room> loadedRooms) : base(hospital)
@@ -89,7 +89,7 @@ public class RoomUI : ConsoleUI
             {
                 System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
             }
-            _loadedRooms = _hospital.RoomRepo.GetAll().ToList();
+            _loadedRooms = _hospital.RoomService.GetAll().ToList();
             ReadSanitizedLine();
         }
     }
@@ -134,14 +134,14 @@ public class RoomUI : ConsoleUI
             room.Type = type;
         }
 
-        _hospital.RoomRepo.Replace(room);
+        _hospital.RoomService.Replace(room);
         System.Console.Write("SUCCESSFULLY UPDATED ROOM. INPUT ANYTHING TO CONTINUE >> ");
     }
 
     private void Add()
     {
         var newRoom = InputRoom();
-        _hospital.RoomRepo.Add(newRoom);
+        _hospital.RoomService.Insert(newRoom);
         System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
     }
 
@@ -151,7 +151,7 @@ public class RoomUI : ConsoleUI
         var location = ReadSanitizedLine();
         if (location == "")
             throw new InvalidInputException("INVALID LOCATION!");
-        if (_hospital.RoomRepo.DoesExist(location))
+        if (_hospital.RoomService.DoesExist(location))
             throw new InvalidInputException("ROOM WITH THAT LOCATION ALREADY EXISTS!");
 
         System.Console.Write("ENTER ROOM NAME >> ");
@@ -181,7 +181,7 @@ public class RoomUI : ConsoleUI
                 throw new AbortException("NOT A YES. ABORTING.");
             _hospital.EquipmentService.DeleteAllInRoom(_loadedRooms[number]);
         }
-        _hospital.RoomRepo.Delete(_loadedRooms[number].Location);
+        _hospital.RoomService.Delete(_loadedRooms[number].Location);
         System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
     }
 
@@ -235,8 +235,8 @@ public class RoomUI : ConsoleUI
         var renovation = new SplitRenovation(originalRoom.Location, range, firstRoom, secondRoom);
 
         // TODO: put this below in a service
-        _hospital.RoomRepo.AddInactive(firstRoom);
-        _hospital.RoomRepo.AddInactive(secondRoom);
+        _hospital.RoomService.UpsertInactive(firstRoom);
+        _hospital.RoomService.UpsertInactive(secondRoom);
         _hospital.SplitRenovationRepo.Add(renovation);
         _hospital.SplitRenovationRepo.Schedule(renovation);
         System.Console.Write("SUCCESSFULLY SCHEDULED SPLIT RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
@@ -281,7 +281,7 @@ public class RoomUI : ConsoleUI
         var renovation = new MergeRenovation(range, firstRoom.Location, secondRoom.Location, mergingRoom.Location);
 
         // TODO: put this below in a service
-        _hospital.RoomRepo.AddInactive(mergingRoom);
+        _hospital.RoomService.UpsertInactive(mergingRoom);
         _hospital.MergeRenovationRepo.Add(renovation);
         _hospital.MergeRenovationRepo.Schedule(renovation);
         System.Console.Write("SUCCESSFULLY SCHEDULED MERGE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");

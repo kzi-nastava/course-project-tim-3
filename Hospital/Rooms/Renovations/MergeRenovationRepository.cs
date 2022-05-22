@@ -6,14 +6,14 @@ namespace HospitalSystem;
 public class MergeRenovationRepository
 {
     private MongoClient _dbClient;
-    private RoomRepository _roomRepo;  // TODO: extract to service!
+    private RoomService _roomService;
     private EquipmentRelocationService _relocationService;
 
-    public MergeRenovationRepository(MongoClient dbClient, RoomRepository roomRepo,
+    public MergeRenovationRepository(MongoClient dbClient, RoomService roomService,
         EquipmentRelocationService relocationService)
     {
         _dbClient = dbClient;
-        _roomRepo = roomRepo;
+        _roomService = roomService;
         _relocationService = relocationService;
     }
 
@@ -42,8 +42,8 @@ public class MergeRenovationRepository
     {
         Scheduler.Schedule(renovation.BusyRange.Starts, () =>
         {
-            _roomRepo.Deactivate(renovation.FirstLocation);
-            _roomRepo.Deactivate(renovation.SecondLocation);
+            _roomService.Deactivate(renovation.FirstLocation);
+            _roomService.Deactivate(renovation.SecondLocation);
         });
         Scheduler.Schedule(renovation.BusyRange.Ends, () => 
         {
@@ -53,11 +53,11 @@ public class MergeRenovationRepository
 
     private void FinishRenovation(MergeRenovation renovation)
     {
-        _roomRepo.Activate(renovation.MergeToLocation);
+        _roomService.Activate(renovation.MergeToLocation);
         _relocationService.MoveAll(renovation.FirstLocation, renovation.MergeToLocation);
         _relocationService.MoveAll(renovation.SecondLocation, renovation.MergeToLocation);
-        _roomRepo.Delete(renovation.FirstLocation);
-        _roomRepo.Delete(renovation.SecondLocation);
+        _roomService.Delete(renovation.FirstLocation);
+        _roomService.Delete(renovation.SecondLocation);
         renovation.IsDone = true;
         Replace(renovation);
     }

@@ -18,12 +18,12 @@ public class NoAvailableRoomException : System.Exception
 public class AppointmentRepository
 {
     private MongoClient _dbClient;
-    private RoomRepository _roomRepo;  // most of this should all be moved to service eventually anyway
+    private RoomService _roomService;
 
-    public AppointmentRepository(MongoClient _dbClient, RoomRepository roomRepo)
+    public AppointmentRepository(MongoClient _dbClient, RoomService roomService)
     {
         this._dbClient = _dbClient;
-        this._roomRepo = roomRepo;
+        this._roomService = roomService;
     }
 
     public IMongoCollection<Checkup> GetCheckups()
@@ -54,7 +54,7 @@ public class AppointmentRepository
     {
         var unavailable = GetUnavailableRoomLocations(newAppointment, type);
         var available = 
-            from room in _roomRepo.GetAll()
+            from room in _roomService.GetAll()
             where room.Type == type && !unavailable.Contains(room.Location)
             select room;
         if (!available.Any())
