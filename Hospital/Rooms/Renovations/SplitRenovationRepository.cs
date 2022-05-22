@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using HospitalSystem.Utils;
 
 namespace HospitalSystem;
 
@@ -6,13 +7,14 @@ public class SplitRenovationRepository
 {
     private MongoClient _dbClient;
     private RoomRepository _roomRepo;  // TODO: extract to service!
-    private EquipmentRelocationRepository _relocationRepo;  // TODO: extract to service!
+    private EquipmentRelocationService _relocationService;
 
-    public SplitRenovationRepository(MongoClient dbClient, RoomRepository roomRepo, EquipmentRelocationRepository relocationRepo)
+    public SplitRenovationRepository(MongoClient dbClient, RoomRepository roomRepo,
+        EquipmentRelocationService relocationService)
     {
         _dbClient = dbClient;
         _roomRepo = roomRepo;
-        _relocationRepo = relocationRepo;
+        _relocationService = relocationService;
     }
 
     private IMongoCollection<SplitRenovation> GetMongoCollection()
@@ -53,7 +55,7 @@ public class SplitRenovationRepository
     {
         _roomRepo.Activate(renovation.SplitToFirstLocation);
         _roomRepo.Activate(renovation.SplitToSecondLocation);
-        _relocationRepo.MoveAll(renovation.SplitRoomLocation, renovation.SplitToFirstLocation);
+        _relocationService.MoveAll(renovation.SplitRoomLocation, renovation.SplitToFirstLocation);
         _roomRepo.Delete(renovation.SplitRoomLocation);
         renovation.IsDone = true;
         Replace(renovation);

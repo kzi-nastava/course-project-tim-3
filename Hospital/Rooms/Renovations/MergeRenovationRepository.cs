@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using HospitalSystem.Utils;
 
 namespace HospitalSystem;
 
@@ -6,13 +7,14 @@ public class MergeRenovationRepository
 {
     private MongoClient _dbClient;
     private RoomRepository _roomRepo;  // TODO: extract to service!
-    private EquipmentRelocationRepository _relocationRepo;  // TODO: extract to service!
+    private EquipmentRelocationService _relocationService;
 
-    public MergeRenovationRepository(MongoClient dbClient, RoomRepository roomRepo, EquipmentRelocationRepository relocationRepo)
+    public MergeRenovationRepository(MongoClient dbClient, RoomRepository roomRepo,
+        EquipmentRelocationService relocationService)
     {
         _dbClient = dbClient;
         _roomRepo = roomRepo;
-        _relocationRepo = relocationRepo;
+        _relocationService = relocationService;
     }
 
     private IMongoCollection<MergeRenovation> GetMongoCollection()
@@ -52,8 +54,8 @@ public class MergeRenovationRepository
     private void FinishRenovation(MergeRenovation renovation)
     {
         _roomRepo.Activate(renovation.MergeToLocation);
-        _relocationRepo.MoveAll(renovation.FirstLocation, renovation.MergeToLocation);
-        _relocationRepo.MoveAll(renovation.SecondLocation, renovation.MergeToLocation);
+        _relocationService.MoveAll(renovation.FirstLocation, renovation.MergeToLocation);
+        _relocationService.MoveAll(renovation.SecondLocation, renovation.MergeToLocation);
         _roomRepo.Delete(renovation.FirstLocation);
         _roomRepo.Delete(renovation.SecondLocation);
         renovation.IsDone = true;

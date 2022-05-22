@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using HospitalSystem.Utils;
 
 namespace HospitalSystem;
 
