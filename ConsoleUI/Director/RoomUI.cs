@@ -189,20 +189,19 @@ public class RoomUI : ConsoleUI
     {
         System.Console.WriteLine("WARNING! Doing this will make any equipment inside inaccessible during renovation. ");
         System.Console.WriteLine("Move it first if you so desire");
-        System.Console.Write("INPUT NUMBER >> ");
+        System.Console.Write("Input number >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
 
         var range = InputDateRange();
 
         if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(_loadedRooms[number].Location, range.Starts))
         {
-            throw new InvalidInputException("THAT ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE");
+            throw new InvalidInputException("That room has appointments scheduled, can't renovate");
         }
 
         var renovation = new SimpleRenovation(_loadedRooms[number].Location, range);
-        _hospital.SimpleRenovationRepo.Add(renovation);
-        _hospital.SimpleRenovationRepo.Schedule(renovation);
-        System.Console.Write("SUCCESSFULLY SCHEDULED SIMPLE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
+        _hospital.SimpleRenovationService.Schedule(renovation);
+        System.Console.Write("Successfully scheduled simple renovation. Input anything to continue >>  ");
     }
 
     private void DoSplitRenovation()

@@ -15,7 +15,7 @@ public class Hospital
     public EquipmentBatchService EquipmentService { get; }
     public EquipmentRelocationService RelocationService { get; }
     public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
-    public SimpleRenovationRepository SimpleRenovationRepo { get; }
+    public SimpleRenovationService SimpleRenovationService { get; }
     public SplitRenovationRepository SplitRenovationRepo { get; }
     public MergeRenovationRepository MergeRenovationRepo { get; }
     public MedicationRepository MedicationRepo {get; set;}
@@ -32,7 +32,7 @@ public class Hospital
         EquipmentService = new (new EquipmentBatchRepository(_dbClient));
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
         CheckupChangeRequestRepo = new (_dbClient);
-        SimpleRenovationRepo = new (_dbClient, RoomService);
+        SimpleRenovationService = new (new SimpleRenovationRepository(_dbClient), RoomService);
         SplitRenovationRepo = new (_dbClient, RoomService, RelocationService);
         MergeRenovationRepo = new (_dbClient, RoomService, RelocationService);
         MedicationRepo = new (_dbClient);

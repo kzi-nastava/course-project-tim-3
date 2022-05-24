@@ -24,7 +24,7 @@ public class HospitalUI : ConsoleUI
     {
         // TODO: this doesn't belong, here. put it in service classes or something
         _hospital.RelocationService.ScheduleAll();
-        _hospital.SimpleRenovationRepo.ScheduleAll();
+        _hospital.SimpleRenovationService.ScheduleAll();
         _hospital.SplitRenovationRepo.ScheduleAll();
         _hospital.MergeRenovationRepo.ScheduleAll();
 
