@@ -233,11 +233,7 @@ public class RoomUI : ConsoleUI
 
         var renovation = new SplitRenovation(originalRoom.Location, range, firstRoom, secondRoom);
 
-        // TODO: put this below in a service
-        _hospital.RoomService.UpsertInactive(firstRoom);
-        _hospital.RoomService.UpsertInactive(secondRoom);
-        _hospital.SplitRenovationRepo.Add(renovation);
-        _hospital.SplitRenovationRepo.Schedule(renovation);
+        _hospital.SplitRenovationService.Schedule(renovation, firstRoom, secondRoom);
         System.Console.Write("SUCCESSFULLY SCHEDULED SPLIT RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
     }
     
