@@ -14,11 +14,6 @@ public class EquipmentRelocationService
         _equipmentService = equipmentService;
     }
 
-    public void Insert(EquipmentRelocation relocation)
-    {
-        _relocationRepo.Insert(relocation);
-    }
-
     private void MoveEquipment(EquipmentRelocation relocation)
     {
         var removing = new EquipmentBatch(relocation.FromRoomLocation, relocation.Name,
@@ -43,6 +38,12 @@ public class EquipmentRelocationService
 
     public void Schedule(EquipmentRelocation relocation)
     {
+        _relocationRepo.Insert(relocation);
+        JustSchedule(relocation);
+    }
+
+    private void JustSchedule(EquipmentRelocation relocation)
+    {
         Scheduler.Schedule(relocation.EndTime, () => 
         {
             MoveEquipment(relocation);
@@ -55,7 +56,7 @@ public class EquipmentRelocationService
         {
             if (!relocation.IsDone)
             {
-                Schedule(relocation);
+                JustSchedule(relocation);
             }
         }
     }

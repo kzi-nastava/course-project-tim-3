@@ -101,7 +101,6 @@ public class EquipmentUI : ConsoleUI
         
         var relocation = new EquipmentRelocation(equipmentBatch.Name, amount, 
             equipmentBatch.Type, endTime, equipmentBatch.RoomLocation, rooms[number].Location);
-        _hospital.RelocationService.Insert(relocation);
         _hospital.RelocationService.Schedule(relocation);
         System.Console.Write("Relocation scheduled successfully. Input anything to continue >> ");
         ReadSanitizedLine();
