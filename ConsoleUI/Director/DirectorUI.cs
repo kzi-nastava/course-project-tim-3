@@ -43,7 +43,7 @@ public class DirectorUI : ConsoleUI
                 }
                 else
                 {
-                    System.Console.Write("UNRECOGNIZED OPTION. INPUT ANYTHING TO CONTINUE >> ");
+                    System.Console.Write("Unrecognized option. Input anything to continue >> ");
                     ReadSanitizedLine();
                 }
             }
