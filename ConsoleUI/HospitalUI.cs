@@ -26,7 +26,7 @@ public class HospitalUI : ConsoleUI
         _hospital.RelocationService.ScheduleAll();
         _hospital.SimpleRenovationService.ScheduleAll();
         _hospital.SplitRenovationService.ScheduleAll();
-        _hospital.MergeRenovationRepo.ScheduleAll();
+        _hospital.MergeRenovationService.ScheduleAll();
 
         bool quit = false;
         while (!quit)

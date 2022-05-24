@@ -275,10 +275,7 @@ public class RoomUI : ConsoleUI
 
         var renovation = new MergeRenovation(range, firstRoom.Location, secondRoom.Location, mergingRoom.Location);
 
-        // TODO: put this below in a service
-        _hospital.RoomService.UpsertInactive(mergingRoom);
-        _hospital.MergeRenovationRepo.Add(renovation);
-        _hospital.MergeRenovationRepo.Schedule(renovation);
+        _hospital.MergeRenovationService.Schedule(renovation, mergingRoom);
         System.Console.Write("SUCCESSFULLY SCHEDULED MERGE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
     }
 }

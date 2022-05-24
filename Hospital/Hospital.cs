@@ -17,7 +17,7 @@ public class Hospital
     public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
     public SimpleRenovationService SimpleRenovationService { get; }
     public SplitRenovationService SplitRenovationService { get; }
-    public MergeRenovationRepository MergeRenovationRepo { get; }
+    public MergeRenovationService MergeRenovationService { get; }
     public MedicationRepository MedicationRepo {get; set;}
 
     public Hospital()
@@ -34,7 +34,7 @@ public class Hospital
         CheckupChangeRequestRepo = new (_dbClient);
         SimpleRenovationService = new (new SimpleRenovationRepository(_dbClient), RoomService);
         SplitRenovationService = new (new SplitRenovationRepository(_dbClient), RoomService, RelocationService);
-        MergeRenovationRepo = new (_dbClient, RoomService, RelocationService);
+        MergeRenovationService = new (new MergeRenovationRepository(_dbClient), RoomService, RelocationService);
         MedicationRepo = new (_dbClient);
     }
 
