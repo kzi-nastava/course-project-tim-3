@@ -232,7 +232,7 @@ public class SecretaryUI : UserUI
     public void CreateUserPatient()
     {   
         Console.Clear();
-        UserService ur = _hospital.UserService;
+        UserService us = _hospital.UserService;
         System.Console.WriteLine("Enter the following data: ");
         System.Console.Write("email >> ");
         string? email = Console.ReadLine();
@@ -281,21 +281,21 @@ public class SecretaryUI : UserUI
             Console.Clear();
             Patient patient = new Patient(email, lastName, new MedicalRecord());
             _hospital.PatientRepo.AddOrUpdatePatient(patient);
-            ur.AddOrUpdateUser(new User(email, password,patient,Role.PATIENT));
+            us.Upsert(new User(email, password,patient,Role.PATIENT));
         }
         printCommands(CRUDCommands);
     }
 
     public void ReadUserPatient(){
         Console.Clear();
-        UserService ur = _hospital.UserService;
+        UserService us = _hospital.UserService;
         System.Console.Write("Enter the user mail to view his data: ");
         string? email = Console.ReadLine();
         if (email is null)
         {
             throw new NullInputException("Null value as input");
         }
-        var user = ur.Get(email);
+        var user = us.Get(email);
         Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) user.Person.Id);
         System.Console.WriteLine("Email : " + user.Email.ToString());
         System.Console.WriteLine("Password : " + user.Password.ToString());
@@ -335,7 +335,7 @@ public class SecretaryUI : UserUI
             {
                 throw new NullInputException("Null value as input");
             }
-            ur.UpdateUserEmail(email,emailNew);
+            ur.UpdateEmail(email,emailNew);
         }
         else if(enter == "password"){
             System.Console.Write("Enter users password : ");
@@ -350,7 +350,7 @@ public class SecretaryUI : UserUI
             {
                 throw new NullInputException("Null value as input");
             }
-            ur.UpdateUserEmail(email,passwordNew);
+            ur.UpdateEmail(email,passwordNew);
         }
         Console.Clear();
         printCommands(CRUDCommands);
@@ -389,7 +389,7 @@ public class SecretaryUI : UserUI
     {
         Console.Clear();
         UserService ur = _hospital.UserService;
-        List<User> blockedUsers = ur.GetAllBlocked();
+        var blockedUsers = ur.GetAllBlocked();
         System.Console.WriteLine("Blocked users(email): ");
         foreach(var b in blockedUsers){
             Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) b.Person.Id);

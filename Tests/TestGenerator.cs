@@ -154,7 +154,7 @@ public static class TestGenerator
                 user = new User("a" + i, "a" + i, secretary, Role.SECRETARY);
                 hospital.SecretaryRepo.AddOrUpdateSecretary(secretary);
             }
-            hospital.UserService.AddOrUpdateUser(user);                
+            hospital.UserService.Upsert(user);                
         }
     }
 

@@ -45,17 +45,12 @@ public class UserService
         _repo.Upsert(userToBlock);
     }
 
-    public List<User> GetAllBlocked()
+    public IQueryable<User> GetAllBlocked()
     {
-        var users = _repo.GetAll();
-        List<User> blockedUsers = new List<User>();
-        var matchingUsers = from user in users select user;
-        foreach(var p in matchingUsers){
-            if (p.BlockStatus != Block.UNBLOCKED){
-                blockedUsers.Add(p);
-            }
-        }
-        return blockedUsers;
+        return 
+            from user in _repo.GetAll()
+            where user.BlockStatus != Block.UNBLOCKED
+            select user;
     }
 
     public void UnblockPatient(string email)
@@ -76,19 +71,19 @@ public class UserService
         return matchingUsers.FirstOrDefault();
     }
 
-    public void AddOrUpdateUser(User user)  // DOES NOT CHECK IF EMAIL IS TAKEN!
+    public void Upsert(User user)  // DOES NOT CHECK IF EMAIL IS TAKEN!!
     {
         _repo.Upsert(user);
     }
 
-    public void UpdateUserPassword(string email, string newPassword)  // TODO: user better naming for these!!!
+    public void UpdatePassword(string email, string newPassword)
     {
         var newUser = _repo.Get(email);
         newUser.Password = newPassword;
-        _repo.Upsert(newUser);
+        _repo.Upsert(newUser);  // TODO: don't upsert for updates
     }
 
-    public void UpdateUserEmail(string email, string newEmail)
+    public void UpdateEmail(string email, string newEmail)
     {
         var newUser = _repo.Get(email);
         newUser.Email = newEmail;
