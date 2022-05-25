@@ -58,6 +58,11 @@ public class EquipmentUI : ConsoleUI
                 System.Console.Write(e.Message + " Input anything to continue >> ");
                 ReadSanitizedLine();
             }
+            catch (InvalidTokenException e)
+            {
+                System.Console.Write(e.Message + " Input anything to continue >> ");
+                ReadSanitizedLine();
+            }
             catch (FormatException e)
             {
                 System.Console.Write(e.Message + " Input anything to continue >> ");
