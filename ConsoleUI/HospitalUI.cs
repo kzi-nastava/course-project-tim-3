@@ -12,7 +12,7 @@ public class HospitalUI : ConsoleUI
         System.Console.Write("input password >> ");
         var password = Console.ReadLine();
         if (email is null || password is null) throw new Exception("AAAAAA"); // TODO: make better exception
-        var user = _hospital.Login(email, password);
+        var user = _hospital.UserService.Login(email, password);
         if (user is null)
         {
             System.Console.WriteLine("NO SUCH USER!! PLEASE TRY AGAIN"); 

@@ -45,9 +45,4 @@ public class Hospital
         MergeRenovationService.ScheduleAll();
 
     }
-
-    public User? Login(string email, string password)
-    {
-        return UserService.Login(email, password);
-    }
 }
