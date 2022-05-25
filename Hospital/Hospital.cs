@@ -38,6 +38,12 @@ public class Hospital
         MergeRenovationService = new (new MergeRenovationRepository(_dbClient), RoomService,
             RelocationService, AppointmentRepo);
         MedicationRepo = new (_dbClient);
+        // TODO: this maybe shouldn't be here
+        RelocationService.ScheduleAll();
+        SimpleRenovationService.ScheduleAll();
+        SplitRenovationService.ScheduleAll();
+        MergeRenovationService.ScheduleAll();
+
     }
 
     public User? Login(string email, string password)

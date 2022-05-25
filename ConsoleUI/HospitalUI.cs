@@ -22,12 +22,6 @@ public class HospitalUI : ConsoleUI
 
     public override void Start()
     {
-        // TODO: this doesn't belong, here. put it in service classes or something
-        _hospital.RelocationService.ScheduleAll();
-        _hospital.SimpleRenovationService.ScheduleAll();
-        _hospital.SplitRenovationService.ScheduleAll();
-        _hospital.MergeRenovationService.ScheduleAll();
-
         bool quit = false;
         while (!quit)
         {

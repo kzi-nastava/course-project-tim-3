@@ -1,5 +1,3 @@
-using HospitalSystem.Utils;
-
 namespace HospitalSystem;
 
 public class RoomUI : ConsoleUI
