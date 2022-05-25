@@ -15,7 +15,7 @@ public class DoctorUI : UserUI
         {
             Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Create checkup\n4. Quit");
             Console.Write("\n>>");
-            var option = Console.ReadLine().Trim();
+            var option = ReadSanitizedLine().Trim();
             switch (option)
             {
                 case "1":
@@ -101,7 +101,7 @@ public class DoctorUI : UserUI
         {
             Console.Write("\nOptions:\n\n1. See patient info for checkup\n2. Start checkup\n3. Update checkup\n4. Delete checkup\n5. Back\n");
             Console.Write(">>");
-            var input = Console.ReadLine().Trim();
+            var input = ReadSanitizedLine().Trim();
             switch (input)
             {
                 case "1":
@@ -235,7 +235,7 @@ public class DoctorUI : UserUI
                     _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
 
                     Console.Write("\nDo you want to add a prescription? [y/n] >> ");
-                    String? choice = Console.ReadLine().ToLower();
+                    string choice = ReadSanitizedLine();
                     if (choice == "y")
                     {
                         PrescriptionMenu(patient);
@@ -493,8 +493,8 @@ public class DoctorUI : UserUI
         while (true)
         {
             Console.Write("\nEnter medication name >> ");
-            string? name = Console.ReadLine();
-            Medication medication = _hospital.MedicationRepo.GetByName(name.ToLower());
+            string name = ReadSanitizedLine();
+            Medication medication = _hospital.MedicationRepo.GetByName(name);
 
             if (medication == null)
             {
@@ -508,11 +508,11 @@ public class DoctorUI : UserUI
             }
 
             Console.Write("\nEnter amount of times the medication should be taken a day >> ");
-            int amount = Int32.Parse(Console.ReadLine());
+            int amount = Int32.Parse(ReadSanitizedLine());
             Console.Write("\nEnter amount of hours inbetween medication intake >> ");
-            int hours = Int32.Parse(Console.ReadLine());
+            int hours = Int32.Parse(ReadSanitizedLine());
             Console.Write("\nWhen to take in medication:\n1. Before Meal\n2. After Meal\n3. With Meal\n4. Anytime\n>> ");
-            string? bestTaken = Console.ReadLine();
+            string bestTaken = ReadSanitizedLine();
 
             WritePrescription(medication, amount, bestTaken, hours, patient);
             

@@ -433,7 +433,7 @@ public class SecretaryUI : UserUI
             buffer = buffer + 1;
         }
         System.Console.Write("Enter id: ");
-        string? stringId = Console.ReadLine();
+        string stringId = ReadSanitizedLine();
         int indexId = Int16.Parse(stringId);
         System.Console.Write("Enter state(approved, denied): ");
         string? stringState = Console.ReadLine();
