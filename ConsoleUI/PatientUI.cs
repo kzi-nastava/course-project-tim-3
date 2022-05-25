@@ -22,7 +22,7 @@ public class UserBlockedException : System.Exception
         System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
 
-public class PatientUI : ConsoleUI
+public class PatientUI : UserUI
 {
     //there might be a better way to set opening time, only time will be used
     //those times should be stored somewhere else
@@ -32,10 +32,9 @@ public class PatientUI : ConsoleUI
     private TimeSpan _checkupDuration = new TimeSpan(0,0,15,0);
     private Patient _loggedInPatient;
 
-    public PatientUI(Hospital _hospital, User? _user) : base(_hospital) 
+    public PatientUI(Hospital hospital, User user) : base(hospital, user) 
     {
-        this._user = _user;
-        _loggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) _user.Person.Id);
+        _loggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) user.Person.Id);
     }
 
     public void ShowCheckupsAnamnesis(Checkup checkup)

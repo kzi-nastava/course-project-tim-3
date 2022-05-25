@@ -4,9 +4,9 @@ using HospitalSystem.Utils;
 
 namespace HospitalSystem;
 
-public class DoctorUI : ConsoleUI
+public class DoctorUI : UserUI
 {
-    public DoctorUI(Hospital _hospital, User _user) : base(_hospital) {}
+    public DoctorUI(Hospital hospital, User user) : base(hospital, user) { }
 
      public override void Start()
     {

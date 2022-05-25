@@ -23,13 +23,9 @@ public class NullInputException : System.Exception
         System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
 
-public class SecretaryUI : ConsoleUI
+public class SecretaryUI : UserUI
 {   
-    public SecretaryUI(Hospital _hospital, User? _user) : base(_hospital) 
-    {
-        this._user = _user;
-        
-    }
+    public SecretaryUI(Hospital hospital, User user) : base(hospital, user) { }
 
     public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
     public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", 
