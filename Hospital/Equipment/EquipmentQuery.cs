@@ -25,14 +25,14 @@ public struct EquipmentQuery
             {
                 bool success = Int32.TryParse(token.Substring(4), out int number);
                 if (!success)
-                    throw new InvalidInputException("GIVEN MIN IS NOT A NUMBER.");
+                    throw new InvalidInputException("Given min is not a number.");
                 MinCount = number;
             } 
             else if (token.StartsWith("max:"))
             {
                 bool success = Int32.TryParse(token.Substring(4), out int number);
                 if (!success)
-                    throw new InvalidInputException("GIVEN MAX IS NOT A NUMBER.");
+                    throw new InvalidInputException("Given max is not a number.");
                 MaxCount = number;
             }
             else if (token.StartsWith("type:"))
@@ -40,12 +40,12 @@ public struct EquipmentQuery
                 EquipmentType type;
                 var success = Enum.TryParse(token.Substring(5), true, out type);
                 if (!success)
-                    throw new InvalidInputException("NOT A VALID TYPE!");
+                    throw new InvalidInputException("Not a valid type.");
                 Type = type;
             }
             else
             {
-                throw new InvalidInputException("UNRECOGNIZED TOKEN: " + token);
+                throw new InvalidInputException("Unrecognized token: " + token);
             }
         }
     }
