@@ -72,8 +72,7 @@ public class UserRepository
             where user.Password == password && user.Email == email
             select user;
         // count on database that there is only one with this email
-        if (matchingUsers.Any()) return matchingUsers.First();
-        return null;
+        return matchingUsers.FirstOrDefault();
     }
 
     public void AddOrUpdateUser(User user)
