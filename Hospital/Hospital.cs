@@ -32,9 +32,11 @@ public class Hospital
         EquipmentService = new (new EquipmentBatchRepository(_dbClient));
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
         CheckupChangeRequestRepo = new (_dbClient);
-        SimpleRenovationService = new (new SimpleRenovationRepository(_dbClient), RoomService);
-        SplitRenovationService = new (new SplitRenovationRepository(_dbClient), RoomService, RelocationService);
-        MergeRenovationService = new (new MergeRenovationRepository(_dbClient), RoomService, RelocationService);
+        SimpleRenovationService = new (new SimpleRenovationRepository(_dbClient), RoomService, AppointmentRepo);
+        SplitRenovationService = new (new SplitRenovationRepository(_dbClient), RoomService,
+            RelocationService, AppointmentRepo);
+        MergeRenovationService = new (new MergeRenovationRepository(_dbClient), RoomService,
+            RelocationService, AppointmentRepo);
         MedicationRepo = new (_dbClient);
     }
 

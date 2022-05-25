@@ -16,6 +16,10 @@ public class MergeRenovation
 
     public MergeRenovation(DateRange busyRange, string firstLocation, string secondLocation, string mergeToLocation)
     {
+        if (firstLocation == secondLocation)
+        {
+            throw new ArgumentException("Nope, can't merge a room with itself.");
+        }
         Id = ObjectId.GenerateNewId();
         BusyRange = busyRange;
         FirstLocation = firstLocation;

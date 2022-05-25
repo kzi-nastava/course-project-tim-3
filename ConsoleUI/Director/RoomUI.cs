@@ -88,6 +88,14 @@ public class RoomUI : ConsoleUI
             {
                 System.Console.Write(e.Message);
             }
+            catch (RenovationException e)
+            {
+                System.Console.Write(e.Message);
+            }
+            catch (ArgumentException e)
+            {
+                System.Console.Write(e.Message);
+            }
             _loadedRooms = _hospital.RoomService.GetAll().ToList();
             System.Console.Write("\nInput anything to continue >> ");
             ReadSanitizedLine();
@@ -194,11 +202,6 @@ public class RoomUI : ConsoleUI
 
         var range = InputDateRange();
 
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(_loadedRooms[number].Location, range.Starts))
-        {
-            throw new InvalidInputException("That room has appointments scheduled, can't renovate");
-        }
-
         var renovation = new SimpleRenovation(_loadedRooms[number].Location, range);
         _hospital.SimpleRenovationService.Schedule(renovation);
         System.Console.Write("Successfully scheduled simple renovation. Input anything to continue >>  ");
@@ -215,23 +218,13 @@ public class RoomUI : ConsoleUI
 
         var range = InputDateRange();
 
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(originalRoom.Location, range.Starts))
-        {
-            throw new InvalidInputException("That room has appointments scheduled, can't renovate");
-        }
-
         System.Console.WriteLine("Input the first room that will split off:");
         var firstRoom = InputRoom();
 
         System.Console.WriteLine("Input the second room that will split off:");
         var secondRoom = InputRoom();
 
-        if (firstRoom.Location == secondRoom.Location)
-        {
-            throw new InvalidInputException("Nope, can't have same location for both.");
-        }
-
-        var renovation = new SplitRenovation(originalRoom.Location, range, firstRoom, secondRoom);
+        var renovation = new SplitRenovation(range, originalRoom.Location, firstRoom.Location, secondRoom.Location);
 
         _hospital.SplitRenovationService.Schedule(renovation, firstRoom, secondRoom);
         System.Console.Write("Successfully scheduled split renovation. Input anything to continue >>  ");
@@ -252,23 +245,7 @@ public class RoomUI : ConsoleUI
         var secondNumber = ReadInt(0, _loadedRooms.Count - 1);
         var secondRoom = _loadedRooms[secondNumber];
 
-        if (secondNumber == firstNumber)
-        {
-            throw new InvalidCastException("Nope, can't merge a room with itself.");
-        }
-
         var range = InputDateRange();
-
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(firstRoom.Location, range.Starts))
-        {  
-            // TODO: change exception type
-            throw new InvalidInputException("First room has appointments scheduled, can't renovate.");
-        }
-
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(secondRoom.Location, range.Starts))
-        {  
-            throw new InvalidInputException("Second room has appointments scheduled, can't renovate.");
-        }
 
         System.Console.WriteLine("Input the room that these will merge into:");
         var mergingRoom = InputRoom();

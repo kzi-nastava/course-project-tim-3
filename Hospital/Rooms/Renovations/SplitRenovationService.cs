@@ -7,21 +7,26 @@ public class SplitRenovationService
     private ISplitRenovationRepository _repo;
     private RoomService _roomService;
     private EquipmentRelocationService _relocationService;
+    private AppointmentRepository _appointmentRepo;
 
     public SplitRenovationService(ISplitRenovationRepository repo, RoomService roomService,
-        EquipmentRelocationService relocationService)
+        EquipmentRelocationService relocationService, AppointmentRepository appointmentRepo)
     {
         _repo = repo;
         _roomService = roomService;
         _relocationService = relocationService;
+        _appointmentRepo = appointmentRepo;
     }
 
     public void Schedule(SplitRenovation renovation, Room firstSplit, Room secondSplit)
     {
+        if (!_appointmentRepo.IsRoomAvailableForRenovation(renovation.SplitRoomLocation, renovation.BusyRange.Starts))
+        {
+            throw new RenovationException("That room has appointments scheduled, can't renovate");
+        }
         _roomService.UpsertInactive(firstSplit);
         _roomService.UpsertInactive(secondSplit);
         _repo.Insert(renovation);
-
         JustSchedule(renovation);
     }
 

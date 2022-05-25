@@ -14,13 +14,18 @@ public class SplitRenovation
     public string SplitToSecondLocation { get; set; }
     public bool IsDone { get; set; }
 
-    public SplitRenovation(string splitRoomLocation, DateRange busyRange, Room firstNewRoom, Room secondNewRoom)
+    public SplitRenovation(DateRange busyRange, string splitRoomLocation,
+        string splitToFirstLocation, string splitToSecondLocation)
     {
+        if (splitToFirstLocation == splitToSecondLocation)
+        {
+            throw new ArgumentException("Nope, can't have same location for both.");
+        }
         Id = ObjectId.GenerateNewId();
-        SplitRoomLocation = splitRoomLocation;
-        SplitToFirstLocation = firstNewRoom.Location;
-        SplitToSecondLocation = secondNewRoom.Location;
         BusyRange = busyRange;
+        SplitRoomLocation = splitRoomLocation;
+        SplitToFirstLocation = splitToFirstLocation;
+        SplitToSecondLocation = splitToSecondLocation;
         IsDone = false;
     }
 }
