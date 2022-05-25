@@ -1,4 +1,4 @@
-namespace HospitalSystem;
+namespace HospitalSystem.ConsoleUI;
 using MongoDB.Driver;
 using MongoDB.Bson;
 [System.Serializable]

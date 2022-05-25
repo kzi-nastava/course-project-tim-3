@@ -2,7 +2,7 @@ using System.Globalization;
 using MongoDB.Bson;
 using HospitalSystem.Utils;
 
-namespace HospitalSystem;
+namespace HospitalSystem.ConsoleUI;
 
 public enum CheckupInTime
     {

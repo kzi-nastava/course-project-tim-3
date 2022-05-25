@@ -2,7 +2,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using HospitalSystem.Utils;
 
-namespace HospitalSystem;
+namespace HospitalSystem.ConsoleUI;
 
 public class DoctorUI : UserUI
 {

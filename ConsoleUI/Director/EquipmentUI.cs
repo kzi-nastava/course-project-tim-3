@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace HospitalSystem;
+namespace HospitalSystem.ConsoleUI;
 
 public class EquipmentUI : ConsoleUI
 {

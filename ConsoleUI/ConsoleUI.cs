@@ -1,6 +1,6 @@
 using HospitalSystem.Utils;
 
-namespace HospitalSystem;
+namespace HospitalSystem.ConsoleUI;
 
 [System.Serializable]
 public class QuitToMainMenuException : System.Exception

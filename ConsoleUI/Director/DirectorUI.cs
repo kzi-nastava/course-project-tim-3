@@ -1,4 +1,4 @@
-namespace HospitalSystem;
+namespace HospitalSystem.ConsoleUI;
 
 public class DirectorUI : ConsoleUI
 {
