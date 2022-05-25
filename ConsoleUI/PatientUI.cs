@@ -272,7 +272,7 @@ public class PatientUI : UserUI
         if (nextWillBlock)
         {
             _user.BlockStatus = Block.BY_SYSTEM;
-            _hospital.UserRepo.AddOrUpdateUser(_user);
+            _hospital.UserService.AddOrUpdateUser(_user);
             throw new UserBlockedException("Deleting too many checkups.");
         }
 
@@ -393,7 +393,7 @@ public class PatientUI : UserUI
         if (nextWillBlock)
         {
             _user.BlockStatus = Block.BY_SYSTEM;
-            _hospital.UserRepo.AddOrUpdateUser(_user);
+            _hospital.UserService.AddOrUpdateUser(_user);
             throw new UserBlockedException("Updating too many checkups.");
         }
 
@@ -858,7 +858,7 @@ public class PatientUI : UserUI
                 if (nextWillBlock)
                 {
                     _user.BlockStatus = Block.BY_SYSTEM;
-                    _hospital.UserRepo.AddOrUpdateUser(_user);
+                    _hospital.UserService.AddOrUpdateUser(_user);
                     throw new UserBlockedException("Creating too many checkups.");
                 }
 
@@ -895,7 +895,7 @@ public class PatientUI : UserUI
             if (nextWillBlock)
             {
                 _user.BlockStatus = Block.BY_SYSTEM;
-                _hospital.UserRepo.AddOrUpdateUser(_user);
+                _hospital.UserService.AddOrUpdateUser(_user);
                 throw new UserBlockedException("Creating too many checkups.");
             }
         }
@@ -962,7 +962,7 @@ public class PatientUI : UserUI
         if (nextWillBlock)
         {
             _user.BlockStatus = Block.BY_SYSTEM;
-            _hospital.UserRepo.AddOrUpdateUser(_user);
+            _hospital.UserService.AddOrUpdateUser(_user);
             throw new UserBlockedException("Creating too many checkups.");
         }
     }

@@ -133,9 +133,8 @@ public class SecretaryUI : UserUI
     {   
         Console.Clear();
         List<User> users = new List<User>();
-        UserRepository ur = _hospital.UserRepo;
-        var usersGet = ur.GetUsers();
-        var matchingUsers = from user in usersGet.AsQueryable() select user;
+        UserService us = _hospital.UserService;
+        var matchingUsers = us.GetAll();
 
         foreach(var p in matchingUsers){
             if (p.Role == Role.PATIENT){
@@ -233,7 +232,7 @@ public class SecretaryUI : UserUI
     public void CreateUserPatient()
     {   
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
+        UserService ur = _hospital.UserService;
         System.Console.WriteLine("Enter the following data: ");
         System.Console.Write("email >> ");
         string? email = Console.ReadLine();
@@ -289,14 +288,14 @@ public class SecretaryUI : UserUI
 
     public void ReadUserPatient(){
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
+        UserService ur = _hospital.UserService;
         System.Console.Write("Enter the user mail to view his data: ");
         string? email = Console.ReadLine();
         if (email is null)
         {
             throw new NullInputException("Null value as input");
         }
-        var user = ur.GetUser(email);
+        var user = ur.Get(email);
         Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) user.Person.Id);
         System.Console.WriteLine("Email : " + user.Email.ToString());
         System.Console.WriteLine("Password : " + user.Password.ToString());
@@ -319,7 +318,7 @@ public class SecretaryUI : UserUI
     public void updateUserPatient()
     {
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
+        UserService ur = _hospital.UserService;
         System.Console.Write("Enter <email> or <password> depending of what you want update: ");
         
         string? enter = Console.ReadLine();
@@ -360,14 +359,14 @@ public class SecretaryUI : UserUI
     public void DeleteUserPatient()
     {
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
+        UserService ur = _hospital.UserService;
         System.Console.Write("Enter the user mail to delete: ");
         string? email = Console.ReadLine();
         if (email is null)
         {
             throw new NullInputException("Null value as input");
         }
-        ur.DeleteUser(email);
+        ur.Delete(email);
         Console.Clear();
         printCommands(CRUDCommands);
     }
@@ -375,22 +374,22 @@ public class SecretaryUI : UserUI
     public void BlockUserPatients()
     {
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
+        UserService ur = _hospital.UserService;
         System.Console.Write("Enter the user mail to block: ");
         string? email = Console.ReadLine();
         if (email is null)
         {
             throw new NullInputException("Null value as input");
         }
-        ur.BlockUserPatient(email);
+        ur.BlockPatient(email);
         Console.Clear();
         printCommands(CRUDCommands);
     }
     public void SelectBlockedPatients()
     {
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
-        List<User> blockedUsers = ur.GetBlockedUsers();
+        UserService ur = _hospital.UserService;
+        List<User> blockedUsers = ur.GetAllBlocked();
         System.Console.WriteLine("Blocked users(email): ");
         foreach(var b in blockedUsers){
             Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) b.Person.Id);
@@ -403,7 +402,7 @@ public class SecretaryUI : UserUI
         {
             throw new NullInputException("Null value as input");
         }
-         ur.UnblockUserPatient(email);
+         ur.UnblockPatient(email);
         Console.Clear();
         printCommands(CRUDCommands);
     }

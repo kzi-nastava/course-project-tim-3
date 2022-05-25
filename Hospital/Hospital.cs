@@ -5,7 +5,7 @@ namespace HospitalSystem;
 public class Hospital
 {
     private MongoClient _dbClient = new MongoClient("mongodb://root:root@localhost:27017"); // TODO: move this
-    public UserRepository UserRepo { get; }
+    public UserService UserService { get; }
     public DoctorRepository DoctorRepo { get; }
     public PatientRepository PatientRepo { get; }
     public AppointmentRepository AppointmentRepo { get; }
@@ -22,7 +22,7 @@ public class Hospital
 
     public Hospital()
     {
-        UserRepo = new (_dbClient);
+        UserService = new (new UserRepository(_dbClient));
         DoctorRepo = new (_dbClient);
         PatientRepo = new (_dbClient);
         DirectorRepo = new (_dbClient);
@@ -48,6 +48,6 @@ public class Hospital
 
     public User? Login(string email, string password)
     {
-        return UserRepo.Login(email, password);
+        return UserService.Login(email, password);
     }
 }
