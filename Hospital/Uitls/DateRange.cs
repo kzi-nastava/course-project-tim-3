@@ -6,7 +6,7 @@ public class DateRange
 {
     // the minimum allowed range (makes scheduling easy)
     [BsonIgnore]
-    private static TimeSpan _minDuration = TimeSpan.FromSeconds(60);  
+    private static TimeSpan s_minDuration = TimeSpan.FromSeconds(60);  
     public DateTime Starts { get; set; }
     public DateTime Ends { get; set; }
 
@@ -17,10 +17,10 @@ public class DateRange
             throw new ArgumentException("Range can not end before it starts.");
         }
 
-        if (ends - starts < _minDuration)
+        if (ends - starts < s_minDuration)
         {
             throw new ArgumentException("Can not make range that lasts less than the minimum duration: " 
-                + _minDuration.Seconds + " seconds.");
+                + s_minDuration.Seconds + " seconds.");
         }
 
         if (!allowPast && starts < DateTime.Now)
