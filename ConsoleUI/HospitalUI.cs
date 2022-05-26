@@ -15,7 +15,7 @@ public class HospitalUI : ConsoleUI
         var user = _hospital.UserService.Login(email, password);
         if (user is null)
         {
-            System.Console.WriteLine("NO SUCH USER!! PLEASE TRY AGAIN"); 
+            System.Console.WriteLine("No such user. Please try again"); 
         }
         return user;
     }
@@ -32,32 +32,26 @@ public class HospitalUI : ConsoleUI
             }
             Console.Clear();
             System.Console.WriteLine("Welcome, " + user.Email + "!");
+            ConsoleUI myUI;
             switch (user.Role)
             {
                 case Role.DIRECTOR:
-                    DirectorUI dirUI = new DirectorUI(_hospital);
-                    dirUI.Start();
+                    myUI = new DirectorUI(_hospital);
                     break;
                 case Role.DOCTOR:
-                    DoctorUI doctorUI = new DoctorUI(_hospital, user);
-                    doctorUI.Start();
+                    myUI = new DoctorUI(_hospital, user);
                     break;
                 case Role.PATIENT:
-                {
-                    var ui = new PatientUI(this._hospital, user);
-                    ui.Start();
+                    myUI = new PatientUI(_hospital, user);
                     break;
-                }
                 case Role.SECRETARY:
-                {
-                    var secUI = new SecretaryUI(this._hospital, user);
-                    secUI.Start();
+                    myUI = new SecretaryUI(_hospital, user);
                     break;
-                }   
                 default:
-                    System.Console.WriteLine("SOMETHING WENT HORRIBLY WRONG. TERMINATING");
-                    break;
+                    System.Console.WriteLine("Something went horribly wrong. Terminating");
+                    return;
             }
+            myUI.Start();
         }
     }
 }
