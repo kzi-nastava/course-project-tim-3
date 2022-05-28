@@ -1,10 +1,10 @@
-namespace HospitalSystem;
+namespace HospitalSystem.ConsoleUI;
 
 public class HospitalUI : ConsoleUI
 {
     public HospitalUI(Hospital _hospital) : base(_hospital) {}
 
-    private bool TryLogin()
+    private User? TryLogin()
     {
         System.Console.Write("Login:\n\n");
         System.Console.Write("input email >> ");
@@ -12,59 +12,46 @@ public class HospitalUI : ConsoleUI
         System.Console.Write("input password >> ");
         var password = Console.ReadLine();
         if (email is null || password is null) throw new Exception("AAAAAA"); // TODO: make better exception
-        _user = _hospital.Login(email, password);
-        if (_user is null)
+        var user = _hospital.UserService.Login(email, password);
+        if (user is null)
         {
-            System.Console.WriteLine("NO SUCH USER!! PLEASE TRY AGAIN"); 
+            System.Console.WriteLine("No such user. Please try again"); 
         }
-        return _user is not null;
+        return user;
     }
 
     public override void Start()
     {
-        // TODO: this doesn't belong, here. put it in service classes or something
-        _hospital.RelocationRepo.ScheduleAll();
-        _hospital.SimpleRenovationRepo.ScheduleAll();
-        _hospital.SplitRenovationRepo.ScheduleAll();
-        _hospital.MergeRenovationRepo.ScheduleAll();
-
         bool quit = false;
         while (!quit)
         {
-            var success = false;
-            while (!success)
+            User? user = null;
+            while (user is null)
             {
-                success = TryLogin();
+                user = TryLogin();
             }
             Console.Clear();
-            System.Console.WriteLine("Welcome, " + _user?.Email + "!");
-            // TODO: spawn UIs below
-            switch (_user?.Role)
+            System.Console.WriteLine("Welcome, " + user.Email + "!");
+            ConsoleUI myUI;
+            switch (user.Role)
             {
                 case Role.DIRECTOR:
-                    DirectorUI dirUI = new DirectorUI(_hospital);
-                    dirUI.Start();
+                    myUI = new DirectorUI(_hospital);
                     break;
                 case Role.DOCTOR:
-                    DoctorUI doctorUI = new DoctorUI(_hospital, _user);
-                    doctorUI.Start();
+                    myUI = new DoctorUI(_hospital, user);
                     break;
                 case Role.PATIENT:
-                {
-                    var ui = new PatientUI(this._hospital, this._user);
-                    ui.Start();
+                    myUI = new PatientUI(_hospital, user);
                     break;
-                }
                 case Role.SECRETARY:
-                {
-                    var secUI = new SecretaryUI(this._hospital, this._user);
-                    secUI.Start();
+                    myUI = new SecretaryUI(_hospital, user);
                     break;
-                }   
                 default:
-                    System.Console.WriteLine("SOMETHING WENT HORRIBLY WRONG. TERMINATING");
-                    break;
+                    System.Console.WriteLine("Something went horribly wrong. Terminating");
+                    return;
             }
+            myUI.Start();
         }
     }
 }

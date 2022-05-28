@@ -1,4 +1,4 @@
-namespace HospitalSystem;
+namespace HospitalSystem.ConsoleUI;
 
 public class RoomUI : ConsoleUI
 {
@@ -6,7 +6,7 @@ public class RoomUI : ConsoleUI
 
     public RoomUI(Hospital hospital) : base(hospital)
     {
-        _loadedRooms = _hospital.RoomRepo.GetAll().ToList();
+        _loadedRooms = _hospital.RoomService.GetAll().ToList();
     }
 
     public RoomUI(Hospital hospital, List<Room> loadedRooms) : base(hospital)
@@ -71,23 +71,31 @@ public class RoomUI : ConsoleUI
                 }
                 else
                 {
-                    System.Console.WriteLine("INVALID INPUT - READ THE AVAILABLE COMMANDS!");
-                    System.Console.Write("INPUT ANYTHING TO CONTINUE >> ");
+                    System.Console.WriteLine("Invalid input: please read the available commands.");
                 }
             }
             catch (InvalidInputException e)
             {
-                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+                System.Console.Write(e.Message);
             }
             catch (AbortException e)
             {  // TODO: make hierarchy extension same with above
-                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+                System.Console.Write(e.Message);
             }
             catch (FormatException e)
             {
-                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+                System.Console.Write(e.Message);
             }
-            _loadedRooms = _hospital.RoomRepo.GetAll().ToList();
+            catch (RenovationException e)
+            {
+                System.Console.Write(e.Message);
+            }
+            catch (ArgumentException e)
+            {
+                System.Console.Write(e.Message);
+            }
+            _loadedRooms = _hospital.RoomService.GetAll().ToList();
+            System.Console.Write("\nInput anything to continue >> ");
             ReadSanitizedLine();
         }
     }
@@ -105,211 +113,144 @@ public class RoomUI : ConsoleUI
 
     private void Update()
     {
-        System.Console.Write("INPUT NUMBER >> ");
+        System.Console.Write("Input number >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
         var room = _loadedRooms[number];
 
-        System.Console.WriteLine("INPUT NOTHING TO KEEP AS IS");
+        System.Console.WriteLine("Input nothing to keep as is");
 
-        System.Console.Write("ENTER ROOM LOCATION >> ");
+        System.Console.Write("Enter room location >> ");
         var location = ReadSanitizedLine();
         if (location != "")
             room.Location = location;
 
-        System.Console.Write("ENTER ROOM NAME >> ");
+        System.Console.Write("Enter room name >> ");
         var name = ReadSanitizedLine();
         if (name != "")
             room.Name = name;
 
-        System.Console.Write("ENTER ROOM TYPE [rest|operation|checkup|other] >> ");
+        System.Console.Write("Enter room type [rest|operation|checkup|other] >> ");
         var rawType = ReadSanitizedLine();
         RoomType type;
         if (rawType != "")
         {
             var success = Enum.TryParse(rawType, true, out type);
             if (!success || type == RoomType.STOCK)
-                throw new InvalidInputException("NOT A VALID TYPE!");
+                throw new InvalidInputException("Not a valid type.");
             room.Type = type;
         }
 
-        _hospital.RoomRepo.Replace(room);
-        System.Console.Write("SUCCESSFULLY UPDATED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+        _hospital.RoomService.Replace(room);
+        System.Console.Write("Successfully updated room. Input anything to continue >> ");
     }
 
     private void Add()
     {
         var newRoom = InputRoom();
-        _hospital.RoomRepo.Add(newRoom);
-        System.Console.Write("SUCCESSFULLY ADDED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+        _hospital.RoomService.Insert(newRoom);
+        System.Console.Write("Successfully added room. Input anything to continue >> ");
     }
 
     private Room InputRoom()
     {
-        System.Console.Write("ENTER ROOM LOCATION >> ");
+        System.Console.Write("Enter room location >> ");
         var location = ReadSanitizedLine();
         if (location == "")
-            throw new InvalidInputException("INVALID LOCATION!");
-        if (_hospital.RoomRepo.DoesExist(location))
-            throw new InvalidInputException("ROOM WITH THAT LOCATION ALREADY EXISTS!");
+            throw new InvalidInputException("Invalid location.");
+        if (_hospital.RoomService.DoesExist(location))
+            throw new InvalidInputException("Room with that location already exists.");
 
-        System.Console.Write("ENTER ROOM NAME >> ");
+        System.Console.Write("Enter room name >> ");
         var name = ReadSanitizedLine();
         if (name == "")
-            throw new InvalidInputException("INVALID NAME!");
+            throw new InvalidInputException("Invalid name.");
 
-        System.Console.Write("ENTER ROOM TYPE [rest|operation|checkup|other] >> ");
+        System.Console.Write("Enter room type [rest|operation|checkup|other] >> ");
         var rawType = ReadSanitizedLine();
         bool success = Enum.TryParse(rawType, true, out RoomType type);
         if (!success || type == RoomType.STOCK)
-            throw new InvalidInputException("NOT A VALID TYPE!");
+            throw new InvalidInputException("Not a valid type.");
 
         return new Room(location, name, type);
     }
 
     private void Delete()
     {
-        System.Console.Write("INPUT NUMBER >> ");
+        System.Console.Write("Input number >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
-        if (_hospital.EquipmentRepo.GetAllIn(_loadedRooms[number].Location).Any())
+        if (_hospital.EquipmentService.GetAllIn(_loadedRooms[number].Location).Any())
         {
             // TODO: make into a moving equipment submenu
-            System.Console.Write("THIS ROOM HAS EQUIPMENT IN IT. THIS OPERATION WILL DELETE IT ALL. ARE YOU SURE? [y/N] >> ");
+            System.Console.Write("This room has equipment in it. This operation will delete it all. Are you sure? [y/N] >> ");
             var answer = ReadSanitizedLine();
             if (answer != "y")
-                throw new AbortException("NOT A YES. ABORTING.");
-            _hospital.EquipmentRepo.DeleteAllInRoom(_loadedRooms[number]);
+                throw new AbortException("Not a yes. Aborting.");
+            _hospital.EquipmentService.DeleteAllInRoom(_loadedRooms[number]);
         }
-        _hospital.RoomRepo.Delete(_loadedRooms[number].Location);
-        System.Console.Write("SUCCESSFULLY DELETED ROOM. INPUT ANYTHING TO CONTINUE >> ");
+        _hospital.RoomService.Delete(_loadedRooms[number].Location);
+        System.Console.Write("Successfully deleted room. Input anything to continue >> ");
     }
 
     private void DoSimpleRenovation()
     {
-        System.Console.WriteLine("WARNING! Doing this will make any equipment inside inaccessible during renovation. ");
+        System.Console.WriteLine("Warning! Doing this will make any equipment inside inaccessible during renovation. ");
         System.Console.WriteLine("Move it first if you so desire");
-        System.Console.Write("INPUT NUMBER >> ");
+        System.Console.Write("Input number >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
 
-        (var startTime, var endTime) = InputInterval();
+        var range = InputDateRange();
 
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(_loadedRooms[number].Location, startTime))
-        {
-            throw new InvalidInputException("THAT ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE");
-        }
-
-        var renovation = new SimpleRenovation(_loadedRooms[number].Location, startTime, endTime);
-        _hospital.SimpleRenovationRepo.Add(renovation);
-        _hospital.SimpleRenovationRepo.Schedule(renovation);
-        System.Console.Write("SUCCESSFULLY SCHEDULED SIMPLE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
-    }
-
-    private (DateTime, DateTime) InputInterval()
-    {
-        System.Console.Write("INPUT DATE-TIME WHEN IT STARTS >> ");
-        var rawDate = ReadSanitizedLine();
-        var startTime = DateTime.Parse(rawDate);
-
-        System.Console.Write("INPUT DATE-TIME WHEN IT IS DONE >> ");
-        rawDate = ReadSanitizedLine();
-        var endTime = DateTime.Parse(rawDate);
-
-        if (endTime < startTime)
-        {
-            throw new InvalidInputException("NOPE, CAN NOT END BEFORE IT STARTS!");
-        }
-
-        if (endTime - startTime < TimeSpan.FromSeconds(60))
-        {
-            throw new InvalidInputException("NOPE, CAN'T LAST LESS THAN ONE MINUTE!");
-        }
-
-        if (startTime < DateTime.Now)
-        {
-            throw new InvalidInputException("NOPE, CAN'T SCHEDULE IN THE PAST!");
-        }
-
-        return (startTime, endTime);
+        var renovation = new SimpleRenovation(_loadedRooms[number].Location, range);
+        _hospital.SimpleRenovationService.Schedule(renovation);
+        System.Console.Write("Successfully scheduled simple renovation. Input anything to continue >>  ");
     }
 
     private void DoSplitRenovation()
     {
-        System.Console.WriteLine("WARNING! Doing this will make any equipment inside inaccessible during renovation");
+        System.Console.WriteLine("Warning! Doing this will make any equipment inside inaccessible during renovation");
         System.Console.WriteLine("This will move all equipment present at the beginning of the renovation into the first room");
         System.Console.WriteLine("Move it first if you so desire");
-        System.Console.Write("INPUT NUMBER TO SPLIT >> ");
+        System.Console.Write("Input number to split >> ");
         var number = ReadInt(0, _loadedRooms.Count - 1);
         var originalRoom = _loadedRooms[number];
 
-        (var startTime, var endTime) = InputInterval();
+        var range = InputDateRange();
 
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(originalRoom.Location, startTime))
-        {
-            throw new InvalidInputException("THAT ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE");
-        }
-
-        System.Console.WriteLine("INPUT THE FIRST ROOM THAT WILL SPLIT OFF:");
+        System.Console.WriteLine("Input the first room that will split off:");
         var firstRoom = InputRoom();
 
-        System.Console.WriteLine("INPUT THE SECOND ROOM THAT WILL SPLIT OFF:");
+        System.Console.WriteLine("Input the second room that will split off:");
         var secondRoom = InputRoom();
 
-        if (firstRoom.Location == secondRoom.Location)
-        {
-            throw new InvalidInputException("NOPE, CAN'T HAVE SAME LOCATION FOR BOTH!");
-        }
+        var renovation = new SplitRenovation(range, originalRoom.Location, firstRoom.Location, secondRoom.Location);
 
-        var renovation = new SplitRenovation(originalRoom.Location, startTime, endTime, firstRoom, secondRoom);
-
-        // TODO: put this below in a service
-        _hospital.RoomRepo.AddInactive(firstRoom);
-        _hospital.RoomRepo.AddInactive(secondRoom);
-        _hospital.SplitRenovationRepo.Add(renovation);
-        _hospital.SplitRenovationRepo.Schedule(renovation);
-        System.Console.Write("SUCCESSFULLY SCHEDULED SPLIT RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
+        _hospital.SplitRenovationService.Schedule(renovation, firstRoom, secondRoom);
+        System.Console.Write("Successfully scheduled split renovation. Input anything to continue >>  ");
     }
     
     private void DoMergeRenovation()
     {
-        System.Console.WriteLine("WARNING! Doing this will make any equipment inside inaccessible during renovation");
+        System.Console.WriteLine("Warning! Doing this will make any equipment inside inaccessible during renovation");
         System.Console.Write("This will move all equipment present at the beginning of the renovation ");
         System.Console.WriteLine("in first and second room into the merging room");
         System.Console.WriteLine("Move it first if you so desire");
 
-        System.Console.Write("INPUT FIRST NUMBER TO MERGE >> ");
+        System.Console.Write("Input first number to merge >> ");
         var firstNumber = ReadInt(0, _loadedRooms.Count - 1);
         var firstRoom = _loadedRooms[firstNumber];
 
-        System.Console.Write("INPUT FIRST NUMBER TO MERGE >> ");
+        System.Console.Write("Input second number to merge >> ");
         var secondNumber = ReadInt(0, _loadedRooms.Count - 1);
         var secondRoom = _loadedRooms[secondNumber];
 
-        if (secondNumber == firstNumber)
-        {
-            throw new InvalidCastException("NOPE, CAN'T MERGE A ROOM WITH ITSELF");
-        }
+        var range = InputDateRange();
 
-        (var startTime, var endTime) = InputInterval();
-
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(firstRoom.Location, startTime))
-        {  
-            // TODO: change exception type
-            throw new InvalidInputException("FIRST ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE.");
-        }
-
-        if (!_hospital.AppointmentRepo.IsRoomAvailableForRenovation(secondRoom.Location, startTime))
-        {  
-            throw new InvalidInputException("SECOND ROOM HAS APPOINTMENTS SCHEDULED, CAN'T RENOVATE.");
-        }
-
-        System.Console.WriteLine("INPUT THE ROOM THAT THESE WILL MERGE INTO:");
+        System.Console.WriteLine("Input the room that these will merge into:");
         var mergingRoom = InputRoom();
 
-        var renovation = new MergeRenovation(startTime, endTime, firstRoom.Location, secondRoom.Location, mergingRoom.Location);
+        var renovation = new MergeRenovation(range, firstRoom.Location, secondRoom.Location, mergingRoom.Location);
 
-        // TODO: put this below in a service
-        _hospital.RoomRepo.AddInactive(mergingRoom);
-        _hospital.MergeRenovationRepo.Add(renovation);
-        _hospital.MergeRenovationRepo.Schedule(renovation);
-        System.Console.Write("SUCCESSFULLY SCHEDULED MERGE RENOVATION. INPUT ANYTHING TO CONTINUE >>  ");
+        _hospital.MergeRenovationService.Schedule(renovation, mergingRoom);
+        System.Console.Write("Successfully scheduled merge renovation. Input anything to continue >>  ");
     }
 }

@@ -1,10 +1,12 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
-namespace HospitalSystem;
+using HospitalSystem.Utils;
 
-public class DoctorUI : ConsoleUI
+namespace HospitalSystem.ConsoleUI;
+
+public class DoctorUI : UserUI
 {
-    public DoctorUI(Hospital _hospital, User _user) : base(_hospital) {}
+    public DoctorUI(Hospital hospital, User user) : base(hospital, user) { }
 
      public override void Start()
     {
@@ -13,7 +15,7 @@ public class DoctorUI : ConsoleUI
         {
             Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Create checkup\n4. Quit");
             Console.Write("\n>>");
-            var option = Console.ReadLine().Trim();
+            var option = ReadSanitizedLine().Trim();
             switch (option)
             {
                 case "1":
@@ -59,9 +61,9 @@ public class DoctorUI : ConsoleUI
             return false;
         }
         Doctor doctor = _hospital.DoctorRepo.GetById((ObjectId)_user.Person.Id);
-        if (_hospital.AppointmentRepo.IsDoctorAvailable(dateTime, doctor))
+        Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
+        if (_hospital.AppointmentRepo.IsDoctorAvailable(checkup.DateRange, doctor))
         {
-            Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
             _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
             Console.WriteLine("\nCheckup successfully added");
             return true;
@@ -99,7 +101,7 @@ public class DoctorUI : ConsoleUI
         {
             Console.Write("\nOptions:\n\n1. See patient info for checkup\n2. Start checkup\n3. Update checkup\n4. Delete checkup\n5. Back\n");
             Console.Write(">>");
-            var input = Console.ReadLine().Trim();
+            var input = ReadSanitizedLine().Trim();
             switch (input)
             {
                 case "1":
@@ -191,14 +193,13 @@ public class DoctorUI : ConsoleUI
 
     public void PrintCheckups(List<Checkup> checkups)
     {
-        Console.WriteLine(String.Format("{0,5} {1,12} {2,12} {3,25}", "Nr.", "Date", "Time", "Patient"));
+        Console.WriteLine(String.Format("{0,5} {2,24} {3,25}", "Nr.", "Date & Time", "Patient"));
         int i = 1;
         foreach (Checkup checkup in checkups)
         {
             Patient patient = _hospital.PatientRepo.GetPatientById((ObjectId)checkup.Patient.Id);
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 60)));
-            Console.WriteLine(String.Format("{0,5} {1,12} {2,12} {3,25}", i, checkup.StartTime.ToString("dd.MM.yyyy"), 
-            checkup.StartTime.ToString("HH:mm"), patient));
+            Console.WriteLine(String.Format("{0,5} {1,24} {2,25}", i, checkup.DateRange, patient));
             i++;
         }
     }
@@ -234,7 +235,7 @@ public class DoctorUI : ConsoleUI
                     _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
 
                     Console.Write("\nDo you want to add a prescription? [y/n] >> ");
-                    String? choice = Console.ReadLine().ToLower();
+                    string choice = ReadSanitizedLine();
                     if (choice == "y")
                     {
                         PrescriptionMenu(patient);
@@ -360,7 +361,7 @@ public class DoctorUI : ConsoleUI
         var newDateTime = DateTime.TryParse(date + " " + time, out DateTime newStartDate);
         if (newDateTime == true)
         {
-            checkup.StartTime = newStartDate;
+            checkup.DateRange = new DateRange(newStartDate, checkup.DateRange.Ends);
             _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
             Console.WriteLine("\nEdit successfull");
         }
@@ -492,8 +493,8 @@ public class DoctorUI : ConsoleUI
         while (true)
         {
             Console.Write("\nEnter medication name >> ");
-            string? name = Console.ReadLine();
-            Medication medication = _hospital.MedicationRepo.GetByName(name.ToLower());
+            string name = ReadSanitizedLine();
+            Medication medication = _hospital.MedicationRepo.GetByName(name);
 
             if (medication == null)
             {
@@ -507,11 +508,11 @@ public class DoctorUI : ConsoleUI
             }
 
             Console.Write("\nEnter amount of times the medication should be taken a day >> ");
-            int amount = Int32.Parse(Console.ReadLine());
+            int amount = Int32.Parse(ReadSanitizedLine());
             Console.Write("\nEnter amount of hours inbetween medication intake >> ");
-            int hours = Int32.Parse(Console.ReadLine());
+            int hours = Int32.Parse(ReadSanitizedLine());
             Console.Write("\nWhen to take in medication:\n1. Before Meal\n2. After Meal\n3. With Meal\n4. Anytime\n>> ");
-            string? bestTaken = Console.ReadLine();
+            string bestTaken = ReadSanitizedLine();
 
             WritePrescription(medication, amount, bestTaken, hours, patient);
             

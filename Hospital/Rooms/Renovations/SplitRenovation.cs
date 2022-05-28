@@ -1,5 +1,6 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using HospitalSystem.Utils;
 
 namespace HospitalSystem;
 
@@ -7,25 +8,24 @@ public class SplitRenovation
 {
     [BsonId]
     public ObjectId Id { get; set; }
-    public DateTime StartTime { get; set; }
-    public DateTime EndTime { get; set; }
+    public DateRange BusyRange { get; set; }
     public string SplitRoomLocation { get; set; }
     public string SplitToFirstLocation { get; set; }
     public string SplitToSecondLocation { get; set; }
     public bool IsDone { get; set; }
 
-    public SplitRenovation(string splitRoomLocation, DateTime startTime, DateTime endTime, Room firstNewRoom, Room secondNewRoom)
+    public SplitRenovation(DateRange busyRange, string splitRoomLocation,
+        string splitToFirstLocation, string splitToSecondLocation)
     {
-        if (endTime < startTime)
+        if (splitToFirstLocation == splitToSecondLocation)
         {
-            throw new ArgumentException("End time can not be before start time");
+            throw new ArgumentException("Nope, can't have same location for both.");
         }
         Id = ObjectId.GenerateNewId();
+        BusyRange = busyRange;
         SplitRoomLocation = splitRoomLocation;
-        SplitToFirstLocation = firstNewRoom.Location;
-        SplitToSecondLocation = secondNewRoom.Location;
-        EndTime = endTime;
-        StartTime = startTime;
+        SplitToFirstLocation = splitToFirstLocation;
+        SplitToSecondLocation = splitToSecondLocation;
         IsDone = false;
     }
 }

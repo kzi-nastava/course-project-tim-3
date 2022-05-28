@@ -1,4 +1,4 @@
-namespace HospitalSystem;
+namespace HospitalSystem.ConsoleUI;
 using MongoDB.Driver;
 using MongoDB.Bson;
 [System.Serializable]
@@ -23,13 +23,9 @@ public class NullInputException : System.Exception
         System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
 
-public class SecretaryUI : ConsoleUI
+public class SecretaryUI : UserUI
 {   
-    public SecretaryUI(Hospital _hospital, User? _user) : base(_hospital) 
-    {
-        this._user = _user;
-        
-    }
+    public SecretaryUI(Hospital hospital, User user) : base(hospital, user) { }
 
     public List<string> Commands {get; private set;} = new List<string> {"Options", "Help", "Exit"};
     public List<string> CRUDCommands {get; private set;} = new List<string> {"Read list", "Create", "Read", "Update", "Delete", 
@@ -137,9 +133,8 @@ public class SecretaryUI : ConsoleUI
     {   
         Console.Clear();
         List<User> users = new List<User>();
-        UserRepository ur = _hospital.UserRepo;
-        var usersGet = ur.GetUsers();
-        var matchingUsers = from user in usersGet.AsQueryable() select user;
+        UserService us = _hospital.UserService;
+        var matchingUsers = us.GetAll();
 
         foreach(var p in matchingUsers){
             if (p.Role == Role.PATIENT){
@@ -237,7 +232,7 @@ public class SecretaryUI : ConsoleUI
     public void CreateUserPatient()
     {   
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
+        UserService us = _hospital.UserService;
         System.Console.WriteLine("Enter the following data: ");
         System.Console.Write("email >> ");
         string? email = Console.ReadLine();
@@ -286,21 +281,21 @@ public class SecretaryUI : ConsoleUI
             Console.Clear();
             Patient patient = new Patient(email, lastName, new MedicalRecord());
             _hospital.PatientRepo.AddOrUpdatePatient(patient);
-            ur.AddOrUpdateUser(new User(email, password,patient,Role.PATIENT));
+            us.Upsert(new User(email, password,patient,Role.PATIENT));
         }
         printCommands(CRUDCommands);
     }
 
     public void ReadUserPatient(){
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
+        UserService us = _hospital.UserService;
         System.Console.Write("Enter the user mail to view his data: ");
         string? email = Console.ReadLine();
         if (email is null)
         {
             throw new NullInputException("Null value as input");
         }
-        var user = ur.GetUser(email);
+        var user = us.Get(email);
         Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) user.Person.Id);
         System.Console.WriteLine("Email : " + user.Email.ToString());
         System.Console.WriteLine("Password : " + user.Password.ToString());
@@ -323,7 +318,7 @@ public class SecretaryUI : ConsoleUI
     public void updateUserPatient()
     {
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
+        UserService ur = _hospital.UserService;
         System.Console.Write("Enter <email> or <password> depending of what you want update: ");
         
         string? enter = Console.ReadLine();
@@ -340,7 +335,7 @@ public class SecretaryUI : ConsoleUI
             {
                 throw new NullInputException("Null value as input");
             }
-            ur.UpdateUserEmail(email,emailNew);
+            ur.UpdateEmail(email,emailNew);
         }
         else if(enter == "password"){
             System.Console.Write("Enter users password : ");
@@ -355,7 +350,7 @@ public class SecretaryUI : ConsoleUI
             {
                 throw new NullInputException("Null value as input");
             }
-            ur.UpdateUserEmail(email,passwordNew);
+            ur.UpdateEmail(email,passwordNew);
         }
         Console.Clear();
         printCommands(CRUDCommands);
@@ -364,14 +359,14 @@ public class SecretaryUI : ConsoleUI
     public void DeleteUserPatient()
     {
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
+        UserService ur = _hospital.UserService;
         System.Console.Write("Enter the user mail to delete: ");
         string? email = Console.ReadLine();
         if (email is null)
         {
             throw new NullInputException("Null value as input");
         }
-        ur.DeleteUser(email);
+        ur.Delete(email);
         Console.Clear();
         printCommands(CRUDCommands);
     }
@@ -379,22 +374,22 @@ public class SecretaryUI : ConsoleUI
     public void BlockUserPatients()
     {
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
+        UserService ur = _hospital.UserService;
         System.Console.Write("Enter the user mail to block: ");
         string? email = Console.ReadLine();
         if (email is null)
         {
             throw new NullInputException("Null value as input");
         }
-        ur.BlockUserPatient(email);
+        ur.BlockPatient(email);
         Console.Clear();
         printCommands(CRUDCommands);
     }
     public void SelectBlockedPatients()
     {
         Console.Clear();
-        UserRepository ur = _hospital.UserRepo;
-        List<User> blockedUsers = ur.GetBlockedUsers();
+        UserService ur = _hospital.UserService;
+        var blockedUsers = ur.GetAllBlocked();
         System.Console.WriteLine("Blocked users(email): ");
         foreach(var b in blockedUsers){
             Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) b.Person.Id);
@@ -407,7 +402,7 @@ public class SecretaryUI : ConsoleUI
         {
             throw new NullInputException("Null value as input");
         }
-         ur.UnblockUserPatient(email);
+         ur.UnblockPatient(email);
         Console.Clear();
         printCommands(CRUDCommands);
     }
@@ -428,16 +423,16 @@ public class SecretaryUI : ConsoleUI
             System.Console.WriteLine("ID: " + m.Id.ToString());
             System.Console.WriteLine("Patient: " +  pat.FirstName + " " + pat.LastName);
             System.Console.WriteLine("Doctor: " +  doc.FirstName + " " + doc.LastName);
-            System.Console.WriteLine("Start time: " + m.Checkup.StartTime);
-            System.Console.WriteLine("End time: " + m.Checkup.EndTime);
-            System.Console.WriteLine("Duration: " + m.Checkup.Duration);
+            System.Console.WriteLine("Start time: " + m.Checkup.DateRange.Starts);
+            System.Console.WriteLine("End time: " + m.Checkup.DateRange.Ends);
+            System.Console.WriteLine("Duration: " + m.Checkup.DateRange.GetDuration());
             System.Console.WriteLine("RequestState: " + m.RequestState);
             System.Console.WriteLine("--------------------------------------------------------------------");
             System.Console.WriteLine();
             buffer = buffer + 1;
         }
         System.Console.Write("Enter id: ");
-        string? stringId = Console.ReadLine();
+        string stringId = ReadSanitizedLine();
         int indexId = Int16.Parse(stringId);
         System.Console.Write("Enter state(approved, denied): ");
         string? stringState = Console.ReadLine();

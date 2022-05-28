@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
+using HospitalSystem.Utils;
 
 namespace HospitalSystem;
 
@@ -17,12 +18,12 @@ public class NoAvailableRoomException : System.Exception
 public class AppointmentRepository
 {
     private MongoClient _dbClient;
-    private RoomRepository _roomRepo;  // most of this should all be moved to service eventually anyway
+    private RoomService _roomService;
 
-    public AppointmentRepository(MongoClient _dbClient, RoomRepository roomRepo)
+    public AppointmentRepository(MongoClient _dbClient, RoomService roomService)
     {
         this._dbClient = _dbClient;
-        this._roomRepo = roomRepo;
+        this._roomService = roomService;
     }
 
     public IMongoCollection<Checkup> GetCheckups()
@@ -53,13 +54,13 @@ public class AppointmentRepository
     {
         var unavailable = GetUnavailableRoomLocations(newAppointment, type);
         var available = 
-            from room in _roomRepo.GetAll()
+            from room in _roomService.GetAll()
             where room.Type == type && !unavailable.Contains(room.Location)
             select room;
         if (!available.Any())
         {
             throw new NoAvailableRoomException("Uh-oh, no rooms available at time interval: " 
-                + newAppointment.StartTime + " - " + newAppointment.EndTime);
+                + newAppointment.DateRange);
         }
         return available.First();  // bad way of finding, will result in some rooms getting swamped, but works
     }
@@ -69,17 +70,19 @@ public class AppointmentRepository
         HashSet<string> unavailable;
         if (type == RoomType.CHECKUP)
         {
+            // TODO: this is a slow way because we convert to enumerable (?), try find a way without it
+            // need convert to enumerable because complex filters
             unavailable = 
-                (from appo in GetCheckups().AsQueryable()
-                where appo.StartTime < newAppointment.EndTime && newAppointment.StartTime < appo.EndTime 
+                (from appo in GetCheckups().AsQueryable().ToEnumerable()
+                where appo.DateRange.Overlaps(newAppointment.DateRange) 
                 where appo.Id != newAppointment.Id
                 select appo.RoomLocation).ToHashSet();
         }
         else
         {
             unavailable = 
-                (from appo in GetOperations().AsQueryable()
-                where appo.StartTime < newAppointment.EndTime && newAppointment.StartTime < appo.EndTime 
+                (from appo in GetOperations().AsQueryable().ToEnumerable()
+                where appo.DateRange.Overlaps(newAppointment.DateRange) 
                 where appo.Id != newAppointment.Id
                 select appo.RoomLocation).ToHashSet();
         }
@@ -91,13 +94,13 @@ public class AppointmentRepository
         // Does some appointment end after Renovation starts? Then can't renovate
         var checkupOvertakes = 
             (from checkup in GetCheckups().AsQueryable()
-            where renovationStartTime < checkup.EndTime
+            where renovationStartTime < checkup.DateRange.Ends
             select checkup).Any();
         if (checkupOvertakes) return false;
 
         var operationOvertakes = 
             (from operation in GetOperations().AsQueryable()
-            where renovationStartTime < operation.EndTime
+            where renovationStartTime < operation.DateRange.Ends
             select operation).Any();
         return !operationOvertakes;
     }
@@ -123,7 +126,7 @@ public class AppointmentRepository
         //might not be the best way to indent
         List<Checkup> filteredCheckups = checkups.Find(
                                                 checkup => checkup.Anamnesis.ToLower().Contains(anamnesisKeyword.ToLower())
-                                                && checkup.StartTime < DateTime.Now 
+                                                && checkup.DateRange.HasPassed() 
                                                 && checkup.Patient.Id == patientId
                                                 ).ToList();
         return filteredCheckups;
@@ -132,7 +135,8 @@ public class AppointmentRepository
     public List<Checkup> GetFutureCheckupsByPatient(ObjectId id)
     {
         var checkups = GetCheckups();
-        List<Checkup> patientCheckups = checkups.Find(checkup => checkup.StartTime > DateTime.Now && checkup.Patient.Id == id).ToList();
+        List<Checkup> patientCheckups = checkups.Find(checkup => checkup.DateRange.IsFuture()
+            && checkup.Patient.Id == id).ToList();
         return patientCheckups;
     }
 
@@ -153,14 +157,15 @@ public class AppointmentRepository
     public List<Checkup> GetCheckupsByDay(DateTime date)
     {
         var checkups = GetCheckups();
-        List<Checkup> checkupsByDay = checkups.Find(appointment => appointment.StartTime > date && appointment.StartTime < date.AddDays(1)).ToList();
+        List<Checkup> checkupsByDay = checkups.Find(checkup => checkup.DateRange.Starts.Date == date.Date).ToList();
         return checkupsByDay;
     }
 
     public List<Checkup> GetPastCheckupsByPatient(ObjectId id)
     {
         var checkups = GetCheckups();
-        List<Checkup> selectedCheckups = checkups.Find(checkup => checkup.StartTime < DateTime.Now && checkup.Patient.Id == id).ToList();
+        List<Checkup> selectedCheckups = checkups.Find(checkup => checkup.DateRange.HasPassed()
+            && checkup.Patient.Id == id).ToList();
         return selectedCheckups;
     }
 
@@ -178,20 +183,20 @@ public class AppointmentRepository
         checkups.DeleteOne(filter);
     }
 
-    public bool IsDoctorAvailable(DateTime date, Doctor doctor)
+    public bool IsDoctorAvailable(DateRange range, Doctor doctor)
     {
         List<Checkup> checkups = GetCheckupsByDoctor(doctor.Id);
         List<Operation> operations = GetOperationsByDoctor(doctor.Id);
         foreach (Checkup checkup in checkups)
         {
-            if (checkup.StartTime < date.AddMinutes(15) && date < checkup.EndTime)
+            if (checkup.DateRange.Overlaps(range))
             {
                 return false;
             } 
         }
         foreach (Operation operation in operations)
         {
-            if (operation.StartTime < date.AddMinutes(15) && date < operation.EndTime)
+            if (operation.DateRange.Overlaps(range))
             {
                 return false;
             } 

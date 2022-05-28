@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace HospitalSystem;
+namespace HospitalSystem.ConsoleUI;
 
 public class EquipmentUI : ConsoleUI
 {
@@ -8,7 +8,7 @@ public class EquipmentUI : ConsoleUI
 
     public EquipmentUI(Hospital hospital) : base(hospital)
     {
-        _loadedBatches = _hospital.EquipmentRepo.GetAll().ToList();
+        _loadedBatches = _hospital.EquipmentService.GetAll().ToList();
     }
 
     public override void Start()
@@ -16,7 +16,7 @@ public class EquipmentUI : ConsoleUI
         while (true)
         {
             System.Console.Clear();
-            System.Console.WriteLine("--- EQUIPMENTS ---");
+            System.Console.WriteLine("--- EQUIPMENT ---");
             DisplayBatches(_loadedBatches);
             System.Console.WriteLine(@"
             INPUT OPTION:
@@ -40,7 +40,7 @@ public class EquipmentUI : ConsoleUI
                 }
                 else if (choice == "q" || choice == "quit")
                 {
-                    throw new QuitToMainMenuException("From StartManageEquipments");
+                    throw new QuitToMainMenuException("From StartManageEquipment.");
                 }
                 else if (choice == "x" || choice == "exit")
                 {
@@ -48,19 +48,24 @@ public class EquipmentUI : ConsoleUI
                 }
                 else
                 {
-                    System.Console.WriteLine("INVALID INPUT - READ THE AVAILABLE COMMANDS!");
-                    System.Console.Write("INPUT ANYTHING TO CONTINUE >> ");
+                    System.Console.WriteLine("Invalid input - please read the available commands.");
+                    System.Console.Write("Input anything to continue >> ");
                     ReadSanitizedLine();
                 }
             }
             catch (InvalidInputException e)
             {
-                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+                System.Console.Write(e.Message + " Input anything to continue >> ");
+                ReadSanitizedLine();
+            }
+            catch (InvalidTokenException e)
+            {
+                System.Console.Write(e.Message + " Input anything to continue >> ");
                 ReadSanitizedLine();
             }
             catch (FormatException e)
             {
-                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+                System.Console.Write(e.Message + " Input anything to continue >> ");
                 ReadSanitizedLine();
             }
         }
@@ -81,46 +86,45 @@ public class EquipmentUI : ConsoleUI
 
     private void Move()
     {
-        System.Console.Write("SELECT EQUIP TO MOVE >> ");
+        System.Console.Write("Select equip to move >> ");
         int index = ReadInt(0, _loadedBatches.Count - 1);
         var equipmentBatch = _loadedBatches[index];
 
-        System.Console.Write("SELECT AMOUNT TO MOVE (MINIMUM 1. AVAILABLE: " + equipmentBatch.Count + ") >> ");
+        System.Console.Write("Select amount to move (minimum 1, available: " + equipmentBatch.Count + ") >> ");
         int amount = ReadInt(1, equipmentBatch.Count);
 
-        System.Console.Write("INPUT DATE-TIME WHEN IT IS DONE >> ");
+        System.Console.Write("Input date-time when it is done >> ");
         var rawDate = ReadSanitizedLine();
         var endTime = DateTime.Parse(rawDate);
 
-        List<Room> rooms = _hospital.RoomRepo.GetAll().ToList();
+        List<Room> rooms = _hospital.RoomService.GetAll().ToList();
         rooms.RemoveAll(room => room.Location == equipmentBatch.RoomLocation);
         var roomUI = new RoomUI(_hospital, rooms);  // TODO: this ugly...
         roomUI.DisplayRooms();
-        System.Console.Write("INPUT ROOM NUMBER >> ");
+        System.Console.Write("Input room number >> ");
         var number = ReadInt(0, rooms.Count - 1);
         
         var relocation = new EquipmentRelocation(equipmentBatch.Name, amount, 
             equipmentBatch.Type, endTime, equipmentBatch.RoomLocation, rooms[number].Location);
-        _hospital.RelocationRepo.Add(relocation);
-        _hospital.RelocationRepo.Schedule(relocation);
-        System.Console.Write("RELOCATION SCHEDULED SUCCESSFULLY. INPUT ANYTHING TO CONTINUE >> ");
+        _hospital.RelocationService.Schedule(relocation);
+        System.Console.Write("Relocation scheduled successfully. Input anything to continue >> ");
         ReadSanitizedLine();
     }
 
     private void Search()
     {
         System.Console.WriteLine("Example filters: min:3 max:100 type:checkup");
-        System.Console.WriteLine("You can leave out any that you want to keep at any value. Range is inclusive");
+        System.Console.WriteLine("You can leave out any that you want to keep at previous value. Range is inclusive");
         System.Console.WriteLine("Available types: checkup, operation, furniture, hallway");
 
-        System.Console.Write("INPUT YOUR FILTERS >> ");
+        System.Console.Write("Input your filters >> ");
         var filters = ReadSanitizedLine().Trim();
         var query = new EquipmentQuery(filters);
 
-        System.Console.Write("INPUT YOUR SEARCH TERM >> ");
+        System.Console.Write("Input your search term >> ");
         var search = ReadSanitizedLine();
         query.NameContains = new Regex(search);
 
-        _loadedBatches = _hospital.EquipmentRepo.Search(query).ToList();
+        _loadedBatches = _hospital.EquipmentService.Search(query).ToList();
     }
 }

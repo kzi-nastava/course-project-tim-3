@@ -2,6 +2,17 @@ using System.Text.RegularExpressions;
 
 namespace HospitalSystem;
 
+[System.Serializable]
+public class InvalidTokenException : System.Exception
+{
+    public InvalidTokenException() { }
+    public InvalidTokenException(string message) : base(message) { }
+    public InvalidTokenException(string message, System.Exception inner) : base(message, inner) { }
+    protected InvalidTokenException(
+        System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}
+
 public struct EquipmentQuery
 {
     public int? MinCount { get; set; }
@@ -25,14 +36,14 @@ public struct EquipmentQuery
             {
                 bool success = Int32.TryParse(token.Substring(4), out int number);
                 if (!success)
-                    throw new InvalidInputException("GIVEN MIN IS NOT A NUMBER.");
+                    throw new InvalidTokenException("Given min is not a number.");
                 MinCount = number;
             } 
             else if (token.StartsWith("max:"))
             {
                 bool success = Int32.TryParse(token.Substring(4), out int number);
                 if (!success)
-                    throw new InvalidInputException("GIVEN MAX IS NOT A NUMBER.");
+                    throw new InvalidTokenException("Given max is not a number.");
                 MaxCount = number;
             }
             else if (token.StartsWith("type:"))
@@ -40,12 +51,12 @@ public struct EquipmentQuery
                 EquipmentType type;
                 var success = Enum.TryParse(token.Substring(5), true, out type);
                 if (!success)
-                    throw new InvalidInputException("NOT A VALID TYPE!");
+                    throw new InvalidTokenException("Not a valid type.");
                 Type = type;
             }
             else
             {
-                throw new InvalidInputException("UNRECOGNIZED TOKEN: " + token);
+                throw new InvalidTokenException("Unrecognized token: " + token);
             }
         }
     }

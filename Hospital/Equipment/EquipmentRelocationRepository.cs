@@ -2,15 +2,13 @@ using MongoDB.Driver;
 
 namespace HospitalSystem;
 
-public class EquipmentRelocationRepository
+public class EquipmentRelocationRepository : IEquipmentRelocationRepository
 {
     private MongoClient _dbClient;
-    private EquipmentBatchRepository _equipmentRepo;  // TODO: extract to service!!
 
-    public EquipmentRelocationRepository(MongoClient dbClient, EquipmentBatchRepository equipmentRepo)
+    public EquipmentRelocationRepository(MongoClient dbClient)
     {
         _dbClient = dbClient;
-        _equipmentRepo = equipmentRepo;
     }
 
     private IMongoCollection<EquipmentRelocation> GetMongoCollection()
@@ -23,54 +21,13 @@ public class EquipmentRelocationRepository
         return GetMongoCollection().AsQueryable();
     }
 
-    public void Add(EquipmentRelocation relocation)
+    public void Insert(EquipmentRelocation relocation)
     {
         GetMongoCollection().InsertOne(relocation);
     }
 
-    // NOTE: expects existing!!
     public void Replace(EquipmentRelocation replacing)
     {
         GetMongoCollection().ReplaceOne(relocation => relocation.Id == replacing.Id, replacing);
-    }
-
-    public void Schedule(EquipmentRelocation relocation)
-    {
-        Scheduler.Schedule(relocation.EndTime, () => 
-        {
-            MoveEquipment(relocation);
-        });
-    }
-
-    private void MoveEquipment(EquipmentRelocation relocation)
-    {
-        var removing = new EquipmentBatch(relocation.FromRoomLocation, relocation.Name, relocation.Count, relocation.Type);
-        var adding = new EquipmentBatch(relocation.ToRoomLocation, relocation.Name, relocation.Count, relocation.Type);
-        _equipmentRepo.Remove(removing);
-        _equipmentRepo.Add(adding);
-        relocation.IsDone = true;
-        Replace(relocation);
-    }
-
-    public void MoveAll(string fromLocation, string toLocation)
-    {
-        foreach (var batch in _equipmentRepo.GetAllIn(fromLocation))
-        {
-            _equipmentRepo.Remove(batch);
-            batch.RoomLocation = toLocation;
-            _equipmentRepo.Add(batch);
-        }
-    }
-
-    // TODO: move this and some others to service
-    public void ScheduleAll()
-    {
-        foreach (var relocation in GetAll())
-        {
-            if (!relocation.IsDone)
-            {
-                Schedule(relocation);
-            }
-        }
     }
 }

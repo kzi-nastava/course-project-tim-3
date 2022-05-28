@@ -1,4 +1,6 @@
-namespace HospitalSystem;
+using HospitalSystem.Utils;
+
+namespace HospitalSystem.ConsoleUI;
 
 [System.Serializable]
 public class QuitToMainMenuException : System.Exception
@@ -36,14 +38,13 @@ public class AbortException : System.Exception
 public abstract class ConsoleUI
 {
     protected Hospital _hospital;
-    protected User? _user;
+
+    protected ConsoleUI(Hospital hospital)
+    {
+        _hospital = hospital;
+    }
 
     public abstract void Start();
-
-    public ConsoleUI(Hospital hospital)
-    {
-        this._hospital = hospital;
-    }
 
     public string ReadSanitizedLine()
     {
@@ -72,4 +73,18 @@ public abstract class ConsoleUI
 
         return number;
     }
+
+    protected DateRange InputDateRange()
+    {
+        System.Console.Write("Input date-time when it starts >> ");
+        var rawDate = ReadSanitizedLine();
+        var starts = DateTime.Parse(rawDate);
+
+        System.Console.Write("Input date-time when it ends >> ");
+        rawDate = ReadSanitizedLine();
+        var ends = DateTime.Parse(rawDate);
+
+        return new DateRange(starts, ends);
+    }
+
 }

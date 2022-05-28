@@ -1,14 +1,15 @@
+using System.Linq.Expressions;
 using MongoDB.Driver;
 
 namespace HospitalSystem;
 
-public class RoomRepository
+public class RoomRepository : IRoomRepository
 {
     private MongoClient _dbClient;
 
-    public RoomRepository(MongoClient _dbClient)
+    public RoomRepository(MongoClient dbClient)
     {
-        this._dbClient = _dbClient;
+        _dbClient = dbClient;
     }
 
     private IMongoCollection<Room> GetMongoCollection()
@@ -18,54 +19,39 @@ public class RoomRepository
 
     public IQueryable<Room> GetAll()
     {
-        return 
+        return
             from room in GetMongoCollection().AsQueryable()
-            where room.Active && !room.Deleted
+            where !room.Deleted
             select room;
+    }
+
+    public void Insert(Room room)
+    {
+        GetMongoCollection().InsertOne(room);
     }
 
     public bool Delete(string location)
     {
-        var rooms = GetMongoCollection();
-        return rooms.UpdateOne(room => room.Location == location && !room.Deleted,
+        return GetMongoCollection().UpdateOne(room => room.Location == location && !room.Deleted,
             Builders<Room>.Update.Set("Deleted", true)).ModifiedCount == 1;
     }
 
-    public void Add(Room newRoom)
+    public Room Get(string location)
     {
-        var rooms = GetMongoCollection();
-        rooms.InsertOne(newRoom);
+        return
+            (from room in GetAll()
+            where room.Location == location
+            select room).First();
     }
 
-    public void AddInactive(Room newRoom)
+    public void Replace(Room replacing, Expression<Func<Room, bool>> filter)
     {
-        newRoom.Active = false;
-        var rooms = GetMongoCollection();
-        rooms.ReplaceOne(room => room.Location == newRoom.Location && !room.Deleted && !room.Active, 
-            newRoom, new ReplaceOptions {IsUpsert = true});
+        GetMongoCollection().ReplaceOne(filter, replacing);
     }
 
-    public bool DoesExist(string location)
+    public void Upsert(Room newRoom, Expression<Func<Room, bool>> filter)
     {
-        return GetMongoCollection().Find(room => room.Location == location && !room.Deleted).Any();
+        GetMongoCollection().ReplaceOne(filter, newRoom, new ReplaceOptions {IsUpsert = true});
     }
 
-    public void Replace(Room changingRoom)
-    {
-        var rooms = GetMongoCollection();
-        rooms.ReplaceOne(room => room.Id == changingRoom.Id && !room.Deleted, changingRoom);
-    }
-
-    public void Activate(string location)
-    {
-        var rooms = GetMongoCollection();
-        rooms.UpdateOne(room => room.Location == location && !room.Deleted, Builders<Room>.Update.Set("Active", true));
-    }
-
-    public void Deactivate(string location)
-    {
-        // TODO: check if room still exists by this time... or stop delete if renovating
-        var rooms = GetMongoCollection();
-        rooms.UpdateOne(room => room.Location == location && !room.Deleted, Builders<Room>.Update.Set("Active", false));
-    }
 }

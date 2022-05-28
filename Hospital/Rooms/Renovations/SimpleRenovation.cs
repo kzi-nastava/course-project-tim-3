@@ -1,5 +1,6 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using HospitalSystem.Utils;
 
 namespace HospitalSystem;
 
@@ -7,21 +8,15 @@ public class SimpleRenovation
 {
     [BsonId]
     public ObjectId Id { get; set; }
-    public DateTime EndTime { get; set; }
-    public DateTime StartTime { get; set; }
+    public DateRange BusyRange { get; set; }
     public string RoomLocation { get; set; }
     public bool IsDone { get; set; }
 
-    public SimpleRenovation(string roomLocation, DateTime startTime, DateTime endTime)
+    public SimpleRenovation(string roomLocation, DateRange busyRange)
     {
-        if (endTime < startTime)
-        {
-            throw new ArgumentException("End time can not be before start time");
-        }
         Id = ObjectId.GenerateNewId();
         RoomLocation = roomLocation;
-        EndTime = endTime;
-        StartTime = startTime;
+        BusyRange = busyRange;
         IsDone = false;
     }
 }
