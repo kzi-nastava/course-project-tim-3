@@ -7,8 +7,8 @@ public class DateRange
     // the minimum allowed range (makes scheduling easy)
     [BsonIgnore]
     private static TimeSpan s_minDuration = TimeSpan.FromSeconds(60);  
-    public DateTime Starts { get; set; }
-    public DateTime Ends { get; set; }
+    public DateTime Starts { get; }
+    public DateTime Ends { get; }
 
     public DateRange(DateTime starts, DateTime ends, bool allowPast = false)
     {
