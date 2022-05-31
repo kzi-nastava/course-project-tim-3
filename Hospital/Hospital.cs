@@ -18,7 +18,8 @@ public class Hospital
     public SimpleRenovationService SimpleRenovationService { get; }
     public SplitRenovationService SplitRenovationService { get; }
     public MergeRenovationService MergeRenovationService { get; }
-    public MedicationRepository MedicationRepo { get; set; }
+    public MedicationRepository MedicationRepo { get; }
+    public MedicationRequestService MedicationRequestService { get; }
 
     public Hospital()
     {
@@ -38,6 +39,7 @@ public class Hospital
         MergeRenovationService = new (new MergeRenovationRepository(_dbClient), RoomService,
             RelocationService, AppointmentRepo);
         MedicationRepo = new (_dbClient);
+        MedicationRequestService = new (new MedicationRequestRepository(_dbClient), MedicationRepo);
         // TODO: this maybe shouldn't be here
         RelocationService.ScheduleAll();
         SimpleRenovationService.ScheduleAll();

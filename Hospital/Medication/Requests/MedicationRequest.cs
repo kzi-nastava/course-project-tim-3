@@ -19,6 +19,7 @@ public class MedicationRequest
     public string DirectorComment { get; set; }
     [BsonElement]
     public DateTime Created { get; }
+    [BsonRepresentation(BsonType.String)]
     public MedicationRequestStatus Status { get; set; }
 
     public MedicationRequest(Medication requested, string directorComment)
