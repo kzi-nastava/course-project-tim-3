@@ -124,19 +124,22 @@ public class AppointmentRepository
     {
         var checkups = GetCheckups();
         //might not be the best way to indent
-        List<Checkup> filteredCheckups = checkups.Find(
-                                                checkup => checkup.Anamnesis.ToLower().Contains(anamnesisKeyword.ToLower())
-                                                && checkup.DateRange.HasPassed() 
-                                                && checkup.Patient.Id == patientId
-                                                ).ToList();
+        List<Checkup> filteredCheckups = 
+            (from checkup in checkups.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where checkup.Anamnesis.ToLower().Contains(anamnesisKeyword.ToLower())
+            && checkup.DateRange.HasPassed() 
+            && checkup.Patient.Id == patientId
+            select checkup).ToList();
         return filteredCheckups;
     }
 
     public List<Checkup> GetFutureCheckupsByPatient(ObjectId id)
     {
         var checkups = GetCheckups();
-        List<Checkup> patientCheckups = checkups.Find(checkup => checkup.DateRange.IsFuture()
-            && checkup.Patient.Id == id).ToList();
+        List<Checkup> patientCheckups = 
+            (from checkup in checkups.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where checkup.DateRange.IsFuture() && checkup.Patient.Id == id
+            select checkup).ToList();
         return patientCheckups;
     }
 
@@ -157,15 +160,20 @@ public class AppointmentRepository
     public List<Checkup> GetCheckupsByDay(DateTime date)
     {
         var checkups = GetCheckups();
-        List<Checkup> checkupsByDay = checkups.Find(checkup => checkup.DateRange.Starts.Date == date.Date).ToList();
+        List<Checkup> checkupsByDay = 
+            (from checkup in checkups.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where checkup.DateRange.Starts.Date == date.Date
+            select checkup).ToList();
         return checkupsByDay;
     }
 
     public List<Checkup> GetPastCheckupsByPatient(ObjectId id)
     {
         var checkups = GetCheckups();
-        List<Checkup> selectedCheckups = checkups.Find(checkup => checkup.DateRange.HasPassed()
-            && checkup.Patient.Id == id).ToList();
+        List<Checkup> selectedCheckups = 
+            (from checkup in checkups.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where checkup.DateRange.HasPassed() && checkup.Patient.Id == id
+            select checkup).ToList();
         return selectedCheckups;
     }
 
