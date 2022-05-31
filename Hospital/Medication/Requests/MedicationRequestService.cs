@@ -17,6 +17,12 @@ public class MedicationRequestService
         _repo.Insert(request);
     }
 
+    public void Resend(MedicationRequest request)
+    {
+        request.Status = MedicationRequestStatus.SENT;
+        _repo.Replace(request);
+    }
+
     public void Deny(MedicationRequest request)
     {
         request.Status = MedicationRequestStatus.DENIED;

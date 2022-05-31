@@ -27,7 +27,7 @@ public class MedicationRequest
         Id = ObjectId.GenerateNewId();
         Requested = requested;
         DirectorComment = directorComment;
-        DoctorComment = "";
+        DoctorComment = "/";
         Created = DateTime.Now;
         Status = MedicationRequestStatus.SENT;
     }

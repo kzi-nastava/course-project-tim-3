@@ -18,9 +18,10 @@ public class DirectorUI : ConsoleUI
                 INPUT OPTION:
                     [manage rooms|mr] Manage rooms and stockrooms
                     [manage equipment|me] Manage equipment
+                    [manage medication requests|mmr] Manage medication requests
                     [log out|lo] Log out
                     [exit|x] Exit program
-                ");  // TODO: add the rest of the features
+                ");
                 System.Console.Write(">> ");
                 var choice = ReadSanitizedLine();
                 if (choice == "mr" || choice == "manage rooms")
@@ -32,6 +33,11 @@ public class DirectorUI : ConsoleUI
                 {
                     var equipmentUI = new EquipmentUI(_hospital);
                     equipmentUI.Start();
+                }
+                else if (choice == "mmr" || choice == "manage medication requests")
+                {
+                    var medicationRequestUI = new MedicationRequestUI(_hospital);
+                    medicationRequestUI.Start();
                 }
                 else if (choice == "lo" || choice == "log out")
                 {
