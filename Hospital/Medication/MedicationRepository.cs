@@ -11,20 +11,20 @@ public class MedicationRepository
         this._dbClient = _dbClient;
     }
 
-    public IMongoCollection<Medication> GetAll()
+    private IMongoCollection<Medication> GetMongoCollection()
     {
         return _dbClient.GetDatabase("hospital").GetCollection<Medication>("medications");
     }
 
     public void AddOrUpdate(Medication newMedication)
     {
-        var medications = GetAll();
+        var medications = GetMongoCollection();
         medications.ReplaceOne(medication => medication.Id == newMedication.Id, newMedication, new ReplaceOptions {IsUpsert = true});
     }
 
     public Medication GetByName(string name)
     {
-        var medications = GetAll();
+        var medications = GetMongoCollection();
         return medications.Find(medication => medication.Name == name).FirstOrDefault();
     }
 }
