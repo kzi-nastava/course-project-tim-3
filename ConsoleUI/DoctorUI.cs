@@ -193,7 +193,7 @@ public class DoctorUI : UserUI
 
     public void PrintCheckups(List<Checkup> checkups)
     {
-        Console.WriteLine(String.Format("{0,5} {2,24} {3,25}", "Nr.", "Date & Time", "Patient"));
+        Console.WriteLine(String.Format("{0,5} {1,24} {2,25}", "Nr.", "Date & Time", "Patient"));
         int i = 1;
         foreach (Checkup checkup in checkups)
         {
