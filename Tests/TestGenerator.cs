@@ -1,8 +1,8 @@
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
-using HospitalSystem;
-using HospitalSystem.Utils;
+using HospitalSystem.Core;
+using HospitalSystem.Core.Utils;
 
 public static class TestGenerator
 {
