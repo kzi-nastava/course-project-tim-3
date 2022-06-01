@@ -139,7 +139,6 @@ public class MedicationRequestUI : ConsoleUI
         {
             req.DirectorComment = comment;
         }
-        System.Console.WriteLine(req.Id + " " + String.Join(", ", req.Requested.Ingredients));
         _hospital.MedicationRequestService.Resend(req);
         System.Console.Write("Success! Input anything to continue >> ");
         ReadSanitizedLine();
@@ -147,6 +146,7 @@ public class MedicationRequestUI : ConsoleUI
 
     private void EditIngredients(List<string> ingredients)
     {
+        // TODO: extract methods
         while (true)
         {
             System.Console.Clear();
@@ -155,6 +155,8 @@ public class MedicationRequestUI : ConsoleUI
             System.Console.WriteLine(@"
             INPUT OPTION:
                 [add|a] Add ingredients
+                [remove|r] Remove ingredient
+                [edit|e] Edit an ingredient
                 [done|d] Finish editing ingredients
                 [quit|q] Quit to main menu
                 [exit|x] Exit program
@@ -164,6 +166,24 @@ public class MedicationRequestUI : ConsoleUI
             if (choice == "a" || choice == "add")
             {
                 AddIngredients(ingredients);
+            }
+            else if (choice == "r" || choice == "remove")
+            {
+                System.Console.Write("Input number to remove >> ");
+                var num = ReadInt(0, ingredients.Count - 1);
+                ingredients.RemoveAt(num);
+            }
+            else if (choice == "e" || choice == "edit")
+            {
+                System.Console.Write("Input number to edit >> ");
+                var num = ReadInt(0, ingredients.Count - 1);
+                System.Console.Write("Input new ingredient >> ");
+                var ingredient = ReadSanitizedLine();
+                if (ingredient == "")
+                {
+                    throw new InvalidInputException("Ingredient can not be empty.");
+                }
+                ingredients[num] = ingredient;
             }
             else if (choice == "d" || choice == "done")
             {

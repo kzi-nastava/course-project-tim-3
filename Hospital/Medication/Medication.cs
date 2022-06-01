@@ -9,7 +9,7 @@ public class Medication
     public ObjectId Id { get; }
     public string Name { get; set; }
     [BsonElement]
-    public List<string> Ingredients { get; }
+    public List<string> Ingredients { get; }  // TODO: add add and remove func instead of get this and adding...
 
     public Medication(string name, List<string> ingredients)
     {
@@ -29,15 +29,5 @@ public class Medication
     public override string ToString()
     {
         return  Name;
-    }
-
-    public void RemoveIngredient(string ingredient)
-    {
-        Ingredients.Remove(ingredient);
-    }
-
-    public void AddIngredient(string ingredient) // TODO: use these instead
-    {
-        Ingredients.Add(ingredient);
     }
 }
