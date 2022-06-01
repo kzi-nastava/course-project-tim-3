@@ -31,4 +31,16 @@ public class MedicationRequest
         Created = DateTime.Now;
         Status = MedicationRequestStatus.SENT;
     }
+
+    [BsonConstructor]
+    internal MedicationRequest(ObjectId id, Medication requested, string doctorComment, string directorComment,  
+        DateTime created, MedicationRequestStatus status)
+    {
+        Id = id;
+        Requested = requested;
+        DoctorComment = doctorComment;
+        DirectorComment = directorComment;
+        Created = created;
+        Status = status;
+    }
 }
