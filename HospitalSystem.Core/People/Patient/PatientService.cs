@@ -45,5 +45,12 @@ public class PatientService
         }
         return false;
     }
+
+    public void LogChange(CRUDOperation crudOperation, Patient patient)
+    {
+        CheckupChangeLog log = new CheckupChangeLog(DateTime.Now,crudOperation);
+        patient.CheckupChangeLogs.Add(log);
+        _repo.AddOrUpdatePatient(patient);
+    }
     
 }

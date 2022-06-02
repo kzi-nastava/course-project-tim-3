@@ -33,9 +33,9 @@ public class Hospital
         RoomService = new (new RoomRepository(_dbClient));
         AppointmentRepo = new (_dbClient);
         // TODO : Might be a wrong way to create a service
-        PatientService = new (new PatientRepository(_dbClient));
+        PatientService = new (PatientRepo);
         // TODO : Might be a wrong way to create a service
-        AppointmentService = new (new AppointmentRepository(_dbClient), RoomService, DoctorRepo);
+        AppointmentService = new (AppointmentRepo, RoomService, DoctorRepo);
         EquipmentService = new (new EquipmentBatchRepository(_dbClient));
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
         CheckupChangeRequestRepo = new (_dbClient);

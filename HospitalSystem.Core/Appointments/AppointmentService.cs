@@ -126,6 +126,16 @@ public class AppointmentService
         return patientCheckups;
     }
 
+    public List<Operation> GetFutureOperationsByPatient(ObjectId id)
+    {
+        var operations = _appointmentRepo.GetOperations();
+        List<Operation> patientOperations = 
+            (from operation in operations.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where operation.DateRange.IsFuture() && operation.Patient.Id == id
+            select operation).ToList();
+        return patientOperations;
+    }
+
     public List<Operation> GetOperationsByPatient(ObjectId id)
     {
         var operations = _appointmentRepo.GetOperations();
@@ -158,6 +168,16 @@ public class AppointmentService
             where checkup.DateRange.HasPassed() && checkup.Patient.Id == id
             select checkup).ToList();
         return selectedCheckups;
+    }
+
+    public List<Operation> GetPastOperationsByPatient(ObjectId id)
+    {
+        var operations = _appointmentRepo.GetOperations();
+        List<Operation> patientOperations = 
+            (from operation in operations.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where operation.DateRange.HasPassed() && operation.Patient.Id == id
+            select operation).ToList();
+        return patientOperations;
     }
 
     public Checkup GetCheckupById(ObjectId id)
@@ -200,6 +220,159 @@ public class AppointmentService
         string specialty1 = _doctorRepo.GetById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
         string specialty2 = _doctorRepo.GetById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
         return String.Compare(specialty1, specialty2);
+    }
+
+    public List<Checkup> GetEarliestFreeCheckups(DateRange interval, Specialty speciality, int numberOfCheckups, User user)
+    {
+        List<Checkup> checkups = new List<Checkup>();
+        DateTime iterationDate = RoundUp(DateTime.Now,TimeSpan.FromMinutes(15));
+
+        while ( checkups.Count < numberOfCheckups)
+        { 
+            if (iterationDate.TimeOfDay >=Globals.ClosingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, Globals.OpeningTime.Hour, Globals.OpeningTime.Minute, Globals.OpeningTime.Second);
+                iterationDate = iterationDate.AddDays(1);
+                continue;
+            }
+
+            if (iterationDate.TimeOfDay < Globals.OpeningTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, Globals.OpeningTime.Hour, Globals.OpeningTime.Minute, Globals.OpeningTime.Second);
+                continue;
+            }
+
+            if (!(interval.Starts.TimeOfDay<=iterationDate.TimeOfDay && iterationDate.TimeOfDay<interval.Ends.TimeOfDay))
+            {
+                iterationDate = iterationDate.AddMinutes(15);
+                continue;
+            }
+
+            foreach (Doctor doctor in _doctorRepo.GetManyBySpecialty(speciality))
+            {
+                Checkup newCheckup = new Checkup(
+                    iterationDate,
+                    new MongoDB.Driver.MongoDBRef("patients", user.Person.Id),
+                    new MongoDB.Driver.MongoDBRef("doctors", doctor.Id),
+                    "no anamnesis");
+                if (!IsDoctorAvailable(newCheckup.DateRange, doctor))
+                {
+                    continue;
+                }
+                else
+                {
+                    if (checkups.Count >= numberOfCheckups)
+                    {
+                        break;
+                    }
+
+                    checkups.Add(newCheckup);
+                }
+            }
+            iterationDate = iterationDate.AddMinutes(15);
+        }
+        return checkups;
+    }
+
+    public List<Checkup> GetFirstFewFreeCheckups(Doctor doctor, int numberOfCheckups, User user)
+    {
+        List<Checkup> checkups = new List<Checkup>();
+        DateTime iterationDate = RoundUp(DateTime.Now, TimeSpan.FromMinutes(15));
+
+        while (checkups.Count < numberOfCheckups)
+        {
+            if (iterationDate.TimeOfDay >=Globals.ClosingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day,
+                    Globals.OpeningTime.Hour, Globals.OpeningTime.Minute, Globals.OpeningTime.Second);
+                iterationDate = iterationDate.AddDays(1);
+                continue;
+            }
+
+            if (iterationDate.TimeOfDay < Globals.OpeningTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day,
+                    Globals.OpeningTime.Hour, Globals.OpeningTime.Minute, Globals.OpeningTime.Second);
+                continue;
+            }
+            
+            Checkup newCheckup = new Checkup(
+                iterationDate,
+                new MongoDB.Driver.MongoDBRef("patients", user.Person.Id),
+                new MongoDB.Driver.MongoDBRef("doctors", doctor.Id),
+                "no anamnesis");
+            if (!IsDoctorAvailable(newCheckup.DateRange, doctor))
+            {
+                iterationDate = iterationDate.AddMinutes(15);
+                continue;
+            }
+            else
+            {
+                checkups.Add(newCheckup);
+                iterationDate = iterationDate.AddMinutes(15);
+            }
+        }
+        return checkups;
+    }
+
+    public DateTime RoundUp(DateTime dt, TimeSpan d)
+    {
+        return new DateTime((dt.Ticks + d.Ticks - 1) / d.Ticks * d.Ticks, dt.Kind);
+    }
+
+    public List<Checkup> FindSuitableCheckups(Doctor doctor, DateRange interval, DateTime deadline, bool isIntervalPriority, User user)
+    {
+        List<Checkup> checkups = new List<Checkup>();
+        DateTime iterationDate = RoundUp(DateTime.Now,TimeSpan.FromMinutes(15));
+        while ( iterationDate < deadline)
+        {
+            if (iterationDate.TimeOfDay >=Globals.ClosingTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, Globals.OpeningTime.Hour, Globals.OpeningTime.Minute, Globals.OpeningTime.Second);
+                iterationDate = iterationDate.AddDays(1);
+                continue;
+            }
+
+            if (iterationDate.TimeOfDay < Globals.OpeningTime.TimeOfDay)
+            {
+                iterationDate = new DateTime(iterationDate.Year, iterationDate.Month, iterationDate.Day, Globals.OpeningTime.Hour, Globals.OpeningTime.Minute, Globals.OpeningTime.Second);
+                continue;
+            }
+
+            if (!(interval.Starts.TimeOfDay<=iterationDate.TimeOfDay && iterationDate.TimeOfDay<interval.Ends.TimeOfDay))
+            {
+                iterationDate = iterationDate.AddMinutes(15);
+                continue;
+            }
+            
+            Checkup newCheckup = new Checkup(
+                iterationDate,
+                new MongoDB.Driver.MongoDBRef("patients", user.Person.Id),
+                new MongoDB.Driver.MongoDBRef("doctors", doctor.Id),
+                "no anamnesis");
+            if (!IsDoctorAvailable(newCheckup.DateRange, doctor))
+            {
+                iterationDate = iterationDate.AddMinutes(15);
+                continue;
+            }
+            else
+            {
+                checkups.Add(newCheckup);
+                return checkups;
+            }
+        }
+        //if code gets to this point, it means it hasnt found a good match
+        if (isIntervalPriority)
+        {
+            return GetEarliestFreeCheckups(interval,doctor.Specialty,3, user);
+        }
+        return GetFirstFewFreeCheckups(doctor,3,user);
+    }
+
+    public List<Checkup> FindCheckupsPriorityInterval(Doctor doctor, DateTime intervalStart, DateTime intervalEnd, DateTime deadline)
+    {
+        List<Checkup> checkups = new List<Checkup>();
+        return checkups;
     }
     
 }
