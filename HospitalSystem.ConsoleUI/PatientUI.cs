@@ -65,7 +65,7 @@ public class PatientUI : UserUI
         Console.Write("Please enter a search keyword: ");
         string keyword = ReadSanitizedLine().Trim();
 
-        List<Checkup> filteredCheckups = _hospital.AppointmentRepo.SearchPastCheckups(_loggedInPatient.Id,keyword);
+        List<Checkup> filteredCheckups = _hospital.AppointmentService.SearchPastCheckups(_loggedInPatient.Id,keyword);
 
         if (filteredCheckups.Count == 0)
         {
@@ -105,7 +105,7 @@ public class PatientUI : UserUI
     public void StartPastCheckups()
     {
         ShowCheckups(CheckupInTime.PAST);
-        List<Checkup> pastCheckups = _hospital.AppointmentRepo.GetPastCheckupsByPatient(_loggedInPatient.Id);
+        List<Checkup> pastCheckups = _hospital.AppointmentService.GetPastCheckupsByPatient(_loggedInPatient.Id);
         int selectedIndex;
         try
         {
@@ -217,7 +217,7 @@ public class PatientUI : UserUI
     public Checkup SelectCheckup ()
     {
         ShowCheckups(CheckupInTime.FUTURE);
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetFutureCheckupsByPatient(_loggedInPatient.Id);
+        List<Checkup> checkups = _hospital.AppointmentService.GetFutureCheckupsByPatient(_loggedInPatient.Id);
         if (checkups.Count == 0)
         {
             throw new QuitToMainMenuException("No checkups.");
@@ -265,7 +265,7 @@ public class PatientUI : UserUI
         }
         else
         {
-            _hospital.AppointmentRepo.DeleteCheckup(selectedCheckup);
+            _hospital.AppointmentService.DeleteCheckup(selectedCheckup);
             Console.WriteLine("Checkup deleted.");
         }
 
@@ -370,7 +370,7 @@ public class PatientUI : UserUI
         selectedCheckup.DateRange = new DateRange(newDate, newDate.Add(Checkup.DefaultDuration));
         
         
-        if (!_hospital.AppointmentRepo.IsDoctorAvailable(selectedCheckup.DateRange, newDoctor))
+        if (!_hospital.AppointmentService.IsDoctorAvailable(selectedCheckup.DateRange, newDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
@@ -386,7 +386,7 @@ public class PatientUI : UserUI
         }
         else
         {
-            _hospital.AppointmentRepo.AddOrUpdateCheckup(selectedCheckup);
+            _hospital.AppointmentService.AddOrUpdateCheckup(selectedCheckup);
             Console.WriteLine("Checkup updated.");
         }
         
@@ -418,13 +418,13 @@ public class PatientUI : UserUI
         switch (checkupTime)
         {
             case CheckupInTime.ALL:
-                checkups = _hospital.AppointmentRepo.GetCheckupsByPatient(_loggedInPatient.Id);
+                checkups = _hospital.AppointmentService.GetCheckupsByPatient(_loggedInPatient.Id);
                 break;   
             case CheckupInTime.FUTURE:
-                checkups = _hospital.AppointmentRepo.GetFutureCheckupsByPatient(_loggedInPatient.Id);
+                checkups = _hospital.AppointmentService.GetFutureCheckupsByPatient(_loggedInPatient.Id);
                 break;
             case CheckupInTime.PAST:
-                checkups = _hospital.AppointmentRepo.GetPastCheckupsByPatient(_loggedInPatient.Id);
+                checkups = _hospital.AppointmentService.GetPastCheckupsByPatient(_loggedInPatient.Id);
                 break;
         }
         
@@ -441,7 +441,7 @@ public class PatientUI : UserUI
 
     public void ShowOperations()
     {
-        List<Operation> operations = _hospital.AppointmentRepo.GetOperationsByPatient(_loggedInPatient.Id);
+        List<Operation> operations = _hospital.AppointmentService.GetOperationsByPatient(_loggedInPatient.Id);
         if (operations.Count == 0)
         {
             Console.WriteLine("No operations.");
@@ -670,7 +670,7 @@ public class PatientUI : UserUI
                     new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
                     new MongoDB.Driver.MongoDBRef("doctors", doctor.Id),
                     "no anamnesis");
-                if (!_hospital.AppointmentRepo.IsDoctorAvailable(newCheckup.DateRange, doctor))
+                if (!_hospital.AppointmentService.IsDoctorAvailable(newCheckup.DateRange, doctor))
                 {
                     continue;
                 }
@@ -716,7 +716,7 @@ public class PatientUI : UserUI
                 new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
                 new MongoDB.Driver.MongoDBRef("doctors", doctor.Id),
                 "no anamnesis");
-            if (!_hospital.AppointmentRepo.IsDoctorAvailable(newCheckup.DateRange, doctor))
+            if (!_hospital.AppointmentService.IsDoctorAvailable(newCheckup.DateRange, doctor))
             {
                 iterationDate = iterationDate.AddMinutes(15);
                 continue;
@@ -765,7 +765,7 @@ public class PatientUI : UserUI
                 new MongoDB.Driver.MongoDBRef("patients", _user.Person.Id),
                 new MongoDB.Driver.MongoDBRef("doctors", doctor.Id),
                 "no anamnesis");
-            if (!_hospital.AppointmentRepo.IsDoctorAvailable(newCheckup.DateRange, doctor))
+            if (!_hospital.AppointmentService.IsDoctorAvailable(newCheckup.DateRange, doctor))
             {
                 iterationDate = iterationDate.AddMinutes(15);
                 continue;
@@ -852,7 +852,7 @@ public class PatientUI : UserUI
             Console.Write("Create checkup? Enter y for yes: ");
             if (ReadSanitizedLine().Trim() == "y")
             {
-                _hospital.AppointmentRepo.AddOrUpdateCheckup(result);
+                _hospital.AppointmentService.AddOrUpdateCheckup(result);
                 Console.WriteLine("Checkup created.");
                 
                 LogChange(CRUDOperation.CREATE);
@@ -889,7 +889,7 @@ public class PatientUI : UserUI
                 System.Console.Write(e.Message + " Aborting...");
                 return;
             }
-            _hospital.AppointmentRepo.AddOrUpdateCheckup(recommendedCheckups[selectedIndex]);
+            _hospital.AppointmentService.AddOrUpdateCheckup(recommendedCheckups[selectedIndex]);
             Console.WriteLine("Checkup created.");
                 
             LogChange(CRUDOperation.CREATE);
@@ -949,14 +949,14 @@ public class PatientUI : UserUI
             new MongoDB.Driver.MongoDBRef("doctors", selectedDoctor.Id),
             "no anamnesis");
         
-        if (!_hospital.AppointmentRepo.IsDoctorAvailable(newCheckup.DateRange, selectedDoctor))
+        if (!_hospital.AppointmentService.IsDoctorAvailable(newCheckup.DateRange, selectedDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
         }
         Console.WriteLine("Checkup is free to schedule");
         
-        _hospital.AppointmentRepo.AddOrUpdateCheckup(newCheckup);
+        _hospital.AppointmentService.AddOrUpdateCheckup(newCheckup);
         Console.WriteLine("Checkup created");
         
         LogChange(CRUDOperation.CREATE);

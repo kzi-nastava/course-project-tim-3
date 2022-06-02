@@ -33,7 +33,7 @@ public static class TestGenerator
         for (int i = 0; i < 20; i++)
         {
             Doctor doctor = hospital.DoctorRepo.GetByFullName("name1","surname1");
-            List<Checkup> checkups = hospital.AppointmentRepo.GetCheckupsByDoctor(doctor.Id);
+            List<Checkup> checkups = hospital.AppointmentService.GetCheckupsByDoctor(doctor.Id);
 
             if (i % 2 == 0)
             {   RequestState state = RequestState.PENDING;

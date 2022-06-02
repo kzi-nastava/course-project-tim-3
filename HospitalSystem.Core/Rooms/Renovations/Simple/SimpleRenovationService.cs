@@ -17,19 +17,19 @@ public class SimpleRenovationService
 {
     private ISimpleRenovationRepository _repo;
     private RoomService _roomService;
-    private AppointmentRepository _appointmentRepo;
+    private AppointmentService _appointmentService;
 
     public SimpleRenovationService(ISimpleRenovationRepository repo, RoomService roomService,
-        AppointmentRepository appointmentRepo)
+        AppointmentService appointmentService)
     {
         _repo = repo;
         _roomService = roomService;
-        _appointmentRepo = appointmentRepo;
+        _appointmentService = appointmentService;
     }
 
     public void Schedule(SimpleRenovation renovation)
     {
-        if (!_appointmentRepo.IsRoomAvailableForRenovation(renovation.RoomLocation, renovation.BusyRange.Starts))
+        if (!_appointmentService.IsRoomAvailableForRenovation(renovation.RoomLocation, renovation.BusyRange.Starts))
         {
             throw new RenovationException("That room has appointments scheduled, can't renovate");
         }

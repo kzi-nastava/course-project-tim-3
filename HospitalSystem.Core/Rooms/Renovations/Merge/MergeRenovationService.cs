@@ -7,24 +7,24 @@ public class MergeRenovationService
     private IMergeRenovationRepository _repo;
     private RoomService _roomService;
     private EquipmentRelocationService _relocationService;
-    private AppointmentRepository _appointmentRepo;
+    private AppointmentService _appointmentService;
 
     public MergeRenovationService(IMergeRenovationRepository repo, RoomService roomService,
-        EquipmentRelocationService relocationService, AppointmentRepository appointmentRepo)
+        EquipmentRelocationService relocationService, AppointmentService appointmentService)
     {
         _repo = repo;
         _roomService = roomService;
         _relocationService = relocationService;
-        _appointmentRepo = appointmentRepo;
+        _appointmentService = appointmentService;
     }
 
     public void Schedule(MergeRenovation renovation, Room mergingInto)
     {
-        if (!_appointmentRepo.IsRoomAvailableForRenovation(renovation.FirstLocation, renovation.BusyRange.Starts))
+        if (!_appointmentService.IsRoomAvailableForRenovation(renovation.FirstLocation, renovation.BusyRange.Starts))
         {  
             throw new RenovationException("First room has appointments scheduled, can't renovate.");
         }
-        if (!_appointmentRepo.IsRoomAvailableForRenovation(renovation.SecondLocation, renovation.BusyRange.Starts))
+        if (!_appointmentService.IsRoomAvailableForRenovation(renovation.SecondLocation, renovation.BusyRange.Starts))
         {  
             throw new RenovationException("Second room has appointments scheduled, can't renovate.");
         }
