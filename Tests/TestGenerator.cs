@@ -1,8 +1,8 @@
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
-using HospitalSystem;
-using HospitalSystem.Utils;
+using HospitalSystem.Core;
+using HospitalSystem.Core.Utils;
 
 public static class TestGenerator
 {
@@ -19,6 +19,7 @@ public static class TestGenerator
         GenerateCheckupsAndOperations(hospital);
         GenerateCheckupChangeRequests(hospital);
         GenerateMedication(hospital);
+        GenerateMedicationRequests(hospital);
 
         System.Console.WriteLine("GENERATED TESTS IN DB");
 
@@ -164,6 +165,16 @@ public static class TestGenerator
         hospital.MedicationRepo.AddOrUpdate(new Medication("probiotic", new List<string> {"lactobacillus"}));
         hospital.MedicationRepo.AddOrUpdate(new Medication("amoxicillin", new List<string> {"penicillin","magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}));
         hospital.MedicationRepo.AddOrUpdate(new Medication("oxacillin", new List<string> {"penicillin"}));
+    }
+
+    private static void GenerateMedicationRequests(Hospital hospital)
+    {
+        hospital.MedicationRequestService.Send(new MedicationRequest(
+            new Medication("ultra probiotic", new List<string> {"ultra lactobacillus"}), "ULTRA"));
+        hospital.MedicationRequestService.Send(new MedicationRequest(
+            new Medication("ultra amoxicillin", new List<string> {"ultra penicillin","mega magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}), "ULTRA2"));
+        hospital.MedicationRequestService.Send(new MedicationRequest(
+            new Medication("ultra oxacillin", new List<string> {"ultra penicillin"}), "ULTRA3"));
     }
 
     private static void WriteDatabaseToFile(MongoClient dbClient)

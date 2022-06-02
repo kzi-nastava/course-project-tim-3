@@ -1,4 +1,4 @@
-﻿using HospitalSystem;
+﻿using HospitalSystem.Core;
 using HospitalSystem.ConsoleUI;
 
 public class Program
