@@ -8,11 +8,13 @@ public class AppointmentService
 {
     private IAppointmentRepository _appointmentRepo;
     private RoomService _roomService;
+    private DoctorRepository _doctorRepo;
 
-    public AppointmentService(AppointmentRepository appointmentRepo, RoomService roomService)
+    public AppointmentService(AppointmentRepository appointmentRepo, RoomService roomService, DoctorRepository doctorRepo)
     {
         _appointmentRepo = appointmentRepo;
         _roomService = roomService;
+        _doctorRepo = doctorRepo;
     }
 
     public void AddOrUpdateCheckup(Checkup newCheckup)
@@ -184,6 +186,20 @@ public class AppointmentService
             } 
         }
         return true;
+    }
+
+    public int CompareCheckupsByDoctorsName(Checkup checkup1, Checkup checkup2)
+    {
+        string name1 = _doctorRepo.GetById((ObjectId)checkup1.Doctor.Id).FirstName;
+        string name2 = _doctorRepo.GetById((ObjectId)checkup2.Doctor.Id).FirstName;
+        return String.Compare(name1, name2);
+    }
+
+    public int CompareCheckupsByDoctorsSpecialty(Checkup checkup1, Checkup checkup2)
+    {
+        string specialty1 = _doctorRepo.GetById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
+        string specialty2 = _doctorRepo.GetById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
+        return String.Compare(specialty1, specialty2);
     }
     
 }

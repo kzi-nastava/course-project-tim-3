@@ -46,20 +46,6 @@ public class PatientUI : UserUI
         Console.WriteLine();
     }
 
-    public int CompareByDoctorsName(Checkup checkup1, Checkup checkup2)
-    {
-        string name1 = _hospital.DoctorRepo.GetById((ObjectId)checkup1.Doctor.Id).FirstName;
-        string name2 = _hospital.DoctorRepo.GetById((ObjectId)checkup2.Doctor.Id).FirstName;
-        return String.Compare(name1, name2);
-    }
-
-    public int CompareByDoctorsSpecialty(Checkup checkup1, Checkup checkup2)
-    {
-        string specialty1 = _hospital.DoctorRepo.GetById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
-        string specialty2 = _hospital.DoctorRepo.GetById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
-        return String.Compare(specialty1, specialty2);
-    }
-
     public void StartAnamnesisSearch()
     {
         Console.Write("Please enter a search keyword: ");
@@ -89,11 +75,11 @@ public class PatientUI : UserUI
         }
         else if (sortSelection == "n")
         {
-            filteredCheckups.Sort(CompareByDoctorsName);
+            filteredCheckups.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsName);
         }
         else if (sortSelection == "s")
         {
-            filteredCheckups.Sort(CompareByDoctorsSpecialty);
+            filteredCheckups.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsSpecialty);
         }
 
         foreach (Checkup checkup in filteredCheckups)
@@ -170,43 +156,6 @@ public class PatientUI : UserUI
         }
     }
 
-    public bool WillNextCRUDOperationBlock(CRUDOperation crudOperation)
-    {
-        int limit;
-        //TODO: unhardcode this
-        switch (crudOperation)
-        {
-            case CRUDOperation.CREATE:
-                limit = 8;
-                break;
-            case CRUDOperation.UPDATE:
-                limit = 4;
-                break;
-            case CRUDOperation.DELETE:
-                limit = 4;
-                break;
-            default:
-                //this is dummy value, as of now there are no read restrictions
-                limit = 999;
-                break;
-        }
-
-        int count = 0;
-        foreach (CheckupChangeLog log in _loggedInPatient.CheckupChangeLogs)
-        {
-            if (log.StartTime > _now.AddDays(-30) &&  log.CRUDOperation == crudOperation)
-            {
-                count++;
-            }
-        }
-
-        if (count+1 > limit)
-        {
-            return true;
-        }
-        return false;
-    }
-
     public void LogChange(CRUDOperation crudOperation)
     {
         CheckupChangeLog log = new CheckupChangeLog(DateTime.Now,crudOperation);
@@ -240,7 +189,7 @@ public class PatientUI : UserUI
 
     public void DeleteCheckup ()
     {
-        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.DELETE);
+        bool nextWillBlock = _hospital.PatientService.WillNextCRUDOperationBlock(CRUDOperation.DELETE, _loggedInPatient);
         if (nextWillBlock)
         {
             Console.WriteLine("Warning! Any additional checkup deletion will result in account block!");
@@ -282,7 +231,7 @@ public class PatientUI : UserUI
     public void UpdateCheckup()
     {
 
-        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.UPDATE);
+        bool nextWillBlock = _hospital.PatientService.WillNextCRUDOperationBlock(CRUDOperation.UPDATE, _loggedInPatient);
         if (nextWillBlock)
         {
             Console.WriteLine("Warning! Any additional checkup updating will result in account block!");
@@ -792,7 +741,7 @@ public class PatientUI : UserUI
 
     public void CreateCheckupAdvanced()
     {
-        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.CREATE);
+        bool nextWillBlock = _hospital.PatientService.WillNextCRUDOperationBlock(CRUDOperation.CREATE, _loggedInPatient);
         if (nextWillBlock)
         {
             Console.WriteLine("Warning! Any additional checkup creation will result in account block!");
@@ -906,7 +855,7 @@ public class PatientUI : UserUI
     {
 
         //TODO: change this
-        bool nextWillBlock = WillNextCRUDOperationBlock(CRUDOperation.CREATE);
+        bool nextWillBlock = _hospital.PatientService.WillNextCRUDOperationBlock(CRUDOperation.CREATE, _loggedInPatient);
         if (nextWillBlock)
         {
             Console.WriteLine("Warning! Any additional checkup creation will result in account block!");
