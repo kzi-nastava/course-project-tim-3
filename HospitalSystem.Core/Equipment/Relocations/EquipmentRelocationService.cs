@@ -44,7 +44,7 @@ public class EquipmentRelocationService
 
     private void JustSchedule(EquipmentRelocation relocation)
     {
-        Scheduler.Schedule(relocation.EndTime, () => 
+        CallbackScheduler.Register(relocation.EndTime, () => 
         {
             MoveEquipment(relocation);
         });

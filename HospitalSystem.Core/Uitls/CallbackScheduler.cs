@@ -2,9 +2,9 @@ using Timer = System.Timers.Timer;
 
 namespace HospitalSystem.Core.Utils;
 
-public static class Scheduler
+public static class CallbackScheduler
 {
-    public static void Schedule(DateTime invokeAt, Action action)
+    public static void Register(DateTime invokeAt, Action action)
     {
         var waiting = invokeAt - DateTime.Now;
         if (waiting < TimeSpan.Zero)  // if task is past, just do it

@@ -48,14 +48,14 @@ public class RenovationService
 
     private void JustSchedule(Renovation renovation)
     {
-        Scheduler.Schedule(renovation.BusyRange.Starts, () =>
+        CallbackScheduler.Register(renovation.BusyRange.Starts, () =>
         {
             foreach (var loc in renovation.OldLocations)
             {
                 _roomService.Deactivate(loc);
             }
         });
-        Scheduler.Schedule(renovation.BusyRange.Ends, () => 
+        CallbackScheduler.Register(renovation.BusyRange.Ends, () => 
         {
             FinishRenovation(renovation);
         });
