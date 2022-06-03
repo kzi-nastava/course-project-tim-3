@@ -83,13 +83,17 @@ public static class TestGenerator
             {
                 var newRoom = new Room("55" + i, "NA" + i, RoomType.CHECKUP);
                 hospital.RoomService.Insert(newRoom);
+                var newEquipmentBatch = new EquipmentBatch(newRoom.Location, "syringe", 10, EquipmentType.CHECKUP);
+                hospital.EquipmentService.Add(newEquipmentBatch);
+                var newEquipmentBatch2 = new EquipmentBatch(newRoom.Location, "bandage", 10, EquipmentType.CHECKUP);
+                hospital.EquipmentService.Add(newEquipmentBatch2);
             }
         }
     }
 
     private static void GenerateCheckupsAndOperations(Hospital hospital)
     {
-        DateTime dateTime = new DateTime(2022, 5, 20, 4, 15, 0);
+        DateTime dateTime = new DateTime(2022, 6, 3, 4, 15, 0);
         int i = 0;
         try
         {
@@ -105,13 +109,13 @@ public static class TestGenerator
                     var range = new DateRange(dateTime, dateTime.Add(Checkup.DefaultDuration), allowPast: true);
                     Checkup check = new Checkup(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "anamneza");
-                    hospital.AppointmentRepo.AddOrUpdateCheckup(check);
+                    hospital.AppointmentService.AddOrUpdateCheckup(check);
                 } else if (i % 2 == 1) 
                 {
                     var range = new DateRange(dateTime, dateTime.Add(new TimeSpan(1, 15, 0)), allowPast: true);
                     Operation op = new Operation(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "report");
-                    hospital.AppointmentRepo.AddOrUpdateOperation(op);
+                    hospital.AppointmentService.AddOrUpdateOperation(op);
                 }
             }
         }

@@ -96,7 +96,6 @@ public class DoctorUI : UserUI
         checkups.AddRange(_hospital.AppointmentService.GetCheckupsByDay(DateTime.Today.AddDays(1)));
         checkups.AddRange(_hospital.AppointmentService.GetCheckupsByDay(DateTime.Today.AddDays(2)));
         PrintCheckups(checkups);
-
         TimetableMenu(checkups);
     }
 
@@ -260,6 +259,7 @@ public class DoctorUI : UserUI
                 }
                 case "4":
                 {
+                    EquipmentStateUpdate(checkup);
                     quit = true;
                     break;
                 }
@@ -270,6 +270,7 @@ public class DoctorUI : UserUI
                 }
             } 
         }
+        
     }
 
     public void EditMedicalRecord(Patient patient)
@@ -367,7 +368,7 @@ public class DoctorUI : UserUI
         var newDateTime = DateTime.TryParse(date + " " + time, out DateTime newStartDate);
         if (newDateTime == true)
         {
-            checkup.DateRange = new DateRange(newStartDate, checkup.DateRange.Ends, allowPast: false);
+            checkup.DateRange = new DateRange(newStartDate, newStartDate.Add(Checkup.DefaultDuration), allowPast: false);
             _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
             Console.WriteLine("\nEdit successfull");
         }
@@ -659,7 +660,38 @@ public class DoctorUI : UserUI
                 Console.WriteLine("Wrong input. Please enter a valid option.");
             }
         }
-        
+    }
 
+    public void EquipmentStateUpdate(Checkup checkup)
+    {
+        List<EquipmentBatch> equipments = _hospital.EquipmentService.GetAllIn(checkup.RoomLocation).ToList();
+        PrintEquipmentState(equipments);
+
+        foreach (EquipmentBatch equipment in equipments)
+        {
+            while (true)
+            {
+               Console.Write("\nInsert amount of used " + equipment.Name + " >> ");
+                var isNumber = int.TryParse(Console.ReadLine(), out int amount);
+                if (isNumber == true && amount >= 0 && amount <=equipment.Count)
+                {
+                    _hospital.EquipmentService.RemoveSome(equipment, amount);
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("\nPlease enter a valid amount between 0 and " + equipment.Count);
+                } 
+            }
+        }
+    }
+
+    public void PrintEquipmentState(List<EquipmentBatch> equipments)
+    {
+        Console.Write("\nEquipment state before checkup:\n\n");
+        foreach (EquipmentBatch equipment in equipments)
+        {
+            Console.WriteLine(equipment);
+        }   
     }
 }
