@@ -7,9 +7,12 @@ public class DateRange
     // the minimum allowed range (makes scheduling easy)
     [BsonIgnore]
     private static TimeSpan s_minDuration = TimeSpan.FromSeconds(60);  
+    [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
     [BsonElement]
     public DateTime Starts { get; }
+    // TODO: these local kinds everywhere will cause a bug if whole system changes timezone. Unlikely, but still...
     [BsonElement]
+    [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
     public DateTime Ends { get; }
 
     public DateRange(DateTime starts, DateTime ends, bool allowPast) : this(starts, ends)

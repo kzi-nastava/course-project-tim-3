@@ -14,6 +14,7 @@ namespace HospitalSystem.Core
 
     [BsonIgnoreExtraElements]
     public class CheckupChangeLog {
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime StartTime {get; set;}
         [BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public CRUDOperation CRUDOperation {get; set;}
