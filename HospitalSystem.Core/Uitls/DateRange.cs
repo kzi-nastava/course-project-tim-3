@@ -12,8 +12,16 @@ public class DateRange
     [BsonElement]
     public DateTime Ends { get; }
 
+    public DateRange(DateTime starts, DateTime ends, bool allowPast) : this(starts, ends)
+    {
+        if (!allowPast && starts < DateTime.Now)
+        {
+            throw new ArgumentException("Can not create range that starts in the past.");
+        }
+    }
+
     [BsonConstructor]
-    public DateRange(DateTime starts, DateTime ends, bool allowPast = false)
+    internal DateRange(DateTime starts, DateTime ends)
     {
         if (ends < starts)
         {
@@ -24,11 +32,6 @@ public class DateRange
         {
             throw new ArgumentException("Can not make range that lasts less than the minimum duration: " 
                 + s_minDuration.Seconds + " seconds.");
-        }
-
-        if (!allowPast && starts < DateTime.Now)
-        {
-            throw new ArgumentException("Can not create range that starts in the past.");
         }
 
         Starts = starts;
