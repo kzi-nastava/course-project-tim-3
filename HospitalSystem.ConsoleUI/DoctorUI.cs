@@ -14,7 +14,7 @@ public class DoctorUI : UserUI
         bool quit = false;
         while (!quit)
         {
-            Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Create checkup\n4. Quit");
+            Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Create checkup\n4. Manage medication requests\n5. Quit");
             Console.Write("\n>>");
             var option = ReadSanitizedLine().Trim();
             switch (option)
@@ -35,6 +35,11 @@ public class DoctorUI : UserUI
                     break;
                 }
                 case "4":
+                {
+                    MedicationRequestsMenu();
+                    break;
+                }
+                case "5":
                 {
                     quit = true;
                     break;
@@ -565,5 +570,96 @@ public class DoctorUI : UserUI
         Prescription prescription = new Prescription(medication, amount, MedicationBestTaken.ANY_TIME, hours);
         patient.MedicalRecord.Prescriptions.Add(prescription);
         _hospital.PatientRepo.AddOrUpdatePatient(patient);
+    }
+
+    public void MedicationRequestsMenu()
+    {
+        List<MedicationRequest> requested = _hospital.MedicationRequestService.GetSent().ToList();
+        PrintMedicationRequests(requested);
+        Console.Write("\nOptions:\n1. Review request\n2. Back\n");
+        Console.Write(">>");
+        string? input = Console.ReadLine();
+        switch (input)
+        {
+            case "1":
+            {
+                ReviewMedicationRequests(requested);
+                break;
+            }
+            case "2":
+                break;
+            default:
+                Console.WriteLine("Wrong input. Please choose a valid option.");
+                break;
+        }
+
+    }
+
+    public void PrintMedicationRequests(List<MedicationRequest> requested)
+    {
+        int i = 1;
+        Console.WriteLine(String.Format("\n{0,5} {1,24} {2,25} {3,20}", "Nr.", "Medication name", "Director comment", "Date of creation"));
+        foreach (MedicationRequest request in requested)
+        {
+            Console.WriteLine(string.Concat(Enumerable.Repeat("-", 60)));
+            Console.WriteLine(String.Format("{0,5} {1,24} {2,20} {3,30}", i, request.Requested.Name, request.DirectorComment, request.Created));
+            i++;
+        }
+    }
+
+    public void ReviewMedicationRequests(List<MedicationRequest> requested)
+    {
+        bool back = false;
+        while (!back)
+        {
+            Console.WriteLine("\nEnter request number");
+            Console.Write(">>");
+            var isNumber = int.TryParse(Console.ReadLine(), out int requestNumber);
+            if (isNumber == true && requestNumber > 0 && requestNumber <= requested.Count())
+            {
+                MedicationRequest request = requested[requestNumber-1];
+                Console.Write("\n" + request);
+                Console.WriteLine("\n1. Approve\n2. Deny\n3. Back");
+                Console.WriteLine(">>");
+                string? option = Console.ReadLine();
+                switch (option)
+                {
+                    case "1":
+                    {
+                        _hospital.MedicationRequestService.Approve(request);
+                        Console.WriteLine("Request approved.");
+                        back = true;
+                        break;
+                    }
+                    case "2":
+                    {
+                        Console.Write("\nWrite comment >>");
+                        string? comment = Console.ReadLine();
+                        if (comment != null)
+                            request.DoctorComment = comment;
+                        _hospital.MedicationRequestService.Deny(request);
+                        Console.WriteLine("\nRequest denied.");
+                        back = true;
+                        break;
+                    }
+                    case "3":
+                    {
+                        back = true;
+                        break;
+                    }
+                    default:
+                    {
+                        Console.WriteLine("Wrong input. Please enter a valid option.");
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Wrong input. Please enter a valid option.");
+            }
+        }
+        
+
     }
 }

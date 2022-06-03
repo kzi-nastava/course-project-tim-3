@@ -44,4 +44,9 @@ public class MedicationRequest
         Created = created;
         Status = status;
     }
+
+    public override string ToString()
+    {
+        return  Requested.ToString() + "\nDate of creation: " + Created + "\nDirector comment: " + DirectorComment;
+    }
 }
