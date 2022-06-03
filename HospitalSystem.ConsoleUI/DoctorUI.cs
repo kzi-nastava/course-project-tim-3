@@ -568,7 +568,7 @@ public class DoctorUI : UserUI
 
     public void AddPrescription(Medication medication, int amount, MedicationBestTaken bestTaken, int hours, Patient patient)
     {
-        Prescription prescription = new Prescription(medication, amount, MedicationBestTaken.ANY_TIME, hours);
+        Prescription prescription = new Prescription(medication, amount, bestTaken, hours);
         patient.MedicalRecord.Prescriptions.Add(prescription);
         _hospital.PatientRepo.AddOrUpdatePatient(patient);
     }
