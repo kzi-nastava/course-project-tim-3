@@ -1,7 +1,8 @@
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
-using HospitalSystem;
+using HospitalSystem.Core;
+using HospitalSystem.Core.Utils;
 
 public static class TestGenerator
 {
@@ -14,10 +15,11 @@ public static class TestGenerator
         System.Console.WriteLine("DROPPED EXISTING DATABASE HOSPITAL");
 
         GenerateUsers(hospital);
-        GenerateRoomsAndEquipments(hospital);
+        GenerateRoomsAndEquipment(hospital);
         GenerateCheckupsAndOperations(hospital);
         GenerateCheckupChangeRequests(hospital);
         GenerateMedication(hospital);
+        GenerateMedicationRequests(hospital);
 
         System.Console.WriteLine("GENERATED TESTS IN DB");
 
@@ -40,11 +42,12 @@ public static class TestGenerator
                     state = RequestState.APPROVED;
                 }
                 Checkup alteredCheckup = checkups[i];
-                DateTime newDateAndTime =  new DateTime (2077,10,10);
-                alteredCheckup.StartTime = newDateAndTime;
+                DateTime newDateAndTime =  new DateTime(2077,10,10);
+                alteredCheckup.DateRange = new DateRange(newDateAndTime, newDateAndTime.Add(Checkup.DefaultDuration));
                 CheckupChangeRequest request = new CheckupChangeRequest(alteredCheckup,CRUDOperation.UPDATE,state);
                 hospital.CheckupChangeRequestRepo.AddOrUpdate(request);
-            } else if (i % 2 == 1) 
+            }
+            else if (i % 2 == 1) 
             {
                 RequestState state = RequestState.PENDING;
                 if (i % 3 == 0)
@@ -57,29 +60,29 @@ public static class TestGenerator
         }
     }
 
-    private static void GenerateRoomsAndEquipments(Hospital hospital)
+    private static void GenerateRoomsAndEquipment(Hospital hospital)
     {
         for (int i = 0; i < 10; i++)
         {
             if (i % 3 == 0)
             {   
                 var newRoom = new Room("90" + i, "NA" + i, RoomType.STOCK);
-                hospital.RoomRepo.Add(newRoom);
+                hospital.RoomService.Insert(newRoom);
                 for (int j = 0; j < 4; j++)
                 {
                     var newEquipmentBatch = new EquipmentBatch(newRoom.Location, "scalpel", 3, EquipmentType.OPERATION);
-                    hospital.EquipmentRepo.Add(newEquipmentBatch);
+                    hospital.EquipmentService.Add(newEquipmentBatch);
                 }
             } 
             else if (i % 3 == 1)
             {
                 var newRoom = new Room("10" + i, "NA" + i, RoomType.OPERATION);
-                hospital.RoomRepo.Add(newRoom);
+                hospital.RoomService.Insert(newRoom);
             } 
             else
             {
                 var newRoom = new Room("55" + i, "NA" + i, RoomType.CHECKUP);
-                hospital.RoomRepo.Add(newRoom);
+                hospital.RoomService.Insert(newRoom);
             }
         }
     }
@@ -98,13 +101,16 @@ public static class TestGenerator
 
                 if (i % 2 == 0)
                 {   
-                    Checkup check = new Checkup(dateTime, new MongoDBRef("patients",patient.Id),
+                    // doing this to allow writing to the past
+                    var range = new DateRange(dateTime, dateTime.Add(Checkup.DefaultDuration), allowPast: true);
+                    Checkup check = new Checkup(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "anamneza");
                     hospital.AppointmentRepo.AddOrUpdateCheckup(check);
                 } else if (i % 2 == 1) 
                 {
-                    Operation op = new Operation(dateTime, new MongoDBRef("patients",patient.Id),
-                        new MongoDBRef("doctors", doctor.Id), "report", new TimeSpan(1,15,0));
+                    var range = new DateRange(dateTime, dateTime.Add(new TimeSpan(1, 15, 0)), allowPast: true);
+                    Operation op = new Operation(range, new MongoDBRef("patients",patient.Id),
+                        new MongoDBRef("doctors", doctor.Id), "report");
                     hospital.AppointmentRepo.AddOrUpdateOperation(op);
                 }
             }
@@ -149,7 +155,7 @@ public static class TestGenerator
                 user = new User("a" + i, "a" + i, secretary, Role.SECRETARY);
                 hospital.SecretaryRepo.AddOrUpdateSecretary(secretary);
             }
-            hospital.UserRepo.AddOrUpdateUser(user);                
+            hospital.UserService.Upsert(user);                
         }
     }
 
@@ -159,6 +165,16 @@ public static class TestGenerator
         hospital.MedicationRepo.AddOrUpdate(new Medication("probiotic", new List<string> {"lactobacillus"}));
         hospital.MedicationRepo.AddOrUpdate(new Medication("amoxicillin", new List<string> {"penicillin","magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}));
         hospital.MedicationRepo.AddOrUpdate(new Medication("oxacillin", new List<string> {"penicillin"}));
+    }
+
+    private static void GenerateMedicationRequests(Hospital hospital)
+    {
+        hospital.MedicationRequestService.Send(new MedicationRequest(
+            new Medication("ultra probiotic", new List<string> {"ultra lactobacillus"}), "ULTRA"));
+        hospital.MedicationRequestService.Send(new MedicationRequest(
+            new Medication("ultra amoxicillin", new List<string> {"ultra penicillin","mega magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}), "ULTRA2"));
+        hospital.MedicationRequestService.Send(new MedicationRequest(
+            new Medication("ultra oxacillin", new List<string> {"ultra penicillin"}), "ULTRA3"));
     }
 
     private static void WriteDatabaseToFile(MongoClient dbClient)

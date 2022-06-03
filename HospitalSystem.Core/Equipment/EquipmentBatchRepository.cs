@@ -1,0 +1,50 @@
+using MongoDB.Driver;
+using System.Linq.Expressions;
+
+namespace HospitalSystem.Core;
+
+public class EquipmentBatchRepository : IEquipmentBatchRepository
+{
+    private MongoClient _dbClient;
+
+    public EquipmentBatchRepository(MongoClient dbClient)
+    {
+        _dbClient = dbClient;
+    }
+
+    private IMongoCollection<EquipmentBatch> GetMongoCollection()
+    {
+        return _dbClient.GetDatabase("hospital").GetCollection<EquipmentBatch>("equipment");
+    }
+
+    public IQueryable<EquipmentBatch> GetAll()
+    {
+        return GetMongoCollection().AsQueryable();
+    }
+
+    public EquipmentBatch? Get(string roomLocation, string name)
+    {
+        var batches = GetMongoCollection();
+        return batches.Find(batch => batch.RoomLocation == roomLocation && batch.Name == name).FirstOrDefault();
+    }
+
+    public void Insert(EquipmentBatch batch)
+    {
+        GetMongoCollection().InsertOne(batch);
+    }
+
+    public void Replace(EquipmentBatch newBatch)
+    {
+        GetMongoCollection().ReplaceOne(batch => batch.Id == newBatch.Id, newBatch);
+    }
+
+    public void Delete(EquipmentBatch existingBatch)
+    {
+        GetMongoCollection().DeleteOne(batch => batch.Id == existingBatch.Id);
+    }
+
+    public void DeleteMany(Expression<Func<EquipmentBatch, bool>> filter)
+    {
+        GetMongoCollection().DeleteMany(filter);
+    }
+}
