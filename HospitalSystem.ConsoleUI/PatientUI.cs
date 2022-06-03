@@ -370,7 +370,7 @@ public class PatientUI : UserUI
                 selectedCheckup,
                 CRUDOperation.DELETE);
                 Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
-                _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
+                _hospital.CheckupChangeRequestService.AddOrUpdate(newRequest);
         }
         else
         {
@@ -385,6 +385,31 @@ public class PatientUI : UserUI
             throw new UserBlockedException("Deleting too many checkups.");
         }
 
+    }
+
+    public Doctor ChangeDoctor(Doctor currentDoctor)
+    {
+
+        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetManyBySpecialty(currentDoctor.Specialty);
+        alternativeDoctors.Remove(currentDoctor);
+
+            if (alternativeDoctors.Count == 0)
+            {
+                Console.WriteLine("No doctors found in the same specialty.");
+                return currentDoctor;
+            }
+
+            for (int i=0; i<alternativeDoctors.Count; i++)
+            {
+                Console.WriteLine(i+" - "+alternativeDoctors[i].ToString());
+            }
+
+            int selectedDoctorIndex = -1;
+            
+            System.Console.Write("Please enter a number from the list: ");
+            selectedDoctorIndex = ReadInt(0, alternativeDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
+            
+            return alternativeDoctors[selectedDoctorIndex];
     }
 
     public void UpdateCheckup()
@@ -409,16 +434,10 @@ public class PatientUI : UserUI
 
         Doctor currentDoctor = _hospital.DoctorRepo.GetById((ObjectId)selectedCheckup.Doctor.Id);
         DateTime existingDate = selectedCheckup.DateRange.Starts;
-        
-        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetManyBySpecialty(currentDoctor.Specialty);
-        alternativeDoctors.Remove(currentDoctor);
         Doctor newDoctor = currentDoctor;
         DateTime newDate = existingDate;
-
-        // change doctor?
-
+        
         Console.WriteLine("Change doctor? Enter yes or no: ");
-
         string changeDoctorOpinion = ReadSanitizedLine().Trim();
 
         if (changeDoctorOpinion !="yes" && changeDoctorOpinion!="no")
@@ -429,33 +448,16 @@ public class PatientUI : UserUI
 
         if (changeDoctorOpinion == "yes")
         {
-            if (alternativeDoctors.Count == 0)
-            {
-                Console.WriteLine("No doctors found in the same specialty.");
-                return;
-            }
-
-            for (int i=0; i<alternativeDoctors.Count; i++)
-            {
-                Console.WriteLine(i+" - "+alternativeDoctors[i].ToString());
-            }
-
-            int selectedDoctorIndex = -1;
             try
             {
-                System.Console.Write("Please enter a number from the list: ");
-                selectedDoctorIndex = ReadInt(0, alternativeDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
+                newDoctor = ChangeDoctor(currentDoctor);
             }
             catch (InvalidInputException e)
             {
                 System.Console.Write(e.Message + " Aborting...");
                 return;
             }
-
-            newDoctor = alternativeDoctors[selectedDoctorIndex];
         }
-
-        //change date?
 
         Console.WriteLine("Change date? Enter yes or no: ");
 
@@ -473,11 +475,9 @@ public class PatientUI : UserUI
             Console.WriteLine("You have selected the following date - "+ newDate);
         }
 
-        //create checkup
         selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
         DateTime oldDate = selectedCheckup.DateRange.Starts;
         selectedCheckup.DateRange = new DateRange(newDate, newDate.Add(Checkup.DefaultDuration), allowPast: false);
-        
         
         if (!_hospital.AppointmentService.IsDoctorAvailable(selectedCheckup.DateRange, newDoctor))
         {
@@ -491,7 +491,7 @@ public class PatientUI : UserUI
                 selectedCheckup,
                 CRUDOperation.UPDATE);
             Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
-            _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
+            _hospital.CheckupChangeRequestService.AddOrUpdate(newRequest);
         }
         else
         {
