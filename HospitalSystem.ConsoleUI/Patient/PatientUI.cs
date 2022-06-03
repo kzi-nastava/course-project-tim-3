@@ -25,10 +25,7 @@ public class UserBlockedException : System.Exception
 
 public class PatientUI : UserUI
 {
-    //there might be a better way to set opening time, only time will be used
-    //those times should be stored somewhere else
-    private DateTime _now = DateTime.Now;
-    private TimeSpan _checkupDuration = new TimeSpan(0,0,15,0);
+    
     private Patient _loggedInPatient;
 
     public PatientUI(Hospital hospital, User user) : base(hospital, user) 
@@ -364,7 +361,7 @@ public class PatientUI : UserUI
             return;
         }
 
-        if (selectedCheckup.DateRange.Starts < _now.AddDays(2))
+        if (selectedCheckup.DateRange.Starts < DateTime.Now.AddDays(2))
         {
             CheckupChangeRequest newRequest = new CheckupChangeRequest(
                 selectedCheckup,
@@ -485,7 +482,7 @@ public class PatientUI : UserUI
             return;
         }
         
-        if (oldDate < _now.AddDays(2))
+        if (oldDate < DateTime.Now.AddDays(2))
         {
             CheckupChangeRequest newRequest = new CheckupChangeRequest(
                 selectedCheckup,
@@ -620,7 +617,7 @@ public class PatientUI : UserUI
         while (iterationTime.TimeOfDay != Globals.ClosingTime.TimeOfDay)
         {
             Console.WriteLine(highestCheckupIndex + " - " + iterationTime.ToString("HH:mm"));
-            iterationTime = iterationTime.Add(_checkupDuration);
+            iterationTime = iterationTime.Add(Globals._checkupDuration);
             highestCheckupIndex += 1;
         }
 
@@ -628,7 +625,7 @@ public class PatientUI : UserUI
         int selectedIndex = ReadInt(0, highestCheckupIndex-1, "Number out of bounds!", "Number not recognized!");
 
         inputDate = inputDate.AddHours(Globals.OpeningTime.Hour);
-        inputDate = inputDate.Add(selectedIndex*_checkupDuration);
+        inputDate = inputDate.Add(selectedIndex*Globals._checkupDuration);
 
         return inputDate;
     }
@@ -648,7 +645,7 @@ public class PatientUI : UserUI
             throw new InvalidInputException("Wrong date entered.");  
         }
 
-        if (DateTime.Compare(result.Date, _now.Date) == -1 )
+        if (DateTime.Compare(result.Date, DateTime.Now.Date) == -1 )
         {
             throw new InvalidInputException("The date entered is in past.");
         }
@@ -664,7 +661,7 @@ public class PatientUI : UserUI
        
         //TODO: The listed times shouldnt be the ones that expired
 
-        if (DateTime.Compare(result, _now) == -1 )
+        if (DateTime.Compare(result, DateTime.Now) == -1 )
         {
              throw new InvalidInputException("Selected date and time expired.");
         } 
