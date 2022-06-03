@@ -362,7 +362,7 @@ public class DoctorUI : UserUI
         var newDateTime = DateTime.TryParse(date + " " + time, out DateTime newStartDate);
         if (newDateTime == true)
         {
-            checkup.DateRange = new DateRange(newStartDate, checkup.DateRange.Ends);
+            checkup.DateRange = new DateRange(newStartDate, checkup.DateRange.Ends, allowPast: false);
             _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
             Console.WriteLine("\nEdit successfull");
         }

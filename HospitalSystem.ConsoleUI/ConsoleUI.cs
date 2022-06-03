@@ -85,7 +85,7 @@ public abstract class ConsoleUI
         rawDate = ReadSanitizedLine();
         var ends = DateTime.Parse(rawDate);
 
-        return new DateRange(starts, ends);
+        return new DateRange(starts, ends, allowPast: false);
     }
 
 }

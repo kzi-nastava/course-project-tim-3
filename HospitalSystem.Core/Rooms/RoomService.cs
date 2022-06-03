@@ -39,10 +39,7 @@ public class RoomService
 
     public bool DoesExist(string location)
     {
-        return
-            (from room in _roomRepo.GetAll()
-            where room.Location == location
-            select room).Any();
+        return _roomRepo.DoesExist(location);
     }
 
     public void Replace(Room replacing)

@@ -143,14 +143,14 @@ public class RoomUI : ConsoleUI
         }
 
         _hospital.RoomService.Replace(room);
-        System.Console.Write("Successfully updated room. Input anything to continue >> ");
+        System.Console.Write("Successfully updated room.");
     }
 
     private void Add()
     {
         var newRoom = InputRoom();
         _hospital.RoomService.Insert(newRoom);
-        System.Console.Write("Successfully added room. Input anything to continue >> ");
+        System.Console.Write("Successfully added room.");
     }
 
     private Room InputRoom()
@@ -190,7 +190,7 @@ public class RoomUI : ConsoleUI
             _hospital.EquipmentService.DeleteAllInRoom(_loadedRooms[number]);
         }
         _hospital.RoomService.Delete(_loadedRooms[number].Location);
-        System.Console.Write("Successfully deleted room. Input anything to continue >> ");
+        System.Console.Write("Successfully deleted room.");
     }
 
     private void DoSimpleRenovation()
@@ -202,9 +202,11 @@ public class RoomUI : ConsoleUI
 
         var range = InputDateRange();
 
-        var renovation = new SimpleRenovation(_loadedRooms[number].Location, range);
-        _hospital.SimpleRenovationService.Schedule(renovation);
-        System.Console.Write("Successfully scheduled simple renovation. Input anything to continue >>  ");
+        var renovation = new Renovation(range,
+            new List<string>() {_loadedRooms[number].Location},
+            new List<string>() {_loadedRooms[number].Location});
+        _hospital.RenovationService.Schedule(renovation, new List<Room>());
+        System.Console.Write("Successfully scheduled simple renovation.");
     }
 
     private void DoSplitRenovation()
@@ -224,10 +226,11 @@ public class RoomUI : ConsoleUI
         System.Console.WriteLine("Input the second room that will split off:");
         var secondRoom = InputRoom();
 
-        var renovation = new SplitRenovation(range, originalRoom.Location, firstRoom.Location, secondRoom.Location);
-
-        _hospital.SplitRenovationService.Schedule(renovation, firstRoom, secondRoom);
-        System.Console.Write("Successfully scheduled split renovation. Input anything to continue >>  ");
+        var renovation = new Renovation(range,
+            new List<string>() {originalRoom.Location},
+            new List<string>() {firstRoom.Location, secondRoom.Location});
+        _hospital.RenovationService.Schedule(renovation, new List<Room>() {firstRoom, secondRoom});
+        System.Console.Write("Successfully scheduled split renovation.");
     }
     
     private void DoMergeRenovation()
@@ -250,9 +253,10 @@ public class RoomUI : ConsoleUI
         System.Console.WriteLine("Input the room that these will merge into:");
         var mergingRoom = InputRoom();
 
-        var renovation = new MergeRenovation(range, firstRoom.Location, secondRoom.Location, mergingRoom.Location);
-
-        _hospital.MergeRenovationService.Schedule(renovation, mergingRoom);
-        System.Console.Write("Successfully scheduled merge renovation. Input anything to continue >>  ");
+        var renovation = new Renovation(range,
+            new List<string>() {firstRoom.Location, secondRoom.Location},
+            new List<string>() {mergingRoom.Location});
+        _hospital.RenovationService.Schedule(renovation, new List<Room> {mergingRoom});
+        System.Console.Write("Successfully scheduled merge renovation.");
     }
 }

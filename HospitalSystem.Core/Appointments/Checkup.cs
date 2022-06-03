@@ -13,7 +13,7 @@ namespace HospitalSystem.Core
         public string Anamnesis { get; set; }
 
         public Checkup(DateTime startTime, MongoDBRef patient, MongoDBRef doctor, string anamnesis)
-            : base(new DateRange(startTime, startTime.Add(DefaultDuration)), patient, doctor)
+            : base(new DateRange(startTime, startTime.Add(DefaultDuration), false), patient, doctor)
         {
             Anamnesis = anamnesis;
         }

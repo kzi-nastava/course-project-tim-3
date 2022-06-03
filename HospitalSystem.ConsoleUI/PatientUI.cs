@@ -476,7 +476,7 @@ public class PatientUI : UserUI
         //create checkup
         selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
         DateTime oldDate = selectedCheckup.DateRange.Starts;
-        selectedCheckup.DateRange = new DateRange(newDate, newDate.Add(Checkup.DefaultDuration));
+        selectedCheckup.DateRange = new DateRange(newDate, newDate.Add(Checkup.DefaultDuration), allowPast: false);
         
         
         if (!_hospital.AppointmentService.IsDoctorAvailable(selectedCheckup.DateRange, newDoctor))
