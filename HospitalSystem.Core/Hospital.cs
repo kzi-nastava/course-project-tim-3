@@ -15,9 +15,7 @@ public class Hospital
     public EquipmentBatchService EquipmentService { get; }
     public EquipmentRelocationService RelocationService { get; }
     public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
-    public SimpleRenovationService SimpleRenovationService { get; }
-    public SplitRenovationService SplitRenovationService { get; }
-    public MergeRenovationService MergeRenovationService { get; }
+    public RenovationService RenovationService { get; }
     public MedicationRepository MedicationRepo { get; }
     public MedicationRequestService MedicationRequestService { get; }
 
@@ -33,18 +31,12 @@ public class Hospital
         EquipmentService = new (new EquipmentBatchRepository(_dbClient));
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
         CheckupChangeRequestRepo = new (_dbClient);
-        SimpleRenovationService = new (new SimpleRenovationRepository(_dbClient), RoomService, AppointmentRepo);
-        SplitRenovationService = new (new SplitRenovationRepository(_dbClient), RoomService,
-            RelocationService, AppointmentRepo);
-        MergeRenovationService = new (new MergeRenovationRepository(_dbClient), RoomService,
+        RenovationService = new (new RenovationRepository(_dbClient), RoomService,
             RelocationService, AppointmentRepo);
         MedicationRepo = new (_dbClient);
         MedicationRequestService = new (new MedicationRequestRepository(_dbClient), MedicationRepo);
         // TODO: this maybe shouldn't be here
         RelocationService.ScheduleAll();
-        SimpleRenovationService.ScheduleAll();
-        SplitRenovationService.ScheduleAll();
-        MergeRenovationService.ScheduleAll();
-
+        RenovationService.ScheduleAll();
     }
 }

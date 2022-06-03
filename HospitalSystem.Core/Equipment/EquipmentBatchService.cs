@@ -27,12 +27,7 @@ public class EquipmentBatchService
 
     public IQueryable<EquipmentBatch> GetAllIn(string roomLocation)
     {
-        var batches = _repo.GetAll();
-        var matches = 
-            from batch in batches
-            where batch.RoomLocation == roomLocation
-            select batch;
-        return matches;
+        return _repo.GetAllIn(roomLocation);
     }
 
     public void Add(EquipmentBatch newBatch)
@@ -74,14 +69,6 @@ public class EquipmentBatchService
 
     public IQueryable<EquipmentBatch> Search(EquipmentQuery query)
     {
-        var batches = _repo.GetAll();
-        var matches = 
-            from batch in batches
-            where (query.MinCount == null || query.MinCount <= batch.Count)
-                && (query.MaxCount == null || query.MaxCount >= batch.Count)
-                && (query.Type == null || query.Type == batch.Type)
-                && (query.NameContains == null || query.NameContains.IsMatch(batch.Name))
-            select batch;
-        return matches;
+        return _repo.Search(query);
     }
 }

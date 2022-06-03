@@ -15,4 +15,8 @@ public interface IEquipmentBatchRepository
     public void Delete(EquipmentBatch batch);
 
     public void DeleteMany(Expression<Func<EquipmentBatch, bool>> filter);
+
+    public IQueryable<EquipmentBatch> Search(EquipmentQuery query);
+
+    public IQueryable<EquipmentBatch> GetAllIn(string roomLocation);
 }

@@ -15,4 +15,6 @@ public interface IRoomRepository
     public void Replace(Room room, Expression<Func<Room, bool>> filter);
 
     public void Upsert(Room room, Expression<Func<Room, bool>> filter);
+
+    public bool DoesExist(string location);
 }

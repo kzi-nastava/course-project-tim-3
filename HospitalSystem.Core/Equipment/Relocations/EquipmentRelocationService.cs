@@ -39,12 +39,12 @@ public class EquipmentRelocationService
     public void Schedule(EquipmentRelocation relocation)
     {
         _relocationRepo.Insert(relocation);
-        JustSchedule(relocation);
+        RegisterFinishCallback(relocation);
     }
 
-    private void JustSchedule(EquipmentRelocation relocation)
+    private void RegisterFinishCallback(EquipmentRelocation relocation)
     {
-        Scheduler.Schedule(relocation.EndTime, () => 
+        CallbackScheduler.Register(relocation.EndTime, () => 
         {
             MoveEquipment(relocation);
         });
@@ -56,7 +56,7 @@ public class EquipmentRelocationService
         {
             if (!relocation.IsDone)
             {
-                JustSchedule(relocation);
+                RegisterFinishCallback(relocation);
             }
         }
     }

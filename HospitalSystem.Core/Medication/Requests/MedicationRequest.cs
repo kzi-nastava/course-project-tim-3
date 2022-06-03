@@ -17,6 +17,7 @@ public class MedicationRequest
     public Medication Requested { get; set; }
     public string DoctorComment { get; set; }
     public string DirectorComment { get; set; }
+    [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
     [BsonElement]
     public DateTime Created { get; }
     [BsonRepresentation(BsonType.String)]

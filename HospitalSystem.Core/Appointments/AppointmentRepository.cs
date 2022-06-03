@@ -93,13 +93,13 @@ public class AppointmentRepository
     {
         // Does some appointment end after Renovation starts? Then can't renovate
         var checkupOvertakes = 
-            (from checkup in GetCheckups().AsQueryable()
+            (from checkup in GetCheckups().AsQueryable().ToList()
             where renovationStartTime < checkup.DateRange.Ends
             select checkup).Any();
         if (checkupOvertakes) return false;
 
         var operationOvertakes = 
-            (from operation in GetOperations().AsQueryable()
+            (from operation in GetOperations().AsQueryable().ToList()
             where renovationStartTime < operation.DateRange.Ends
             select operation).Any();
         return !operationOvertakes;

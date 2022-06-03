@@ -43,7 +43,7 @@ public static class TestGenerator
                 }
                 Checkup alteredCheckup = checkups[i];
                 DateTime newDateAndTime =  new DateTime(2077,10,10);
-                alteredCheckup.DateRange = new DateRange(newDateAndTime, newDateAndTime.Add(Checkup.DefaultDuration));
+                alteredCheckup.DateRange = new DateRange(newDateAndTime, newDateAndTime.Add(Checkup.DefaultDuration), true);
                 CheckupChangeRequest request = new CheckupChangeRequest(alteredCheckup,CRUDOperation.UPDATE,state);
                 hospital.CheckupChangeRequestRepo.AddOrUpdate(request);
             }

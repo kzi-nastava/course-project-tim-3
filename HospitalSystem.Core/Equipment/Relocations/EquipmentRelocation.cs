@@ -12,6 +12,7 @@ public class EquipmentRelocation
     public string Name { get; set; }
     public EquipmentType Type { get; set; }
     public int Count { get; set; }
+    [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
     public DateTime EndTime { get; set; }
     public bool IsDone { get; set; }
 

@@ -54,4 +54,11 @@ public class RoomRepository : IRoomRepository
         GetMongoCollection().ReplaceOne(filter, newRoom, new ReplaceOptions {IsUpsert = true});
     }
 
+    public bool DoesExist(string location)
+    {
+        return
+            (from room in GetAll()
+            where room.Location == location
+            select room).Any();
+    }
 }
