@@ -51,6 +51,7 @@ public class PatientUI : UserUI
             Commands:
             ma - manage appointments
             vm - view medical record
+            sd - search doctors
             exit - quit the program
 
             ");
@@ -65,6 +66,10 @@ public class PatientUI : UserUI
                 else if (selectedOption == "vm")
                 {
                     StartMedicalRecord();
+                }
+                else if (selectedOption == "sd")
+                {
+                    StartDoctorSearch();
                 }
                 else if (selectedOption == "exit")
                 {
@@ -93,9 +98,9 @@ public class PatientUI : UserUI
         Console.Write("Please enter a search keyword: ");
         string keyword = ReadSanitizedLine().Trim();
 
-        List<Checkup> filteredCheckups = _hospital.AppointmentService.SearchPastCheckups(_loggedInPatient.Id,keyword);
+        List<Checkup> filteredDoctors = _hospital.AppointmentService.SearchPastCheckups(_loggedInPatient.Id,keyword);
 
-        if (filteredCheckups.Count == 0)
+        if (filteredDoctors.Count == 0)
         {
             Console.WriteLine("No anamnesis found");
             return;
@@ -109,22 +114,22 @@ public class PatientUI : UserUI
             ");
         
         //there is probably a better way to do n and s, but idk
-        string sortSelection = ReadSanitizedLine().Trim();
-        if (sortSelection == "d")
+        string sortOption = ReadSanitizedLine().Trim();
+        if (sortOption == "d")
         {
-            filteredCheckups.Sort((checkup1, checkup2)=> 
+            filteredDoctors.Sort((checkup1, checkup2)=> 
                 DateTime.Compare(checkup1.DateRange.Starts, checkup2.DateRange.Ends));
         }
-        else if (sortSelection == "n")
+        else if (sortOption == "n")
         {
-            filteredCheckups.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsName);
+            filteredDoctors.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsName);
         }
-        else if (sortSelection == "s")
+        else if (sortOption == "s")
         {
-            filteredCheckups.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsSpecialty);
+            filteredDoctors.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsSpecialty);
         }
 
-        foreach (Checkup checkup in filteredCheckups)
+        foreach (Checkup checkup in filteredDoctors)
         {
            ShowCheckupsAnamnesis(checkup);
         }
@@ -872,6 +877,74 @@ public class PatientUI : UserUI
         {
             _hospital.UserService.BlockUser(_user);
             throw new UserBlockedException("Creating too many checkups.");
+        }
+    }
+
+    public void StartDoctorSearch()
+    {
+        System.Console.WriteLine(@"
+            Search options:
+            n - search by name
+            l - search by last name
+            s - search by speciality
+            ");
+
+        Console.Write("Please enter a search option: ");
+        string searchOption = ReadSanitizedLine().Trim();
+        if (searchOption!= "n" && searchOption!= "l" && searchOption!= "s")
+        {
+            Console.WriteLine("Wrong option entered. Aborting...");
+        }
+
+        Console.Write("Please enter a search keyword: ");
+        string keyword = ReadSanitizedLine().Trim();
+
+        List<Doctor> filteredDoctors = new List<Doctor>();
+
+        switch (searchOption)
+        {
+            case "n":
+                filteredDoctors = _hospital.DoctorRepo.GetManyByName(keyword);
+                break;
+            case "l":
+                filteredDoctors = _hospital.DoctorRepo.GetManyByLastName(keyword);
+                break;
+            case "s":
+                filteredDoctors = _hospital.DoctorRepo.GetManyBySpecialty(keyword);
+                break;
+        }
+
+        if (filteredDoctors.Count == 0)
+        {
+            Console.WriteLine("No doctors found.");
+            return;
+        }
+
+        Console.WriteLine(filteredDoctors.Count + " doctors found.");
+        System.Console.WriteLine(@"
+            Sort options:
+            n - sort by name
+            l - sort by last name
+            s - sort by specialty
+            ");
+        
+        string sortOption = ReadSanitizedLine().Trim();
+        if (sortOption == "n")
+        {
+            filteredDoctors.Sort((doctor1, doctor2)=> String.Compare(doctor1.FirstName, doctor2.FirstName));
+        }
+        else if (sortOption == "l")
+        {
+            filteredDoctors.Sort((doctor1, doctor2)=> String.Compare(doctor1.LastName, doctor2.LastName));
+        }
+        else if (sortOption == "s")
+        {
+            filteredDoctors.Sort((doctor1, doctor2)=> String.Compare(doctor1.Specialty.ToString(), doctor2.Specialty.ToString()));
+        }
+
+        foreach (Doctor doctor in filteredDoctors)
+        {
+           Console.WriteLine(doctor.ToString());
         }
     }
 

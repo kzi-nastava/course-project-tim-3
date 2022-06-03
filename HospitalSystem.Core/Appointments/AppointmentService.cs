@@ -369,10 +369,10 @@ public class AppointmentService
         return GetFirstFewFreeCheckups(doctor,3,user);
     }
 
-    public List<Checkup> FindCheckupsPriorityInterval(Doctor doctor, DateTime intervalStart, DateTime intervalEnd, DateTime deadline)
-    {
-        List<Checkup> checkups = new List<Checkup>();
-        return checkups;
-    }
+    // public List<Checkup> FindCheckupsPriorityInterval(Doctor doctor, DateTime intervalStart, DateTime intervalEnd, DateTime deadline)
+    // {
+    //     List<Checkup> checkups = new List<Checkup>();
+    //     return checkups;
+    // }
     
 }
