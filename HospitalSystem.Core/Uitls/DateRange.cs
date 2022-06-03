@@ -12,6 +12,7 @@ public class DateRange
     [BsonElement]
     public DateTime Ends { get; }
 
+    [BsonConstructor]
     public DateRange(DateTime starts, DateTime ends, bool allowPast = false)
     {
         if (ends < starts)
