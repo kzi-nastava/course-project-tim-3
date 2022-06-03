@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace HospitalSystem.Core
 {
-    public class PatientRepository
+    public class PatientRepository : IPatientRepository
     {
         private MongoClient _dbClient;
 

@@ -63,7 +63,7 @@ public class DoctorUI : UserUI
         }
         Doctor doctor = _hospital.DoctorRepo.GetById((ObjectId)_user.Person.Id);
         Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
-        if (_hospital.AppointmentRepo.IsDoctorAvailable(checkup.DateRange, doctor))
+        if (_hospital.AppointmentService.IsDoctorAvailable(checkup.DateRange, doctor))
         {
             _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
             Console.WriteLine("\nCheckup successfully added");
@@ -80,16 +80,16 @@ public class DoctorUI : UserUI
     {
         Console.Write("\nEnter date (dd.mm.yyyy) >> ");
         var date = Console.ReadLine();
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByDay(Convert.ToDateTime(date));
+        List<Checkup> checkups = _hospital.AppointmentService.GetCheckupsByDay(Convert.ToDateTime(date));
         PrintCheckups(checkups);
     }
 
     public void ShowNextThreeDays()
     {
         Console.WriteLine("\nThese are your checkups for the next 3 days:\n");
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByDay(DateTime.Now);
-        checkups.AddRange(_hospital.AppointmentRepo.GetCheckupsByDay(DateTime.Today.AddDays(1)));
-        checkups.AddRange(_hospital.AppointmentRepo.GetCheckupsByDay(DateTime.Today.AddDays(2)));
+        List<Checkup> checkups = _hospital.AppointmentService.GetCheckupsByDay(DateTime.Now);
+        checkups.AddRange(_hospital.AppointmentService.GetCheckupsByDay(DateTime.Today.AddDays(1)));
+        checkups.AddRange(_hospital.AppointmentService.GetCheckupsByDay(DateTime.Today.AddDays(2)));
         PrintCheckups(checkups);
 
         TimetableMenu(checkups);

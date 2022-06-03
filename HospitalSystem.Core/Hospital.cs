@@ -18,6 +18,8 @@ public class Hospital
     public RenovationService RenovationService { get; }
     public MedicationRepository MedicationRepo { get; }
     public MedicationRequestService MedicationRequestService { get; }
+    public AppointmentService AppointmentService { get; }
+     public PatientService PatientService { get; }
 
     public Hospital()
     {
@@ -27,14 +29,19 @@ public class Hospital
         DirectorRepo = new (_dbClient);
         SecretaryRepo = new (_dbClient);
         RoomService = new (new RoomRepository(_dbClient));
-        AppointmentRepo = new (_dbClient, RoomService);
+        AppointmentRepo = new (_dbClient);
+        // TODO : Might be a wrong way to create a service
+        PatientService = new (PatientRepo);
+        // TODO : Might be a wrong way to create a service
+        AppointmentService = new (AppointmentRepo, RoomService, DoctorRepo);
         EquipmentService = new (new EquipmentBatchRepository(_dbClient));
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
         CheckupChangeRequestRepo = new (_dbClient);
         RenovationService = new (new RenovationRepository(_dbClient), RoomService,
-            RelocationService, AppointmentRepo);
+            RelocationService, AppointmentService);
         MedicationRepo = new (_dbClient);
         MedicationRequestService = new (new MedicationRequestRepository(_dbClient), MedicationRepo);
+        
         // TODO: this maybe shouldn't be here
         RelocationService.ScheduleAll();
         RenovationService.ScheduleAll();
