@@ -103,11 +103,15 @@ public static class TestGenerator
                 {   
                     // doing this to allow writing to the past
                     var range = new DateRange(dateTime, dateTime.Add(Checkup.DefaultDuration), allowPast: true);
+                    Random rand = new Random();
+                    var doctorSurvey = new DoctorSurvey("service opinion lorem ipsum",rand.Next(1, 5),"comment lorem ipsum");
                     Checkup check = new Checkup(range, new MongoDBRef("patients",patient.Id),
-                        new MongoDBRef("doctors", doctor.Id), "anamneza");
+                        new MongoDBRef("doctors", doctor.Id), "anamneza", doctorSurvey);
                     hospital.AppointmentRepo.AddOrUpdateCheckup(check);
                 } else if (i % 2 == 1) 
                 {
+                    Random rand = new Random();
+                    var doctorSurvey = new DoctorSurvey("service opinion lorem ipsum",rand.Next(1, 5),"comment lorem ipsum");
                     var range = new DateRange(dateTime, dateTime.Add(new TimeSpan(1, 15, 0)), allowPast: true);
                     Operation op = new Operation(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "report");
