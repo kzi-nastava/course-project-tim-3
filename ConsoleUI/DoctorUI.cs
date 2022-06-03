@@ -498,13 +498,15 @@ public class DoctorUI : ConsoleUI
             if (medication == null)
             {
                 Console.WriteLine("No such medication found in database");
-                break;
             }
+             else
+            {
             if (patient.IsAllergicToMedication(medication)) 
             {
                 Console.WriteLine("Patient is allergic to given Medication. Cancelling prescription.");
                 break;
             }
+           
 
             Console.Write("\nEnter amount of times the medication should be taken a day >> ");
             int amount = Int32.Parse(Console.ReadLine());
@@ -514,7 +516,7 @@ public class DoctorUI : ConsoleUI
             string? bestTaken = Console.ReadLine();
 
             WritePrescription(medication, amount, bestTaken, hours, patient);
-            
+            }
             string? choice = "n";
             while (choice != "y")
             {

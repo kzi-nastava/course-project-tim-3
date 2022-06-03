@@ -25,7 +25,7 @@ namespace HospitalSystem
         public Medication GetByName(string name)
         {
             var medications = GetAll();
-            return medications.Find(medication => medication.Name == name).FirstOrDefault();
+            return medications.Find(medication => medication.Name == name || medication.Name.Contains(name)).FirstOrDefault();
         }
     }
 }
