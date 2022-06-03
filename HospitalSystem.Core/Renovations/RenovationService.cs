@@ -43,22 +43,32 @@ public class RenovationService
             _roomService.UpsertInactive(room);
         }
         _repo.Insert(renovation);
-        JustSchedule(renovation);
+        RegisterStartCallback(renovation);
+        RegisterFinishCallback(renovation);
     }
 
-    private void JustSchedule(Renovation renovation)
+    private void RegisterStartCallback(Renovation renovation)
     {
         CallbackScheduler.Register(renovation.BusyRange.Starts, () =>
         {
-            foreach (var loc in renovation.OldLocations)
-            {
-                _roomService.Deactivate(loc);
-            }
+            StartRenovation(renovation);
         });
+    }
+
+    private void RegisterFinishCallback(Renovation renovation)
+    {
         CallbackScheduler.Register(renovation.BusyRange.Ends, () => 
         {
             FinishRenovation(renovation);
         });
+    }
+
+    private void StartRenovation(Renovation renovation)
+    {
+        foreach (var loc in renovation.OldLocations)
+        {
+            _roomService.Deactivate(loc);
+        }
     }
 
     private void FinishRenovation(Renovation renovation)
@@ -82,7 +92,8 @@ public class RenovationService
         {
             if (!renovation.IsDone)
             {
-                JustSchedule(renovation);
+                RegisterStartCallback(renovation);
+                RegisterFinishCallback(renovation);
             }
         }
     }
