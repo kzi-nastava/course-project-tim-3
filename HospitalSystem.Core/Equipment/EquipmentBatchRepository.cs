@@ -47,4 +47,23 @@ public class EquipmentBatchRepository : IEquipmentBatchRepository
     {
         GetMongoCollection().DeleteMany(filter);
     }
+
+    public IQueryable<EquipmentBatch> Search(EquipmentQuery query)
+    {
+        return
+            from batch in GetAll()
+            where (query.MinCount == null || query.MinCount <= batch.Count)
+                && (query.MaxCount == null || query.MaxCount >= batch.Count)
+                && (query.Type == null || query.Type == batch.Type)
+                && (query.NameContains == null || query.NameContains.IsMatch(batch.Name))
+            select batch;
+    }
+
+    public IQueryable<EquipmentBatch> GetAllIn(string roomLocation)
+    {
+        return
+            from batch in GetAll()
+            where batch.RoomLocation == roomLocation
+            select batch;
+    }
 }
