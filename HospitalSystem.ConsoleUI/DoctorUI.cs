@@ -48,7 +48,7 @@ public class DoctorUI : UserUI
         }
     }
 
-    public bool CreateCheckup()
+    public void CreateCheckup()
     {
         Console.WriteLine("Creating new Checkup appointment...");
         Console.Write("\nEnter date >>");
@@ -60,24 +60,13 @@ public class DoctorUI : UserUI
         string? name = Console.ReadLine();
         Console.Write("\nEnter patient surname >>");
         string? surname = Console.ReadLine();
-        Patient patient = _hospital.PatientRepo.GetPatientByFullName(name,surname);
-        if (patient == null)
+        if (_hospital.AppointmentService.UpsertCheckup(_user, dateTime, name, surname) == true)
         {
-            Console.WriteLine("No such patient existst.");
-            return false;
-        }
-        Doctor doctor = _hospital.DoctorService.GetById((ObjectId)_user.Person.Id);
-        Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
-        if (_hospital.AppointmentService.IsDoctorAvailable(checkup.DateRange, doctor))
-        {
-            _hospital.AppointmentService.AddOrUpdateCheckup(checkup);
             Console.WriteLine("\nCheckup successfully added");
-            return true;
         }
         else
         {
             Console.WriteLine("Doctor is not available at that time");
-            return false;
         }
     }
 
@@ -237,7 +226,7 @@ public class DoctorUI : UserUI
                     _hospital.PatientRepo.AddOrUpdatePatient(patient);
 
                     checkup.Anamnesis = anamnesis;
-                    _hospital.AppointmentService.AddOrUpdateCheckup(checkup);
+                    _hospital.AppointmentService.UpsertCheckup(checkup);
 
                     Console.Write("\nDo you want to add a prescription? [y/n] >> ");
                     string choice = ReadSanitizedLine();
@@ -369,7 +358,7 @@ public class DoctorUI : UserUI
         if (newDateTime == true)
         {
             checkup.DateRange = new DateRange(newStartDate, newStartDate.Add(Checkup.DefaultDuration), allowPast: false);
-            _hospital.AppointmentService.AddOrUpdateCheckup(checkup);
+            _hospital.AppointmentService.UpsertCheckup(checkup);
             Console.WriteLine("\nEdit successfull");
         }
         else
@@ -388,7 +377,7 @@ public class DoctorUI : UserUI
         if (newPatient != null)
         {
            checkup.Patient = new MongoDB.Driver.MongoDBRef("patients", newPatient.Id);
-            _hospital.AppointmentService.AddOrUpdateCheckup(checkup);                
+            _hospital.AppointmentService.UpsertCheckup(checkup);                
             Console.WriteLine("Edit successfull"); 
         }
         else
@@ -418,18 +407,14 @@ public class DoctorUI : UserUI
 
     public void ReferralBySpecialtyMenu(Patient patient)
     {
-        Doctor doctor = null;
         Console.Write("\nChoose specialty:\n1. Dermatology\n2. Radiology\n3. Stomatology\n4. Ophthalmology\n5. Family medicine>> ");
         var input = Int32.TryParse(Console.ReadLine(), out int specialty);
         if (input)
         {
-            doctor = _hospital.DoctorService.GetOneBySpecialty((Specialty)specialty);
+            Doctor doctor = _hospital.DoctorService.GetOneBySpecialty((Specialty)specialty);
             if (doctor != null)
             {
-                Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                patient.MedicalRecord.Referrals.Add(referral);
-                _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                Console.WriteLine("\nReferral succesfully added");
+                _hospital.PatientService.AddReferral(patient, doctor);
             }
             else
             {
@@ -454,9 +439,7 @@ public class DoctorUI : UserUI
             Doctor doctor = _hospital.DoctorService.GetByFullName(firstName, lastName);
             if (doctor != null)
             {
-                Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                patient.MedicalRecord.Referrals.Add(referral);
-                _hospital.PatientRepo.AddOrUpdatePatient(patient);
+                _hospital.PatientService.AddReferral(patient,doctor);
                 Console.WriteLine("\nReferral succesfully added");
             }
             else
@@ -500,7 +483,7 @@ public class DoctorUI : UserUI
                 else
                     Console.Write("\nPlease enter a valid option.");
             }
-            
+
             string? choice = "n";
             while (choice != "y")
             {
@@ -535,7 +518,6 @@ public class DoctorUI : UserUI
                 Console.WriteLine("Wrong input. Please choose a valid option.");
                 break;
         }
-
     }
 
     public void PrintMedicationRequests(List<MedicationRequest> requested)

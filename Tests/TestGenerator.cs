@@ -109,7 +109,7 @@ public static class TestGenerator
                     var range = new DateRange(dateTime, dateTime.Add(Checkup.DefaultDuration), allowPast: true);
                     Checkup check = new Checkup(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "anamneza");
-                    hospital.AppointmentService.AddOrUpdateCheckup(check);
+                    hospital.AppointmentService.UpsertCheckup(check);
                 } else if (i % 2 == 1) 
                 {
                     var range = new DateRange(dateTime, dateTime.Add(new TimeSpan(1, 15, 0)), allowPast: true);
@@ -145,7 +145,7 @@ public static class TestGenerator
                 doctorSpecialtynumber++; 
                 var doctor = new Doctor("name" + i,"surname" + i, doctorsSpecialty);
                 user = new User("a" + i, "a" + i, doctor, Role.DOCTOR);
-                hospital.DoctorService.AddOrUpdateDoctor(doctor);
+                hospital.DoctorService.Upsert(doctor);
             }
             else if (i % 4 == 2) 
             {

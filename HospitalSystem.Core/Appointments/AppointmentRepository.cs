@@ -34,7 +34,7 @@ public class AppointmentRepository : IAppointmentRepository
         return _dbClient.GetDatabase("hospital").GetCollection<Operation>("operations");
     }
 
-    public void AddOrUpdateCheckup(Checkup newCheckup)
+    public void UpsertCheckup(Checkup newCheckup)
     {
         var checkups = GetCheckups();
         checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});

@@ -9,6 +9,7 @@ public class AppointmentService
     private IAppointmentRepository _appointmentRepo;
     private RoomService _roomService;
     private DoctorService _doctorService;
+    private PatientService _patientService;
 
     public AppointmentService(AppointmentRepository appointmentRepo, RoomService roomService, DoctorService doctorService)
     {
@@ -17,10 +18,30 @@ public class AppointmentService
         _doctorService = doctorService;
     }
 
-    public void AddOrUpdateCheckup(Checkup newCheckup)
+    public void UpsertCheckup(Checkup newCheckup)
     {
         newCheckup.RoomLocation = GetAvailableRoom(newCheckup, RoomType.CHECKUP).Location;
-        _appointmentRepo.AddOrUpdateCheckup(newCheckup);
+        _appointmentRepo.UpsertCheckup(newCheckup);
+    }
+
+    public bool UpsertCheckup(User _user, DateTime dateTime, string name, string surname)
+    {
+        Patient patient = _patientService.GetPatientByFullName(name,surname);
+        if (patient == null)
+        {
+            return false;
+        }
+        Doctor doctor = _doctorService.GetById((ObjectId)_user.Person.Id);
+        Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
+        if (IsDoctorAvailable(checkup.DateRange, doctor))
+        {
+            _appointmentRepo.UpsertCheckup(checkup);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void AddOrUpdateOperation(Operation newOperation)

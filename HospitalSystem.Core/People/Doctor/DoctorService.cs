@@ -35,7 +35,7 @@ public class DoctorService
         return foundDoctor;
     }
 
-    public void AddOrUpdateDoctor(Doctor doctor)
+    public void Upsert(Doctor doctor)
     {
         _doctorRepo.Upsert(doctor);
     }

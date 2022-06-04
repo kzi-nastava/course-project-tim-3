@@ -495,7 +495,7 @@ public class PatientUI : UserUI
         }
         else
         {
-            _hospital.AppointmentService.AddOrUpdateCheckup(selectedCheckup);
+            _hospital.AppointmentService.UpsertCheckup(selectedCheckup);
             Console.WriteLine("Checkup updated.");
         }
         
@@ -765,7 +765,7 @@ public class PatientUI : UserUI
             Console.Write("Create checkup? Enter y for yes: ");
             if (ReadSanitizedLine().Trim() == "y")
             {
-                _hospital.AppointmentService.AddOrUpdateCheckup(result);
+                _hospital.AppointmentService.UpsertCheckup(result);
                 Console.WriteLine("Checkup created.");
                 
                 _hospital.PatientService.LogChange(CRUDOperation.CREATE,_loggedInPatient);
@@ -801,7 +801,7 @@ public class PatientUI : UserUI
                 System.Console.Write(e.Message + " Aborting...");
                 return;
             }
-            _hospital.AppointmentService.AddOrUpdateCheckup(recommendedCheckups[selectedIndex]);
+            _hospital.AppointmentService.UpsertCheckup(recommendedCheckups[selectedIndex]);
             Console.WriteLine("Checkup created.");
                 
             _hospital.PatientService.LogChange(CRUDOperation.CREATE,_loggedInPatient);
@@ -867,7 +867,7 @@ public class PatientUI : UserUI
         }
         Console.WriteLine("Checkup is free to schedule");
         
-        _hospital.AppointmentService.AddOrUpdateCheckup(newCheckup);
+        _hospital.AppointmentService.UpsertCheckup(newCheckup);
         Console.WriteLine("Checkup created");
         
         _hospital.PatientService.LogChange(CRUDOperation.CREATE,_loggedInPatient);

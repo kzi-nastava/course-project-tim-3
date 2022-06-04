@@ -1,3 +1,5 @@
+using MongoDB.Driver;
+
 namespace HospitalSystem.Core;
 
 public class PatientService
@@ -59,5 +61,12 @@ public class PatientService
         patient.MedicalRecord.Prescriptions.Add(prescription);
         _repo.AddOrUpdatePatient(patient);
     }
-    
+
+    public void AddReferral(Patient patient, Doctor doctor)
+    {
+        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
+        patient.MedicalRecord.Referrals.Add(referral);
+        _repo.AddOrUpdatePatient(patient);
+        Console.WriteLine("\nReferral succesfully added");
+    }
 }
