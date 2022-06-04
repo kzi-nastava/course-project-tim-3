@@ -52,5 +52,12 @@ public class PatientService
         patient.CheckupChangeLogs.Add(log);
         _repo.AddOrUpdatePatient(patient);
     }
+
+    public void AddPrescription(Medication medication, int amount, MedicationBestTaken bestTaken, int hours, Patient patient)
+    {
+        Prescription prescription = new Prescription(medication, amount, bestTaken, hours);
+        patient.MedicalRecord.Prescriptions.Add(prescription);
+        _repo.AddOrUpdatePatient(patient);
+    }
     
 }

@@ -420,51 +420,27 @@ public class DoctorUI : UserUI
     {
         Doctor doctor = null;
         Console.Write("\nChoose specialty:\n1. Dermatology\n2. Radiology\n3. Stomatology\n4. Ophthalmology\n5. Family medicine>> ");
-        string? specialty = Console.ReadLine();
-        switch (specialty)
+        var input = Int32.TryParse(Console.ReadLine(), out int specialty);
+        if (input)
         {
-            case "1":
+            doctor = _hospital.DoctorService.GetOneBySpecialty((Specialty)specialty);
+            if (doctor != null)
             {
-                doctor = _hospital.DoctorService.GetOneBySpecialty(Specialty.DERMATOLOGY);
-                break;
+                Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
+                patient.MedicalRecord.Referrals.Add(referral);
+                _hospital.PatientRepo.AddOrUpdatePatient(patient);
+                Console.WriteLine("\nReferral succesfully added");
             }
-            case "2":
+            else
             {
-                doctor = _hospital.DoctorService.GetOneBySpecialty(Specialty.RADIOLOGY);
-                break;
+                Console.WriteLine("No adequate doctor found.");
             }
-            case "3":
-            {
-                doctor = _hospital.DoctorService.GetOneBySpecialty(Specialty.STOMATOLOGY);
-                break;
-            }
-            case "4":
-            {
-                doctor = _hospital.DoctorService.GetOneBySpecialty(Specialty.OPHTHALMOLOGY);
-                break;
-            }
-            case "5":
-            {
-                doctor = _hospital.DoctorService.GetOneBySpecialty(Specialty.FAMILY_MEDICINE);
-                break;
-            }
-            default:
-            {
-                Console.WriteLine("Wrong input");
-                break;
-            }
-        }
-        if (doctor != null)
-        {
-            Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-            patient.MedicalRecord.Referrals.Add(referral);
-            _hospital.PatientRepo.AddOrUpdatePatient(patient);
-            Console.WriteLine("\nReferral succesfully added");
         }
         else
         {
-            Console.WriteLine("No adequate doctor found.");
+            Console.Write("\nPlease input valid option.");
         }
+        
     }
 
     public void ReferralByDoctor(Patient patient)
@@ -496,7 +472,6 @@ public class DoctorUI : UserUI
 
     public void PrescriptionMenu(Patient patient)
     {
-        bool quit = false;
         while (true)
         {
             Console.Write("\nEnter medication name >> ");
@@ -507,24 +482,25 @@ public class DoctorUI : UserUI
             {
                 Console.WriteLine("No such medication found in database");
             }
-             else
-            {
-            if (patient.IsAllergicToMedication(medication)) 
+            else if (patient.IsAllergicToMedication(medication)) 
             {
                 Console.WriteLine("Patient is allergic to given Medication. Cancelling prescription.");
                 break;
             }
-           
-
-            Console.Write("\nEnter amount of times the medication should be taken a day >> ");
-            int amount = Int32.Parse(ReadSanitizedLine());
-            Console.Write("\nEnter amount of hours inbetween medication intake >> ");
-            int hours = Int32.Parse(ReadSanitizedLine());
-            Console.Write("\nWhen to take in medication:\n1. Before Meal\n2. After Meal\n3. With Meal\n4. Anytime\n>> ");
-            string bestTaken = ReadSanitizedLine();
-
-            WritePrescription(medication, amount, bestTaken, hours, patient);
+            else
+            {
+                Console.Write("\nEnter amount of times the medication should be taken a day >> ");
+                int amount = Int32.Parse(ReadSanitizedLine());
+                Console.Write("\nEnter amount of hours inbetween medication intake >> ");
+                int hours = Int32.Parse(ReadSanitizedLine());
+                Console.Write("\nWhen to take in medication:\n1. Before Meal\n2. After Meal\n3. With Meal\n4. Anytime\n>> ");
+                var input = Int32.TryParse(ReadSanitizedLine(), out int bestTaken);
+                if (input)
+                    _hospital.PatientService.AddPrescription(medication, amount, (MedicationBestTaken)bestTaken, hours, patient);
+                else
+                    Console.Write("\nPlease enter a valid option.");
             }
+            
             string? choice = "n";
             while (choice != "y")
             {
@@ -537,40 +513,6 @@ public class DoctorUI : UserUI
             }
             if (choice == "n") break;
         }
-    }
-
-    public void WritePrescription(Medication medication, int amount, string bestTaken, int hours, Patient patient)
-    {
-        switch (bestTaken)
-        {
-            case "1":
-            {
-                AddPrescription(medication, amount, MedicationBestTaken.BEFORE_MEAL, hours, patient);
-                break;
-            }
-            case "2":
-            {
-                AddPrescription(medication, amount, MedicationBestTaken.AFTER_MEAL, hours, patient);
-                break;
-            }
-            case "3":
-            {
-                AddPrescription(medication, amount, MedicationBestTaken.WITH_MEAL, hours, patient);
-                break;
-            }
-            case "4":
-            {
-                AddPrescription(medication, amount, MedicationBestTaken.ANY_TIME, hours, patient);
-                break;
-            }
-        }         
-    }
-
-    public void AddPrescription(Medication medication, int amount, MedicationBestTaken bestTaken, int hours, Patient patient)
-    {
-        Prescription prescription = new Prescription(medication, amount, bestTaken, hours);
-        patient.MedicalRecord.Prescriptions.Add(prescription);
-        _hospital.PatientRepo.AddOrUpdatePatient(patient);
     }
 
     public void MedicationRequestsMenu()
