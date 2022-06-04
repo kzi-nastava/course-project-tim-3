@@ -32,7 +32,7 @@ public static class TestGenerator
     {
         for (int i = 0; i < 20; i++)
         {
-            Doctor doctor = hospital.DoctorRepo.GetByFullName("name1","surname1");
+            Doctor doctor = hospital.DoctorService.GetByFullName("name1","surname1");
             List<Checkup> checkups = hospital.AppointmentService.GetCheckupsByDoctor(doctor.Id);
 
             if (i % 2 == 0)
@@ -99,7 +99,7 @@ public static class TestGenerator
         {
             for (; i < 100; i++)
             {
-                Doctor doctor = hospital.DoctorRepo.GetByFullName("name1","surname1");
+                Doctor doctor = hospital.DoctorService.GetByFullName("name1","surname1");
                 Patient patient = hospital.PatientRepo.GetPatientByFullName("name2","surname2");
                 dateTime = dateTime.AddHours(1);
 
@@ -145,7 +145,7 @@ public static class TestGenerator
                 doctorSpecialtynumber++; 
                 var doctor = new Doctor("name" + i,"surname" + i, doctorsSpecialty);
                 user = new User("a" + i, "a" + i, doctor, Role.DOCTOR);
-                hospital.DoctorRepo.AddOrUpdateDoctor(doctor);
+                hospital.DoctorService.AddOrUpdateDoctor(doctor);
             }
             else if (i % 4 == 2) 
             {

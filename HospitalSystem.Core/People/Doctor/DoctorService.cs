@@ -1,34 +1,56 @@
-// namespace HospitalSystem.Core;
+using MongoDB.Driver;
+using MongoDB.Bson;
 
-// public class DoctorService 
-// {
-//     private DoctorRepository _doctorRepo;
+namespace HospitalSystem.Core;
+
+public class DoctorService 
+{
+    private DoctorRepository _doctorRepo;
      
-//     public DoctorService(DoctorRepository doctorRepo)
-//     {
-//         _doctorRepo = doctorRepo;
-//     }
-//     public void CreateCheckup(DateTime dateTime, string name, string surname)
-//     {
-//         Patient patient = _hospital.PatientRepo.GetPatientByFullName(name,surname);
-//     if (patient == null)
-//     {
-//         Console.WriteLine("No such patient existst.");
-//         return false;
-//     }
-//     Doctor doctor = _hospital.DoctorRepo.GetById((ObjectId)_user.Person.Id);
-//     Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
-//     if (_hospital.AppointmentRepo.IsDoctorAvailable(checkup.DateRange, doctor))
-//     {
-//         _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
-//         Console.WriteLine("\nCheckup successfully added");
-//         return true;
-//     }
-//     else
-//     {
-//         Console.WriteLine("Doctor is not available at that time");
-//         return false;
-//     }
-//     }
-    
-// }
+    public DoctorService(DoctorRepository doctorRepo)
+    {
+        _doctorRepo = doctorRepo;
+    }
+
+    public IMongoCollection<Doctor> GetAll()
+    {
+        return _doctorRepo.GetAll();
+    }
+
+    public List<Doctor> GetManyBySpecialty(Specialty specialty)
+    {
+        var doctors = _doctorRepo.GetAll();
+            var specizedDoctors =
+                from doctor in doctors.AsQueryable<Doctor>()
+                where doctor.Specialty == specialty
+                select doctor;
+
+            return specizedDoctors.ToList();
+    }
+
+    public Doctor GetOneBySpecialty(Specialty specialty)
+    {
+        var doctors = _doctorRepo.GetAll();
+        var foundDoctor = doctors.Find(doctor => doctor.Specialty == specialty).FirstOrDefault();
+        return foundDoctor;
+    }
+
+    public void AddOrUpdateDoctor(Doctor doctor)
+    {
+        _doctorRepo.Upsert(doctor);
+    }
+
+    public Doctor GetByFullName(string firstName, string lastName)
+    {
+        var doctors = _doctorRepo.GetAll();
+        var foundDoctor = doctors.Find(doctor => doctor.FirstName == firstName && doctor.LastName == lastName).FirstOrDefault();
+        return foundDoctor;
+    }
+
+    public Doctor GetById(ObjectId id)
+    {
+        var doctors = _doctorRepo.GetAll();
+        var foundDoctor = doctors.Find(doctor => doctor.Id == id).FirstOrDefault();
+        return foundDoctor;
+    }
+}

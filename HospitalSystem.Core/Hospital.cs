@@ -15,6 +15,7 @@ public class Hospital
     public EquipmentBatchService EquipmentService { get; }
     public EquipmentRelocationService RelocationService { get; }
     public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
+    public DoctorService DoctorService { get; }
     public RenovationService RenovationService { get; }
     public MedicationRepository MedicationRepo { get; }
     public MedicationRequestService MedicationRequestService { get; }
@@ -33,7 +34,8 @@ public class Hospital
         // TODO : Might be a wrong way to create a service
         PatientService = new (PatientRepo);
         // TODO : Might be a wrong way to create a service
-        AppointmentService = new (AppointmentRepo, RoomService, DoctorRepo);
+        DoctorService = new (DoctorRepo);
+        AppointmentService = new (AppointmentRepo, RoomService, DoctorService);
         EquipmentService = new (new EquipmentBatchRepository(_dbClient));
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
         CheckupChangeRequestRepo = new (_dbClient);

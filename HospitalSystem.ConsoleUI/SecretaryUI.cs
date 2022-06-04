@@ -420,7 +420,7 @@ public class SecretaryUI : UserUI
         int buffer = 1;
         foreach(var m in matchingRequests){
             Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) m.Checkup.Patient.Id);
-            Doctor doc = _hospital.DoctorRepo.GetById((ObjectId) m.Checkup.Doctor.Id);
+            Doctor doc = _hospital.DoctorService.GetById((ObjectId) m.Checkup.Doctor.Id);
             System.Console.WriteLine("Index ID: " + buffer);
             System.Console.WriteLine("ID: " + m.Id.ToString());
             System.Console.WriteLine("Patient: " +  pat.FirstName + " " + pat.LastName);

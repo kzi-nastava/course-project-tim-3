@@ -8,13 +8,13 @@ public class AppointmentService
 {
     private IAppointmentRepository _appointmentRepo;
     private RoomService _roomService;
-    private DoctorRepository _doctorRepo;
+    private DoctorService _doctorService;
 
-    public AppointmentService(AppointmentRepository appointmentRepo, RoomService roomService, DoctorRepository doctorRepo)
+    public AppointmentService(AppointmentRepository appointmentRepo, RoomService roomService, DoctorService doctorService)
     {
         _appointmentRepo = appointmentRepo;
         _roomService = roomService;
-        _doctorRepo = doctorRepo;
+        _doctorService = doctorService;
     }
 
     public void AddOrUpdateCheckup(Checkup newCheckup)
@@ -210,15 +210,15 @@ public class AppointmentService
 
     public int CompareCheckupsByDoctorsName(Checkup checkup1, Checkup checkup2)
     {
-        string name1 = _doctorRepo.GetById((ObjectId)checkup1.Doctor.Id).FirstName;
-        string name2 = _doctorRepo.GetById((ObjectId)checkup2.Doctor.Id).FirstName;
+        string name1 = _doctorService.GetById((ObjectId)checkup1.Doctor.Id).FirstName;
+        string name2 = _doctorService.GetById((ObjectId)checkup2.Doctor.Id).FirstName;
         return String.Compare(name1, name2);
     }
 
     public int CompareCheckupsByDoctorsSpecialty(Checkup checkup1, Checkup checkup2)
     {
-        string specialty1 = _doctorRepo.GetById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
-        string specialty2 = _doctorRepo.GetById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
+        string specialty1 = _doctorService.GetById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
+        string specialty2 = _doctorService.GetById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
         return String.Compare(specialty1, specialty2);
     }
 
@@ -248,7 +248,7 @@ public class AppointmentService
                 continue;
             }
 
-            foreach (Doctor doctor in _doctorRepo.GetManyBySpecialty(speciality))
+            foreach (Doctor doctor in _doctorService.GetManyBySpecialty(speciality))
             {
                 Checkup newCheckup = new Checkup(
                     iterationDate,

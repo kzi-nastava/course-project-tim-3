@@ -66,11 +66,11 @@ public class DoctorUI : UserUI
             Console.WriteLine("No such patient existst.");
             return false;
         }
-        Doctor doctor = _hospital.DoctorRepo.GetById((ObjectId)_user.Person.Id);
+        Doctor doctor = _hospital.DoctorService.GetById((ObjectId)_user.Person.Id);
         Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
         if (_hospital.AppointmentService.IsDoctorAvailable(checkup.DateRange, doctor))
         {
-            _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+            _hospital.AppointmentService.AddOrUpdateCheckup(checkup);
             Console.WriteLine("\nCheckup successfully added");
             return true;
         }
@@ -187,7 +187,7 @@ public class DoctorUI : UserUI
         var isNumber = int.TryParse(Console.ReadLine(), out int checkupNumber);
         if (isNumber == true && checkupNumber >= 0 && checkupNumber <= checkups.Count())
         {
-            _hospital.AppointmentRepo.DeleteCheckup(checkups[checkupNumber-1]);
+            _hospital.AppointmentService.DeleteCheckup(checkups[checkupNumber-1]);
             Console.WriteLine("Deletion successfull"); 
         }
         else
@@ -202,7 +202,7 @@ public class DoctorUI : UserUI
         int i = 1;
         foreach (Checkup checkup in checkups)
         {
-            Patient patient = _hospital.PatientRepo.GetPatientById((ObjectId)checkup.Patient.Id);
+            Patient patient = _hospital.PatientRepo .GetPatientById((ObjectId)checkup.Patient.Id);
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 60)));
             Console.WriteLine(String.Format("{0,5} {1,24} {2,25}", i, checkup.DateRange, patient));
             i++;
@@ -231,13 +231,13 @@ public class DoctorUI : UserUI
                 case "1":
                 {
                     Console.Write("\nEnter Anamnesis >> ");
-                    String anamnesis = Console.ReadLine();
+                    String? anamnesis = Console.ReadLine();
 
                     patient.MedicalRecord.AnamnesisHistory.Add(anamnesis);
                     _hospital.PatientRepo.AddOrUpdatePatient(patient);
 
                     checkup.Anamnesis = anamnesis;
-                    _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+                    _hospital.AppointmentService.AddOrUpdateCheckup(checkup);
 
                     Console.Write("\nDo you want to add a prescription? [y/n] >> ");
                     string choice = ReadSanitizedLine();
@@ -293,7 +293,7 @@ public class DoctorUI : UserUI
             case "3":
             {
                 Console.Write("\nEnter new allergy >>");
-                string allergy = Console.ReadLine();
+                string? allergy = Console.ReadLine();
                 patient.MedicalRecord.Allergies.Add(allergy);
                 _hospital.PatientRepo.AddOrUpdatePatient(patient);
                 Console.WriteLine("Edit successfull");
@@ -369,7 +369,7 @@ public class DoctorUI : UserUI
         if (newDateTime == true)
         {
             checkup.DateRange = new DateRange(newStartDate, newStartDate.Add(Checkup.DefaultDuration), allowPast: false);
-            _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+            _hospital.AppointmentService.AddOrUpdateCheckup(checkup);
             Console.WriteLine("\nEdit successfull");
         }
         else
@@ -388,7 +388,7 @@ public class DoctorUI : UserUI
         if (newPatient != null)
         {
            checkup.Patient = new MongoDB.Driver.MongoDBRef("patients", newPatient.Id);
-            _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);                
+            _hospital.AppointmentService.AddOrUpdateCheckup(checkup);                
             Console.WriteLine("Edit successfull"); 
         }
         else
@@ -425,27 +425,27 @@ public class DoctorUI : UserUI
         {
             case "1":
             {
-                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.DERMATOLOGY);
+                doctor = _hospital.DoctorService.GetOneBySpecialty(Specialty.DERMATOLOGY);
                 break;
             }
             case "2":
             {
-                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.RADIOLOGY);
+                doctor = _hospital.DoctorService.GetOneBySpecialty(Specialty.RADIOLOGY);
                 break;
             }
             case "3":
             {
-                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.STOMATOLOGY);
+                doctor = _hospital.DoctorService.GetOneBySpecialty(Specialty.STOMATOLOGY);
                 break;
             }
             case "4":
             {
-                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.OPHTHALMOLOGY);
+                doctor = _hospital.DoctorService.GetOneBySpecialty(Specialty.OPHTHALMOLOGY);
                 break;
             }
             case "5":
             {
-                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.FAMILY_MEDICINE);
+                doctor = _hospital.DoctorService.GetOneBySpecialty(Specialty.FAMILY_MEDICINE);
                 break;
             }
             default:
@@ -475,7 +475,7 @@ public class DoctorUI : UserUI
         string? lastName = Console.ReadLine();
         if (firstName != null && lastName != null)
         {
-            Doctor doctor = _hospital.DoctorRepo.GetByFullName(firstName, lastName);
+            Doctor doctor = _hospital.DoctorService.GetByFullName(firstName, lastName);
             if (doctor != null)
             {
                 Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
