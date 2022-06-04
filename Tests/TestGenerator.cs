@@ -100,7 +100,7 @@ public static class TestGenerator
             for (; i < 100; i++)
             {
                 Doctor doctor = hospital.DoctorService.GetByFullName("name1","surname1");
-                Patient patient = hospital.PatientRepo.GetPatientByFullName("name2","surname2");
+                Patient patient = hospital.PatientService.GetPatientByFullName("name2","surname2");
                 dateTime = dateTime.AddHours(1);
 
                 if (i % 2 == 0)
@@ -115,7 +115,7 @@ public static class TestGenerator
                     var range = new DateRange(dateTime, dateTime.Add(new TimeSpan(1, 15, 0)), allowPast: true);
                     Operation op = new Operation(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "report");
-                    hospital.AppointmentService.AddOrUpdateOperation(op);
+                    hospital.AppointmentService.UpsertOperation(op);
                 }
             }
         }
@@ -150,7 +150,7 @@ public static class TestGenerator
             else if (i % 4 == 2) 
             {
                 var patient = new Patient("name" + i, "surname" + i, new MedicalRecord());
-                hospital.PatientRepo.AddOrUpdatePatient(patient);
+                hospital.PatientService.AddOrUpdatePatient(patient);
                 user = new User("a" + i, "a" + i, patient, Role.PATIENT);
             }  
             else

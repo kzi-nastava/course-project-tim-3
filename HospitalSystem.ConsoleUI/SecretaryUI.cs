@@ -218,7 +218,7 @@ public class SecretaryUI : UserUI
         int i;
         for(i = startIndex; i < endIndex; i++ ){
             var user = usersList.ElementAt(i);
-            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) user.Person.Id);
+            Patient pat = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
             System.Console.WriteLine(String.Format("| {0,-21} | {1,-20} | {2, -40} |", pat.FirstName, pat.LastName, user.Email));
         }
 
@@ -282,7 +282,7 @@ public class SecretaryUI : UserUI
         else{
             Console.Clear();
             Patient patient = new Patient(email, lastName, new MedicalRecord());
-            _hospital.PatientRepo.AddOrUpdatePatient(patient);
+            _hospital.PatientService.AddOrUpdatePatient(patient);
             us.Upsert(new User(email, password,patient,Role.PATIENT));
         }
         printCommands(CRUDCommands);
@@ -298,7 +298,7 @@ public class SecretaryUI : UserUI
             throw new NullInputException("Null value as input");
         }
         var user = us.Get(email);
-        Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) user.Person.Id);
+        Patient pat = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
         System.Console.WriteLine("Email : " + user.Email.ToString());
         System.Console.WriteLine("Password : " + user.Password.ToString());
         System.Console.WriteLine("First Name : " + pat.FirstName);
@@ -394,7 +394,7 @@ public class SecretaryUI : UserUI
         var blockedUsers = ur.GetAllBlocked();
         System.Console.WriteLine("Blocked users(email): ");
         foreach(var b in blockedUsers){
-            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) b.Person.Id);
+            Patient pat = _hospital.PatientService.GetPatientById((ObjectId) b.Person.Id);
             System.Console.WriteLine(" << User: " + pat.FirstName.ToString() + " " + pat.LastName.ToString() + ", Email: " + b.Email.ToString() + " >> ");
         }
         System.Console.WriteLine();
@@ -419,7 +419,7 @@ public class SecretaryUI : UserUI
 
         int buffer = 1;
         foreach(var m in matchingRequests){
-            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) m.Checkup.Patient.Id);
+            Patient pat = _hospital.PatientService.GetPatientById((ObjectId) m.Checkup.Patient.Id);
             Doctor doc = _hospital.DoctorService.GetById((ObjectId) m.Checkup.Doctor.Id);
             System.Console.WriteLine("Index ID: " + buffer);
             System.Console.WriteLine("ID: " + m.Id.ToString());

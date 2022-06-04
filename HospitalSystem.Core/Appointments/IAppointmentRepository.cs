@@ -10,6 +10,6 @@ public interface IAppointmentRepository
     public IMongoCollection<Operation> GetOperations();
     public void UpsertCheckup(Checkup newCheckup);
 
-    public void AddOrUpdateOperation(Operation newOperation);
+    public void UpsertOperation(Operation newOperation);
     public void DeleteCheckup(Checkup checkup);
 }

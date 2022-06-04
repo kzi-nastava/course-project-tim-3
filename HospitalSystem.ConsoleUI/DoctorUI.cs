@@ -191,7 +191,7 @@ public class DoctorUI : UserUI
         int i = 1;
         foreach (Checkup checkup in checkups)
         {
-            Patient patient = _hospital.PatientRepo .GetPatientById((ObjectId)checkup.Patient.Id);
+            Patient patient = _hospital.PatientService.GetPatientById((ObjectId)checkup.Patient.Id);
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 60)));
             Console.WriteLine(String.Format("{0,5} {1,24} {2,25}", i, checkup.DateRange, patient));
             i++;
@@ -200,7 +200,7 @@ public class DoctorUI : UserUI
 
     public Patient ShowPatientInfo(Checkup checkup)
     {
-        Patient patient = _hospital.PatientRepo.GetPatientById((ObjectId)checkup.Patient.Id);
+        Patient patient = _hospital.PatientService.GetPatientById((ObjectId)checkup.Patient.Id);
         Console.Write("\n" + patient.ToString() + "\n");
         Console.Write(patient.MedicalRecord.ToString() + "\n");
         return patient;
@@ -223,7 +223,7 @@ public class DoctorUI : UserUI
                     String? anamnesis = Console.ReadLine();
 
                     patient.MedicalRecord.AnamnesisHistory.Add(anamnesis);
-                    _hospital.PatientRepo.AddOrUpdatePatient(patient);
+                    _hospital.PatientService.AddOrUpdatePatient(patient);
 
                     checkup.Anamnesis = anamnesis;
                     _hospital.AppointmentService.UpsertCheckup(checkup);
@@ -298,7 +298,7 @@ public class DoctorUI : UserUI
         if (input == true && weight > 10 && weight < 400)
         {
             patient.MedicalRecord.WeightInKg = weight;
-            _hospital.PatientRepo.AddOrUpdatePatient(patient);
+            _hospital.PatientService.AddOrUpdatePatient(patient);
             Console.WriteLine("Edit successfull");
         }
         else
@@ -314,7 +314,7 @@ public class DoctorUI : UserUI
         if (input == true && height > 30 && height < 250)
         {
             patient.MedicalRecord.HeightInCm = height;
-            _hospital.PatientRepo.AddOrUpdatePatient(patient);
+            _hospital.PatientService.AddOrUpdatePatient(patient);
             Console.WriteLine("Edit successfull");
         }
         else
@@ -328,7 +328,7 @@ public class DoctorUI : UserUI
         Console.Write("\nEnter new allergy >>");
         string? allergy = Console.ReadLine();
         patient.MedicalRecord.Allergies.Add(allergy);
-        _hospital.PatientRepo.AddOrUpdatePatient(patient);
+        _hospital.PatientService.AddOrUpdatePatient(patient);
         Console.WriteLine("Edit successfull");
     }
 
@@ -470,11 +470,6 @@ public class DoctorUI : UserUI
             {
                 Console.WriteLine("No such medication found in database");
             }
-            else if (patient.IsAllergicToMedication(medication)) 
-            {
-                Console.WriteLine("Patient is allergic to given Medication. Cancelling prescription.");
-                break;
-            }
             else
             {
                 Console.Write("\nEnter amount of times the medication should be taken a day >> ");
@@ -604,7 +599,7 @@ public class DoctorUI : UserUI
                 var isNumber = int.TryParse(Console.ReadLine(), out int amount);
                 if (isNumber == true && amount >= 0 && amount <=equipment.Count)
                 {
-                    _hospital.EquipmentService.RemoveSome(equipment, amount);
+                    _hospital.EquipmentService.Remove(new EquipmentBatch(equipment.RoomLocation, equipment.Name, amount, equipment.Type));
                     break;
                 }
                 else

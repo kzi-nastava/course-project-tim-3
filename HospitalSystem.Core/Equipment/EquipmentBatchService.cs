@@ -74,7 +74,7 @@ public class EquipmentBatchService
 
     public void RemoveSome(EquipmentBatch equipmentBatch, int amount)
     {
-            equipmentBatch.Count -= amount;
-            _repo.Replace(equipmentBatch);
+        equipmentBatch.Count -= amount;
+        _repo.Replace(equipmentBatch);
     }
 }

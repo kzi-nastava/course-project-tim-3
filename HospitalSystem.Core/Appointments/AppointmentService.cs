@@ -11,11 +11,12 @@ public class AppointmentService
     private DoctorService _doctorService;
     private PatientService _patientService;
 
-    public AppointmentService(AppointmentRepository appointmentRepo, RoomService roomService, DoctorService doctorService)
+    public AppointmentService(IAppointmentRepository appointmentRepo, RoomService roomService, DoctorService doctorService, PatientService patientService)
     {
         _appointmentRepo = appointmentRepo;
         _roomService = roomService;
         _doctorService = doctorService;
+        _patientService = patientService;
     }
 
     public void UpsertCheckup(Checkup newCheckup)
@@ -44,10 +45,10 @@ public class AppointmentService
         }
     }
 
-    public void AddOrUpdateOperation(Operation newOperation)
+    public void UpsertOperation(Operation newOperation)
     {
         newOperation.RoomLocation = GetAvailableRoom(newOperation, RoomType.OPERATION).Location;
-        _appointmentRepo.AddOrUpdateOperation(newOperation);
+        _appointmentRepo.UpsertOperation(newOperation);
     }
 
      public void DeleteCheckup(Checkup checkup)
