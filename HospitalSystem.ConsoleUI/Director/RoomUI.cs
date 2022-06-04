@@ -4,7 +4,7 @@ namespace HospitalSystem.ConsoleUI;
 
 public class RoomUI : HospitalClientUI
 {
-    private List<Room> _loadedRooms;
+    protected List<Room> _loadedRooms;
 
     public RoomUI(Hospital hospital) : base(hospital)
     {
@@ -36,12 +36,13 @@ public class RoomUI : HospitalClientUI
             ");
             System.Console.Write(">> ");
             var choice = ReadSanitizedLine();
+            var renoUI = new RenovationUI(_hospital, _loadedRooms);
             try
             {
                 // todo: unhardcode choices so they match menu display always
                 if (choice == "a" || choice == "ar" || choice == "add" || choice == "add rooms")
                 {
-                    Add();
+                    Insert();
                 }
                 else if (choice == "u" || choice == "ur" || choice == "update" || choice == "update room")
                 {
@@ -53,15 +54,15 @@ public class RoomUI : HospitalClientUI
                 }
                 else if (choice == "renovate room" || choice == "renovate" || choice == "rr" || choice == "r")
                 {
-                    DoSimpleRenovation();
+                    renoUI.ScheduleSimple();
                 }
                 else if (choice == "s" || choice == "sr" || choice == "split" || choice == "split renovation")
                 {
-                    DoSplitRenovation();
+                    renoUI.ScheduleSplit();
                 }
                 else if (choice == "m" || choice == "mr" || choice == "merge" || choice == "merge renovation")
                 {
-                    DoMergeRenovation();
+                    renoUI.ScheduleMerge();
                 }
                 else if (choice == "q" || choice == "quit")
                 {
@@ -146,14 +147,14 @@ public class RoomUI : HospitalClientUI
         System.Console.Write("Successfully updated room.");
     }
 
-    private void Add()
+    private void Insert()
     {
         var newRoom = InputRoom();
         _hospital.RoomService.Insert(newRoom);
         System.Console.Write("Successfully added room.");
     }
 
-    private Room InputRoom()
+    protected Room InputRoom()
     {
         System.Console.Write("Enter room location >> ");
         var location = ReadSanitizedLine();
@@ -191,72 +192,5 @@ public class RoomUI : HospitalClientUI
         }
         _hospital.RoomService.Delete(_loadedRooms[number].Location);
         System.Console.Write("Successfully deleted room.");
-    }
-
-    private void DoSimpleRenovation()
-    {
-        System.Console.WriteLine("Warning! Doing this will make any equipment inside inaccessible during renovation. ");
-        System.Console.WriteLine("Move it first if you so desire");
-        System.Console.Write("Input number >> ");
-        var number = ReadInt(0, _loadedRooms.Count - 1);
-
-        var range = InputDateRange();
-
-        var renovation = new Renovation(range,
-            new List<string>() {_loadedRooms[number].Location},
-            new List<string>() {_loadedRooms[number].Location});
-        _hospital.RenovationService.Schedule(renovation, new List<Room>());
-        System.Console.Write("Successfully scheduled simple renovation.");
-    }
-
-    private void DoSplitRenovation()
-    {
-        System.Console.WriteLine("Warning! Doing this will make any equipment inside inaccessible during renovation");
-        System.Console.WriteLine("This will move all equipment present at the beginning of the renovation into the first room");
-        System.Console.WriteLine("Move it first if you so desire");
-        System.Console.Write("Input number to split >> ");
-        var number = ReadInt(0, _loadedRooms.Count - 1);
-        var originalRoom = _loadedRooms[number];
-
-        var range = InputDateRange();
-
-        System.Console.WriteLine("Input the first room that will split off:");
-        var firstRoom = InputRoom();
-
-        System.Console.WriteLine("Input the second room that will split off:");
-        var secondRoom = InputRoom();
-
-        var renovation = new Renovation(range,
-            new List<string>() {originalRoom.Location},
-            new List<string>() {firstRoom.Location, secondRoom.Location});
-        _hospital.RenovationService.Schedule(renovation, new List<Room>() {firstRoom, secondRoom});
-        System.Console.Write("Successfully scheduled split renovation.");
-    }
-    
-    private void DoMergeRenovation()
-    {
-        System.Console.WriteLine("Warning! Doing this will make any equipment inside inaccessible during renovation");
-        System.Console.Write("This will move all equipment present at the beginning of the renovation ");
-        System.Console.WriteLine("in first and second room into the merging room");
-        System.Console.WriteLine("Move it first if you so desire");
-
-        System.Console.Write("Input first number to merge >> ");
-        var firstNumber = ReadInt(0, _loadedRooms.Count - 1);
-        var firstRoom = _loadedRooms[firstNumber];
-
-        System.Console.Write("Input second number to merge >> ");
-        var secondNumber = ReadInt(0, _loadedRooms.Count - 1);
-        var secondRoom = _loadedRooms[secondNumber];
-
-        var range = InputDateRange();
-
-        System.Console.WriteLine("Input the room that these will merge into:");
-        var mergingRoom = InputRoom();
-
-        var renovation = new Renovation(range,
-            new List<string>() {firstRoom.Location, secondRoom.Location},
-            new List<string>() {mergingRoom.Location});
-        _hospital.RenovationService.Schedule(renovation, new List<Room> {mergingRoom});
-        System.Console.Write("Successfully scheduled merge renovation.");
     }
 }
