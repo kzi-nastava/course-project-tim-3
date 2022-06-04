@@ -1,3 +1,7 @@
+using MongoDB.Driver;
+using MongoDB.Bson;
+using HospitalSystem.Core.Utils;
+
 namespace HospitalSystem.Core;
 
 public class PatientService
@@ -51,6 +55,28 @@ public class PatientService
         CheckupChangeLog log = new CheckupChangeLog(DateTime.Now,crudOperation);
         patient.CheckupChangeLogs.Add(log);
         _repo.AddOrUpdatePatient(patient);
+    }
+
+    public IMongoCollection<Patient> GetPatients()
+    {
+        return _repo.GetPatients();
+    }
+    public void AddOrUpdatePatient(Patient patient)
+    {
+        _repo.AddOrUpdatePatient(patient);
+    }
+    public Patient GetPatientByName(string name)
+    {
+        return _repo.GetPatientByName(name);
+    }
+
+    public Patient GetPatientByFullName(string firstName, string lastName)
+    {
+        return _repo.GetPatientByFullName(firstName,lastName);
+    }
+    public Patient GetPatientById(ObjectId id)
+    {
+        return _repo.GetPatientById(id);
     }
     
 }

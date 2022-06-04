@@ -388,7 +388,6 @@ public class PatientUI : UserUI
         }
 
     }
-
     public Doctor ChangeDoctor(Doctor currentDoctor)
     {
 
@@ -815,7 +814,7 @@ public class PatientUI : UserUI
         }
     }
 
-    public void CreateCheckup()
+    public void CreateCheckup(Doctor ?overrideDoctor = null)
     {
 
         //TODO: change this
@@ -835,24 +834,31 @@ public class PatientUI : UserUI
             System.Console.Write(e.Message + " Aborting...");
             return;
         }
-
+        
         Console.WriteLine("You have selected the following date - "+ selectedDate);
+        Doctor? selectedDoctor;
+        if (overrideDoctor is null)
+        {
+            Specialty selectedSpecialty;
+            try
+            {
+                selectedSpecialty = SelectSpecialty();
+            }
+            catch (InvalidInputException e)
+            {
+                System.Console.Write(e.Message + " Aborting...");
+                return;
+            }
 
-        Specialty selectedSpecialty;
-        try
-        {
-            selectedSpecialty = SelectSpecialty();
+            selectedDoctor = SelectDoctor(selectedSpecialty);
+            if (selectedDoctor == null)
+            {
+                return;
+            }
         }
-        catch (InvalidInputException e)
+        else
         {
-            System.Console.Write(e.Message + " Aborting...");
-            return;
-        }
-
-        Doctor? selectedDoctor = SelectDoctor(selectedSpecialty);
-        if (selectedDoctor == null)
-        {
-            return;
+            selectedDoctor = overrideDoctor;
         }
 
         //TODO: Might want to create an additional expiry check for checkup timedate
@@ -879,6 +885,15 @@ public class PatientUI : UserUI
             throw new UserBlockedException("Creating too many checkups.");
         }
     }
+    /*public int CompareDoctorsByRating(Doctor doctor1, Doctor doctor2)
+    {
+        float rating1 = _hospital.AppointmentService.GetAverageRating(doctor1);
+        if (rating1 == 0){
+            rating1 = -10; 
+        }
+        float rating2 = _hospital.AppointmentService.GetAverageRating(doctor2);
+        return String.Compare(name1, name2);
+    }*/
 
     public void StartDoctorSearch()
     {
@@ -926,6 +941,7 @@ public class PatientUI : UserUI
             n - sort by name
             l - sort by last name
             s - sort by specialty
+            a - sort by average rating
             ");
         
         string sortOption = ReadSanitizedLine().Trim();
@@ -941,11 +957,42 @@ public class PatientUI : UserUI
         {
             filteredDoctors.Sort((doctor1, doctor2)=> String.Compare(doctor1.Specialty.ToString(), doctor2.Specialty.ToString()));
         }
-
-        foreach (Doctor doctor in filteredDoctors)
+         else if (sortOption == "a")
         {
-           Console.WriteLine(doctor.ToString());
+            filteredDoctors.Sort((doctor1, doctor2)=>  _hospital.AppointmentService.GetAverageRating(doctor1).CompareTo(_hospital.AppointmentService.GetAverageRating(doctor2)));
         }
+
+        for (int i=0; i<filteredDoctors.Count; i++)
+        {
+            string rating = "no rating";
+            float averageRating = _hospital.AppointmentService.GetAverageRating(filteredDoctors[i]);
+            if (averageRating != 10){
+                rating = averageRating + "/5";
+            }
+            Console.WriteLine(i+" - "+filteredDoctors[i].ToString() + " " + rating);
+        }
+
+        System.Console.Write("Create checkup? Enter y to continue, anything else to return: ");
+        string continuteOpinion = ReadSanitizedLine().Trim().ToLower();
+        if (continuteOpinion != "y"){
+            return;
+        }
+
+        System.Console.Write("Please enter a number from the list: ");
+        int selectedIndex;
+        try
+        {
+            selectedIndex = ReadInt(0, filteredDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
+            return;
+        }
+
+        CreateCheckup(filteredDoctors[selectedIndex]);
+        
+
     }
 
     

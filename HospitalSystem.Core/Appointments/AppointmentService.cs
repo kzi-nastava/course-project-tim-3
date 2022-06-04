@@ -368,11 +368,32 @@ public class AppointmentService
         }
         return GetFirstFewFreeCheckups(doctor,3,user);
     }
-
-    // public List<Checkup> FindCheckupsPriorityInterval(Doctor doctor, DateTime intervalStart, DateTime intervalEnd, DateTime deadline)
-    // {
-    //     List<Checkup> checkups = new List<Checkup>();
-    //     return checkups;
-    // }
     
+     public List<Checkup> GetCheckupsByDoctor(Doctor doctor)
+        {
+            var checkups = _appointmentRepo.GetCheckups();
+            return
+                (from checkup in checkups.AsQueryable()
+                where doctor.Id == checkup.Doctor.Id
+                select checkup).ToList();        }
+
+    public float GetAverageRating(Doctor doctor)
+    {
+        var checkups = GetCheckupsByDoctor(doctor);
+        float sum = 0;
+        int count = 0;
+        foreach (Checkup checkup in checkups)
+        {
+            if (checkup.DoctorSurvey is not null)
+            {
+                sum += checkup.DoctorSurvey.Rating;
+                count+=1;
+            }
+        }
+        if (count == 0)
+        {
+            return 10;
+        }
+        return sum/count;
+    }
 }

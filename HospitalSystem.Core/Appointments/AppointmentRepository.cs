@@ -29,6 +29,11 @@ public class AppointmentRepository : IAppointmentRepository
         return _dbClient.GetDatabase("hospital").GetCollection<Checkup>("checkups");
     }
 
+     public IMongoCollection<Checkup> GetCheckupsByDoctor()
+    {
+        return _dbClient.GetDatabase("hospital").GetCollection<Checkup>("checkups");
+    }
+
     public IMongoCollection<Operation> GetOperations()
     {
         return _dbClient.GetDatabase("hospital").GetCollection<Operation>("operations");
