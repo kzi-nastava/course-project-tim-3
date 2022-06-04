@@ -81,21 +81,15 @@ public class MedicationRequestUI : HospitalClientUI
     private void CreateRequest()
     {
         System.Console.Write("Enter Medication name >> ");
-        var name = ReadSanitizedLine();
-        if (name == "")
-        {
-            throw new InvalidInputException("Name can not be empty.");
-        }
+        var name = ReadNotEmpty("Name can not be empty.");
 
         List<string> ingredients = new();
         var ingredientUI = new IngredientsUI(ingredients);
         ingredientUI.Start();
+
         System.Console.Write("Input your comment >> ");
-        var comment = ReadSanitizedLine();
-        if (comment == "")
-        {
-            comment = "/";
-        }
+        var comment = ReadUpdate("/");
+
         var req = new MedicationRequest(new Medication(name, ingredients), comment);
         _hospital.MedicationRequestService.Send(req);
         System.Console.Write("Success! ");
@@ -109,11 +103,7 @@ public class MedicationRequestUI : HospitalClientUI
         System.Console.WriteLine("Leave line blank for no changes.");
 
         System.Console.Write("Enter Medication name >> ");
-        var name = ReadSanitizedLine();
-        if (name != "")
-        {
-            req.Requested.Name = name;
-        }
+        req.Requested.Name = ReadUpdate(req.Requested.Name);
 
         System.Console.Write("Edit ingredients? [y/N] >> ");
         var choice = ReadSanitizedLine();
@@ -124,11 +114,8 @@ public class MedicationRequestUI : HospitalClientUI
         }
 
         System.Console.Write("Input your comment >> ");
-        var comment = ReadSanitizedLine();
-        if (comment != "")
-        {
-            req.DirectorComment = comment;
-        }
+        req.DirectorComment = ReadUpdate(req.DirectorComment);
+
         _hospital.MedicationRequestService.Resend(req);
         System.Console.Write("Success! ");
     }

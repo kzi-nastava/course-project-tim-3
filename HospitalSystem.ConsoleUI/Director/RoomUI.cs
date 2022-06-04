@@ -123,25 +123,13 @@ public class RoomUI : HospitalClientUI
         System.Console.WriteLine("Input nothing to keep as is");
 
         System.Console.Write("Enter room location >> ");
-        var location = ReadSanitizedLine();
-        if (location != "")
-            room.Location = location;
+        room.Location = ReadUpdate(room.Location);
 
         System.Console.Write("Enter room name >> ");
-        var name = ReadSanitizedLine();
-        if (name != "")
-            room.Name = name;
+        room.Name = ReadUpdate(room.Name);
 
         System.Console.Write("Enter room type [rest|operation|checkup|other] >> ");
-        var rawType = ReadSanitizedLine();
-        RoomType type;
-        if (rawType != "")
-        {
-            var success = Enum.TryParse(rawType, true, out type);
-            if (!success || type == RoomType.STOCK)
-                throw new InvalidInputException("Not a valid type.");
-            room.Type = type;
-        }
+        room.Type = InputRoomType(update: true, room.Type);
 
         _hospital.RoomService.Replace(room);
         System.Console.Write("Successfully updated room.");
@@ -157,24 +145,29 @@ public class RoomUI : HospitalClientUI
     protected Room InputRoom()
     {
         System.Console.Write("Enter room location >> ");
-        var location = ReadSanitizedLine();
-        if (location == "")
-            throw new InvalidInputException("Invalid location.");
-        if (_hospital.RoomService.DoesExist(location))
+        var location = ReadNotEmpty("Invalid location.");
+
+        if (_hospital.RoomService.DoesExist(location))  // TODO: move this check
             throw new InvalidInputException("Room with that location already exists.");
 
         System.Console.Write("Enter room name >> ");
-        var name = ReadSanitizedLine();
-        if (name == "")
-            throw new InvalidInputException("Invalid name.");
+        var name = ReadNotEmpty("Invalid name.");
 
         System.Console.Write("Enter room type [rest|operation|checkup|other] >> ");
+        var type = InputRoomType();
+
+        return new Room(location, name, type);
+    }
+
+    private RoomType InputRoomType(bool update = false, RoomType defaultType = RoomType.OTHER)
+    {
         var rawType = ReadSanitizedLine();
+        if (update && rawType == "")
+            return defaultType;
         bool success = Enum.TryParse(rawType, true, out RoomType type);
         if (!success || type == RoomType.STOCK)
             throw new InvalidInputException("Not a valid type.");
-
-        return new Room(location, name, type);
+        return type;
     }
 
     private void Delete()

@@ -85,4 +85,19 @@ public abstract class ConsoleUI
         return new DateRange(starts, ends, allowPast: false);
     }
 
+    protected string ReadUpdate(string defaultVal)
+    {
+        var val = ReadSanitizedLine();
+        if (val != "")
+            return val;
+        return defaultVal;
+    }
+
+    protected string ReadNotEmpty(string errMsg)
+    {
+        var val = ReadSanitizedLine();
+        if (val == "")
+            throw new InvalidInputException(errMsg);
+        return val;
+    }
 }

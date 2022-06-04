@@ -88,11 +88,7 @@ public class IngredientsUI : ConsoleUI
         System.Console.Write("Input number to edit >> ");
         var num = ReadInt(0, _ingredients.Count - 1);
         System.Console.Write("Input new ingredient >> ");
-        var ingredient = ReadSanitizedLine();
-        if (ingredient == "")
-        {
-            throw new InvalidInputException("Ingredient can not be empty.");
-        }
+        var ingredient = ReadNotEmpty("Ingredient can not be empty.");
         _ingredients[num] = ingredient;
     }
 
