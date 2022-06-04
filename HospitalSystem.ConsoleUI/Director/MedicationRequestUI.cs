@@ -142,7 +142,6 @@ public class MedicationRequestUI : ConsoleUI
 
     private void EditIngredients(List<string> ingredients)
     {
-        // TODO: extract methods
         while (true)
         {
             System.Console.Clear();
@@ -165,21 +164,11 @@ public class MedicationRequestUI : ConsoleUI
             }
             else if (choice == "r" || choice == "remove")
             {
-                System.Console.Write("Input number to remove >> ");
-                var num = ReadInt(0, ingredients.Count - 1);
-                ingredients.RemoveAt(num);
+                RemoveIngredient(ingredients);
             }
             else if (choice == "e" || choice == "edit")
             {
-                System.Console.Write("Input number to edit >> ");
-                var num = ReadInt(0, ingredients.Count - 1);
-                System.Console.Write("Input new ingredient >> ");
-                var ingredient = ReadSanitizedLine();
-                if (ingredient == "")
-                {
-                    throw new InvalidInputException("Ingredient can not be empty.");
-                }
-                ingredients[num] = ingredient;
+                EditIngredient(ingredients);
             }
             else if (choice == "d" || choice == "done")
             {
@@ -188,7 +177,6 @@ public class MedicationRequestUI : ConsoleUI
                     // TODO: move this to some med service
                     throw new InvalidInputException("Can not have no ingredients.");
                 }
-
                 return;
             }
             else if (choice == "q" || choice == "quit")
@@ -206,6 +194,26 @@ public class MedicationRequestUI : ConsoleUI
                 ReadSanitizedLine();
             }
         }
+    }
+
+    private void RemoveIngredient(List<string> ingredients)
+    {
+        System.Console.Write("Input number to remove >> ");
+        var num = ReadInt(0, ingredients.Count - 1);
+        ingredients.RemoveAt(num);
+    }
+
+    private void EditIngredient(List<string> ingredients)
+    {
+        System.Console.Write("Input number to edit >> ");
+        var num = ReadInt(0, ingredients.Count - 1);
+        System.Console.Write("Input new ingredient >> ");
+        var ingredient = ReadSanitizedLine();
+        if (ingredient == "")
+        {
+            throw new InvalidInputException("Ingredient can not be empty.");
+        }
+        ingredients[num] = ingredient;
     }
 
     private void AddIngredients(List<string> ingredients)
