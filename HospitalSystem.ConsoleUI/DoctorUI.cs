@@ -472,18 +472,24 @@ public class DoctorUI : UserUI
             }
             else
             {
-                Console.Write("\nEnter amount of times the medication should be taken a day >> ");
-                int amount = Int32.Parse(ReadSanitizedLine());
-                Console.Write("\nEnter amount of hours inbetween medication intake >> ");
-                int hours = Int32.Parse(ReadSanitizedLine());
-                Console.Write("\nWhen to take in medication:\n1. Before Meal\n2. After Meal\n3. With Meal\n4. Anytime\n>> ");
-                var input = Int32.TryParse(ReadSanitizedLine(), out int bestTaken);
-                if (input)
-                    _hospital.PatientService.AddPrescription(medication, amount, (MedicationBestTaken)bestTaken, hours, patient);
+                if (patient.IsAllergicToMedication(medication)) 
+                {
+                    Console.WriteLine("Patient is allergic to given Medication. Cancelling prescription.");
+                }
                 else
-                    Console.Write("\nPlease enter a valid option.");
+                {
+                    Console.Write("\nEnter amount of times the medication should be taken a day >> ");
+                    int amount = Int32.Parse(ReadSanitizedLine());
+                    Console.Write("\nEnter amount of hours inbetween medication intake >> ");
+                    int hours = Int32.Parse(ReadSanitizedLine());
+                    Console.Write("\nWhen to take in medication:\n1. Before Meal\n2. After Meal\n3. With Meal\n4. Anytime\n>> ");
+                    var input = Int32.TryParse(ReadSanitizedLine(), out int bestTaken);
+                    if (input)
+                        _hospital.PatientService.AddPrescription(medication, amount, (MedicationBestTaken)bestTaken, hours, patient);
+                    else
+                        Console.Write("\nPlease enter a valid option.");
+                }   
             }
-
             string? choice = "n";
             while (choice != "y")
             {

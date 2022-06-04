@@ -58,16 +58,9 @@ public class PatientService
 
     public void AddPrescription(Medication medication, int amount, MedicationBestTaken bestTaken, int hours, Patient patient)
     {
-        if (patient.IsAllergicToMedication(medication)) 
-        {
-            Console.WriteLine("Patient is allergic to given Medication. Cancelling prescription.");
-        }
-        else
-        {
-            Prescription prescription = new Prescription(medication, amount, bestTaken, hours);
-            patient.MedicalRecord.Prescriptions.Add(prescription);
-            _repo.AddOrUpdatePatient(patient);
-        }  
+        Prescription prescription = new Prescription(medication, amount, bestTaken, hours);
+        patient.MedicalRecord.Prescriptions.Add(prescription);
+        _repo.AddOrUpdatePatient(patient);
     }
 
     public void AddReferral(Patient patient, Doctor doctor)
