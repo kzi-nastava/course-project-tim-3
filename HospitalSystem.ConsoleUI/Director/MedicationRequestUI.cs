@@ -54,13 +54,14 @@ public class MedicationRequestUI : ConsoleUI
                 else
                 {
                     System.Console.WriteLine("Invalid input - please read the available commands.");
-                    System.Console.Write("Input anything to continue >> ");
                 }
             }
             catch (InvalidInputException e)
             {
-                System.Console.Write(e.Message + " Input anything to continue >> ");
+                System.Console.WriteLine(e.Message);
             }
+            System.Console.Write("Input anything to continue >> ");
+            ReadSanitizedLine();
         }
     }
 
@@ -96,12 +97,7 @@ public class MedicationRequestUI : ConsoleUI
         }
 
         List<string> ingredients = new();
-        AddIngredients(ingredients);
-        if (ingredients.Count == 0)
-        {
-            throw new InvalidInputException("Can not have no ingredients.");  // TODO: move this to some med service
-        }
-
+        EditIngredients(ingredients);
         System.Console.Write("Input your comment >> ");
         var comment = ReadSanitizedLine();
         if (comment == "")
@@ -110,8 +106,7 @@ public class MedicationRequestUI : ConsoleUI
         }
         var req = new MedicationRequest(new Medication(name, ingredients), comment);
         _hospital.MedicationRequestService.Send(req);
-        System.Console.Write("Success! Input anything to continue >> ");
-        ReadSanitizedLine();
+        System.Console.Write("Success! ");
     }
 
     private void EditRequest()
@@ -142,8 +137,7 @@ public class MedicationRequestUI : ConsoleUI
             req.DirectorComment = comment;
         }
         _hospital.MedicationRequestService.Resend(req);
-        System.Console.Write("Success! Input anything to continue >> ");
-        ReadSanitizedLine();
+        System.Console.Write("Success! ");
     }
 
     private void EditIngredients(List<string> ingredients)
@@ -189,6 +183,12 @@ public class MedicationRequestUI : ConsoleUI
             }
             else if (choice == "d" || choice == "done")
             {
+                if (ingredients.Count == 0)
+                {
+                    // TODO: move this to some med service
+                    throw new InvalidInputException("Can not have no ingredients.");
+                }
+
                 return;
             }
             else if (choice == "q" || choice == "quit")
