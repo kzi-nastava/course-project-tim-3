@@ -6,7 +6,7 @@ public class IngredientsUI : ConsoleUI
 {
     private List<string> _ingredients;
 
-    public IngredientsUI(Hospital hospital, List<string> ingredients) : base(hospital)
+    public IngredientsUI(List<string> ingredients)
     {
         _ingredients = ingredients;
     }

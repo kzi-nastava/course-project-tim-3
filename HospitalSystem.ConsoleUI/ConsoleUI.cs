@@ -1,5 +1,4 @@
 using HospitalSystem.Core.Utils;
-using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
@@ -38,11 +37,9 @@ public class AbortException : System.Exception
 
 public abstract class ConsoleUI
 {
-    protected Hospital _hospital;
-
-    protected ConsoleUI(Hospital hospital)
+    protected ConsoleUI()
     {
-        _hospital = hospital;
+
     }
 
     public abstract void Start();

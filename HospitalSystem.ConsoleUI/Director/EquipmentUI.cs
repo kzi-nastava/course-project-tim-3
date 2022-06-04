@@ -3,7 +3,7 @@ using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class EquipmentUI : ConsoleUI
+public class EquipmentUI : HospitalClientUI
 {
     private List<EquipmentBatch> _loadedBatches;
 

@@ -2,7 +2,7 @@ using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class MedicationRequestUI : ConsoleUI
+public class MedicationRequestUI : HospitalClientUI
 {
     private List<MedicationRequest> _loadedRequests = new();
 
@@ -88,7 +88,7 @@ public class MedicationRequestUI : ConsoleUI
         }
 
         List<string> ingredients = new();
-        var ingredientUI = new IngredientsUI(_hospital, ingredients);
+        var ingredientUI = new IngredientsUI(ingredients);
         ingredientUI.Start();
         System.Console.Write("Input your comment >> ");
         var comment = ReadSanitizedLine();
@@ -119,7 +119,7 @@ public class MedicationRequestUI : ConsoleUI
         var choice = ReadSanitizedLine();
         if (choice == "y")
         {
-            var ingredientUI = new IngredientsUI(_hospital, req.Requested.Ingredients);
+            var ingredientUI = new IngredientsUI(req.Requested.Ingredients);
             ingredientUI.Start();
         }
 

@@ -2,7 +2,7 @@ using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class RoomUI : ConsoleUI
+public class RoomUI : HospitalClientUI
 {
     private List<Room> _loadedRooms;
 
