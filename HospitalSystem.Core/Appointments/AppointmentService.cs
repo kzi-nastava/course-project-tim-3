@@ -397,7 +397,8 @@ public class AppointmentService
             return
                 (from checkup in checkups.AsQueryable()
                 where doctor.Id == checkup.Doctor.Id
-                select checkup).ToList();        }
+                select checkup).ToList();
+        }
 
     public float GetAverageRating(Doctor doctor)
     {

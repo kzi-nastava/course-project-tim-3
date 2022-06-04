@@ -885,15 +885,6 @@ public class PatientUI : UserUI
             throw new UserBlockedException("Creating too many checkups.");
         }
     }
-    /*public int CompareDoctorsByRating(Doctor doctor1, Doctor doctor2)
-    {
-        float rating1 = _hospital.AppointmentService.GetAverageRating(doctor1);
-        if (rating1 == 0){
-            rating1 = -10; 
-        }
-        float rating2 = _hospital.AppointmentService.GetAverageRating(doctor2);
-        return String.Compare(name1, name2);
-    }*/
 
     public void StartDoctorSearch()
     {
