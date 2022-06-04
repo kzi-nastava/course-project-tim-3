@@ -129,7 +129,7 @@ public class RoomUI : HospitalClientUI
         room.Name = ReadUpdate(room.Name);
 
         System.Console.Write("Enter room type [rest|operation|checkup|other] >> ");
-        room.Type = InputRoomType(update: true, room.Type);
+        room.Type = InputRoomType(update: true, defaultType: room.Type);
 
         _hospital.RoomService.Replace(room);
         System.Console.Write("Successfully updated room.");
