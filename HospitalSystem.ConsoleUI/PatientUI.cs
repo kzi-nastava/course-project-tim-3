@@ -1021,17 +1021,17 @@ public class PatientUI : UserUI
                 switch(prescription.BestTaken)
                 {
                     case MedicationBestTaken.AFTER_MEAL:
-                    meal = "after meal";
-                    break;
+                        meal = "after meal";
+                        break;
                     case MedicationBestTaken.BEFORE_MEAL:
-                    meal = "before meal";
-                    break;
+                        meal = "before meal";
+                        break;
                     case MedicationBestTaken.ANY_TIME:
-                    meal = "any time";
-                    break;
+                        meal = "any time";
+                        break;
                     case MedicationBestTaken.WITH_MEAL:
-                    meal = "with meal";
-                    break;
+                        meal = "with meal";
+                        break;
                 }
                 Console.WriteLine("Take "+prescription.Medication.Name+" at "+ whenToTake?.ToString("HH:mm")+" best taken "+meal);
             }
