@@ -52,6 +52,7 @@ public class PatientUI : UserUI
             ma - manage appointments
             vm - view medical record
             sd - search doctors
+            mn - show notifications
             exit - quit the program
 
             ");
@@ -70,6 +71,10 @@ public class PatientUI : UserUI
                 else if (selectedOption == "sd")
                 {
                     StartDoctorSearch();
+                }
+                else if (selectedOption == "mn")
+                {
+                    ManageNotifications();
                 }
                 else if (selectedOption == "exit")
                 {
@@ -983,8 +988,62 @@ public class PatientUI : UserUI
 
         CreateCheckup(filteredDoctors[selectedIndex]);
         
-
     }
 
-    
+    public void ManageNotifications()
+    {
+        System.Console.WriteLine(@"
+            Options:
+            s - show notifications
+            w - set when to remind
+            ");
+        string sortOption = ReadSanitizedLine().Trim();
+        if (sortOption == "s")
+        {
+            ShowNotifications();
+        }
+        else if (sortOption == "w")
+        {
+            SetNotificationSettings();
+        }
+    }
+
+    public void ShowNotifications()
+    {
+        int notificationCount = 0;
+        foreach (Prescription prescription in _loggedInPatient.MedicalRecord.Prescriptions)
+        {
+            DateTime ?whenToTake = _hospital.PatientService.WhenToTakeMedicine(prescription,_loggedInPatient);
+            if (whenToTake is not null)
+            {
+                notificationCount += 1;
+                string meal = "";
+                switch(prescription.BestTaken)
+                {
+                    case MedicationBestTaken.AFTER_MEAL:
+                    meal = "after meal";
+                    break;
+                    case MedicationBestTaken.BEFORE_MEAL:
+                    meal = "before meal";
+                    break;
+                    case MedicationBestTaken.ANY_TIME:
+                    meal = "any time";
+                    break;
+                    case MedicationBestTaken.WITH_MEAL:
+                    meal = "with meal";
+                    break;
+                }
+                Console.WriteLine("Take "+prescription.Medication.Name+" at "+ whenToTake?.ToString("HH:mm")+" best taken "+meal);
+            }
+        }
+        if (notificationCount==0)
+        {
+            Console.WriteLine("No notifications.");
+        }
+    }
+    public void SetNotificationSettings()
+    {
+        
+    }
 }
+
