@@ -34,6 +34,7 @@ public class EquipmentUI : HospitalClientUI
                 if (choice == "se" || choice == "search" || choice == "search equipment")
                 {
                     Search();
+                    continue;
                 }
                 else if (choice == "me" || choice == "move" || choice == "move equipment")
                 {
@@ -50,25 +51,22 @@ public class EquipmentUI : HospitalClientUI
                 else
                 {
                     System.Console.WriteLine("Invalid input - please read the available commands.");
-                    System.Console.Write("Input anything to continue >> ");
-                    ReadSanitizedLine();
                 }
             }
             catch (InvalidInputException e)
             {
-                System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
+                System.Console.WriteLine(e.Message);
             }
             catch (InvalidTokenException e)
             {
-                System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
+                System.Console.WriteLine(e.Message);
             }
             catch (FormatException e)
             {
-                System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
+                System.Console.WriteLine(e.Message);
             }
+            System.Console.Write("Input anything to continue >> ");
+            ReadSanitizedLine();
         }
     }
 
@@ -108,8 +106,7 @@ public class EquipmentUI : HospitalClientUI
         var relocation = new EquipmentRelocation(equipmentBatch.Name, amount, 
             equipmentBatch.Type, endTime, equipmentBatch.RoomLocation, rooms[number].Location);
         _hospital.RelocationService.Schedule(relocation);
-        System.Console.Write("Relocation scheduled successfully. Input anything to continue >> ");
-        ReadSanitizedLine();
+        System.Console.Write("Relocation scheduled successfully. ");
     }
 
     private void Search()
