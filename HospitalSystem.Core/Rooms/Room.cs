@@ -34,4 +34,9 @@ public class Room
         Active = true;
         Deleted = false;
     }
+
+    public override string ToString()
+    {
+        return Location + "Type: " + Type;
+    }
 }

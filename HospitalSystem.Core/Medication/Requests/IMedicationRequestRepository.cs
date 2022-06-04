@@ -7,4 +7,8 @@ public interface IMedicationRequestRepository
     public void Replace(MedicationRequest request);
 
     public IQueryable<MedicationRequest> GetAll();
+
+    public IQueryable<MedicationRequest> GetSent();
+
+    public IQueryable<MedicationRequest> GetDenied();
 }

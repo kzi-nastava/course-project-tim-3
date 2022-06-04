@@ -1,6 +1,5 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
-using HospitalSystem.Core.Utils;
 
 namespace HospitalSystem.Core;
 
@@ -65,9 +64,26 @@ public class PatientService
     {
         _repo.AddOrUpdatePatient(patient);
     }
-    public Patient GetPatientByName(string name)
+    public void AddPrescription(Medication medication, int amount, MedicationBestTaken bestTaken, int hours, Patient patient)
     {
-        return _repo.GetPatientByName(name);
+        if (patient.IsAllergicToMedication(medication)) 
+        {
+            Console.WriteLine("Patient is allergic to given Medication. Cancelling prescription.");
+        }
+        else
+        {
+            Prescription prescription = new Prescription(medication, amount, bestTaken, hours);
+            patient.MedicalRecord.Prescriptions.Add(prescription);
+            _repo.AddOrUpdatePatient(patient);
+        }  
+    }
+
+    public void AddReferral(Patient patient, Doctor doctor)
+    {
+        Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
+        patient.MedicalRecord.Referrals.Add(referral);
+        _repo.AddOrUpdatePatient(patient);
+        Console.WriteLine("\nReferral succesfully added");
     }
 
     public Patient GetPatientByFullName(string firstName, string lastName)
@@ -78,5 +94,4 @@ public class PatientService
     {
         return _repo.GetPatientById(id);
     }
-    
 }

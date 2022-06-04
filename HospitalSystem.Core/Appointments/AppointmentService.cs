@@ -8,25 +8,47 @@ public class AppointmentService
 {
     private IAppointmentRepository _appointmentRepo;
     private RoomService _roomService;
-    private DoctorRepository _doctorRepo;
+    private DoctorService _doctorService;
+    private PatientService _patientService;
 
-    public AppointmentService(AppointmentRepository appointmentRepo, RoomService roomService, DoctorRepository doctorRepo)
+    public AppointmentService(IAppointmentRepository appointmentRepo, RoomService roomService, DoctorService doctorService, PatientService patientService)
     {
         _appointmentRepo = appointmentRepo;
         _roomService = roomService;
-        _doctorRepo = doctorRepo;
+        _doctorService = doctorService;
+        _patientService = patientService;
     }
 
-    public void AddOrUpdateCheckup(Checkup newCheckup)
+    public void UpsertCheckup(Checkup newCheckup)
     {
         newCheckup.RoomLocation = GetAvailableRoom(newCheckup, RoomType.CHECKUP).Location;
-        _appointmentRepo.AddOrUpdateCheckup(newCheckup);
+        _appointmentRepo.UpsertCheckup(newCheckup);
     }
 
-    public void AddOrUpdateOperation(Operation newOperation)
+    public bool UpsertCheckup(User _user, DateTime dateTime, string name, string surname)
+    {
+        Patient patient = _patientService.GetPatientByFullName(name,surname);
+        if (patient == null)
+        {
+            return false;
+        }
+        Doctor doctor = _doctorService.GetById((ObjectId)_user.Person.Id);
+        Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
+        if (IsDoctorAvailable(checkup.DateRange, doctor))
+        {
+            _appointmentRepo.UpsertCheckup(checkup);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void UpsertOperation(Operation newOperation)
     {
         newOperation.RoomLocation = GetAvailableRoom(newOperation, RoomType.OPERATION).Location;
-        _appointmentRepo.AddOrUpdateOperation(newOperation);
+        _appointmentRepo.UpsertOperation(newOperation);
     }
 
      public void DeleteCheckup(Checkup checkup)
@@ -210,15 +232,15 @@ public class AppointmentService
 
     public int CompareCheckupsByDoctorsName(Checkup checkup1, Checkup checkup2)
     {
-        string name1 = _doctorRepo.GetById((ObjectId)checkup1.Doctor.Id).FirstName;
-        string name2 = _doctorRepo.GetById((ObjectId)checkup2.Doctor.Id).FirstName;
+        string name1 = _doctorService.GetById((ObjectId)checkup1.Doctor.Id).FirstName;
+        string name2 = _doctorService.GetById((ObjectId)checkup2.Doctor.Id).FirstName;
         return String.Compare(name1, name2);
     }
 
     public int CompareCheckupsByDoctorsSpecialty(Checkup checkup1, Checkup checkup2)
     {
-        string specialty1 = _doctorRepo.GetById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
-        string specialty2 = _doctorRepo.GetById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
+        string specialty1 = _doctorService.GetById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
+        string specialty2 = _doctorService.GetById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
         return String.Compare(specialty1, specialty2);
     }
 
@@ -248,7 +270,7 @@ public class AppointmentService
                 continue;
             }
 
-            foreach (Doctor doctor in _doctorRepo.GetManyBySpecialty(speciality))
+            foreach (Doctor doctor in _doctorService.GetManyBySpecialty(speciality))
             {
                 Checkup newCheckup = new Checkup(
                     iterationDate,

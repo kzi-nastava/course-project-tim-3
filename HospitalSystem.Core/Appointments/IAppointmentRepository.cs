@@ -8,8 +8,8 @@ public interface IAppointmentRepository
 {
     public IMongoCollection<Checkup> GetCheckups();
     public IMongoCollection<Operation> GetOperations();
-    public void AddOrUpdateCheckup(Checkup newCheckup);
+    public void UpsertCheckup(Checkup newCheckup);
 
-    public void AddOrUpdateOperation(Operation newOperation);
+    public void UpsertOperation(Operation newOperation);
     public void DeleteCheckup(Checkup checkup);
 }

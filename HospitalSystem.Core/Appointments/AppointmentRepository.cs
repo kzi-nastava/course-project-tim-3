@@ -39,19 +39,19 @@ public class AppointmentRepository : IAppointmentRepository
         return _dbClient.GetDatabase("hospital").GetCollection<Operation>("operations");
     }
 
-    public void AddOrUpdateCheckup(Checkup newCheckup)
+    public void UpsertCheckup(Checkup newCheckup)
     {
         var checkups = GetCheckups();
         checkups.ReplaceOne(checkup => checkup.Id == newCheckup.Id, newCheckup, new ReplaceOptions {IsUpsert = true});
     }
 
-    public void AddOrUpdateOperation(Operation newOperation)
+    public void UpsertOperation(Operation newOperation)
     {
         var operations = GetOperations();
         operations.ReplaceOne(operation => operation.Id == newOperation.Id, newOperation, new ReplaceOptions {IsUpsert = true});
     }
 
-     public void DeleteCheckup(Checkup checkup)
+    public void DeleteCheckup(Checkup checkup)
     {
         var checkups = GetCheckups();
         var filter = Builders<Checkup>.Filter.Eq(deletedCheckup => deletedCheckup.Id, checkup.Id);

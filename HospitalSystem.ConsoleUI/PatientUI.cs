@@ -30,7 +30,7 @@ public class PatientUI : UserUI
 
     public PatientUI(Hospital hospital, User user) : base(hospital, user) 
     {
-        _loggedInPatient = _hospital.PatientRepo.GetPatientById((ObjectId) user.Person.Id);
+        _loggedInPatient = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
     }
 
     public override void Start()
@@ -298,7 +298,7 @@ public class PatientUI : UserUI
 
     public void ShowCheckupsAnamnesis(Checkup checkup)
     {
-        Doctor doctor = _hospital.DoctorRepo.GetById( (ObjectId)checkup.Doctor.Id );
+        Doctor doctor = _hospital.DoctorService.GetById( (ObjectId)checkup.Doctor.Id );
         Console.WriteLine("[ " + checkup.DateRange.Starts + " " + doctor + " ] ");
         Console.WriteLine(checkup.Anamnesis);
         Console.WriteLine();
@@ -391,7 +391,7 @@ public class PatientUI : UserUI
     public Doctor ChangeDoctor(Doctor currentDoctor)
     {
 
-        List<Doctor> alternativeDoctors =  _hospital.DoctorRepo.GetManyBySpecialty(currentDoctor.Specialty);
+        List<Doctor> alternativeDoctors =  _hospital.DoctorService.GetManyBySpecialty(currentDoctor.Specialty);
         alternativeDoctors.Remove(currentDoctor);
 
             if (alternativeDoctors.Count == 0)
@@ -433,7 +433,7 @@ public class PatientUI : UserUI
         }
         Console.WriteLine ("You have selected " + ConvertAppointmentToString(selectedCheckup));
 
-        Doctor currentDoctor = _hospital.DoctorRepo.GetById((ObjectId)selectedCheckup.Doctor.Id);
+        Doctor currentDoctor = _hospital.DoctorService.GetById((ObjectId)selectedCheckup.Doctor.Id);
         DateTime existingDate = selectedCheckup.DateRange.Starts;
         Doctor newDoctor = currentDoctor;
         DateTime newDate = existingDate;
@@ -496,7 +496,7 @@ public class PatientUI : UserUI
         }
         else
         {
-            _hospital.AppointmentService.AddOrUpdateCheckup(selectedCheckup);
+            _hospital.AppointmentService.UpsertCheckup(selectedCheckup);
             Console.WriteLine("Checkup updated.");
         }
         
@@ -514,7 +514,7 @@ public class PatientUI : UserUI
         string output = "";
 
         output += a.DateRange.Starts +" ";
-        Doctor doctor = _hospital.DoctorRepo.GetById((ObjectId)a.Doctor.Id);
+        Doctor doctor = _hospital.DoctorService.GetById((ObjectId)a.Doctor.Id);
         output += doctor.ToString();
 
         return output;
@@ -675,7 +675,7 @@ public class PatientUI : UserUI
 
     public Doctor? SelectDoctor(Specialty selectedSpecialty)
     {
-        List<Doctor> suitableDoctors =  _hospital.DoctorRepo.GetManyBySpecialty(selectedSpecialty);
+        List<Doctor> suitableDoctors =  _hospital.DoctorService.GetManyBySpecialty(selectedSpecialty);
         if (suitableDoctors.Count == 0)
         {
             Console.WriteLine("No doctors found in selected specialty.");
@@ -760,13 +760,13 @@ public class PatientUI : UserUI
         {
             Checkup result = recommendedCheckups[0];
             Console.WriteLine("Recommendation:");
-            Doctor referencedDoctor = _hospital.DoctorRepo.GetById((ObjectId)result.Doctor.Id);
+            Doctor referencedDoctor = _hospital.DoctorService.GetById((ObjectId)result.Doctor.Id);
             Console.WriteLine(referencedDoctor.ToString()+" "+result.DateRange.Starts);
 
             Console.Write("Create checkup? Enter y for yes: ");
             if (ReadSanitizedLine().Trim() == "y")
             {
-                _hospital.AppointmentService.AddOrUpdateCheckup(result);
+                _hospital.AppointmentService.UpsertCheckup(result);
                 Console.WriteLine("Checkup created.");
                 
                 _hospital.PatientService.LogChange(CRUDOperation.CREATE,_loggedInPatient);
@@ -787,7 +787,7 @@ public class PatientUI : UserUI
             for (int i=0; i<recommendedCheckups.Count; i++)
             {
                 Checkup result = recommendedCheckups[i];
-                Doctor referencedDoctor = _hospital.DoctorRepo.GetById((ObjectId)result.Doctor.Id);
+                Doctor referencedDoctor = _hospital.DoctorService.GetById((ObjectId)result.Doctor.Id);
                 Console.WriteLine(i+" - "+referencedDoctor.ToString()+" "+result.DateRange.Starts);
             }
 
@@ -802,7 +802,7 @@ public class PatientUI : UserUI
                 System.Console.Write(e.Message + " Aborting...");
                 return;
             }
-            _hospital.AppointmentService.AddOrUpdateCheckup(recommendedCheckups[selectedIndex]);
+            _hospital.AppointmentService.UpsertCheckup(recommendedCheckups[selectedIndex]);
             Console.WriteLine("Checkup created.");
                 
             _hospital.PatientService.LogChange(CRUDOperation.CREATE,_loggedInPatient);
@@ -875,7 +875,7 @@ public class PatientUI : UserUI
         }
         Console.WriteLine("Checkup is free to schedule");
         
-        _hospital.AppointmentService.AddOrUpdateCheckup(newCheckup);
+        _hospital.AppointmentService.UpsertCheckup(newCheckup);
         Console.WriteLine("Checkup created");
         
         _hospital.PatientService.LogChange(CRUDOperation.CREATE,_loggedInPatient);
@@ -919,13 +919,13 @@ public class PatientUI : UserUI
         switch (searchOption)
         {
             case "n":
-                filteredDoctors = _hospital.DoctorRepo.GetManyByName(keyword);
+                filteredDoctors = _hospital.DoctorService.GetManyByName(keyword);
                 break;
             case "l":
-                filteredDoctors = _hospital.DoctorRepo.GetManyByLastName(keyword);
+                filteredDoctors = _hospital.DoctorService.GetManyByLastName(keyword);
                 break;
             case "s":
-                filteredDoctors = _hospital.DoctorRepo.GetManyBySpecialty(keyword);
+                filteredDoctors = _hospital.DoctorService.GetManyBySpecialty(keyword);
                 break;
         }
 

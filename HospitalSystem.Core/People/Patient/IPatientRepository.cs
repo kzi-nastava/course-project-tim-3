@@ -7,12 +7,10 @@ namespace HospitalSystem.Core;
 public interface IPatientRepository
 {
     public IMongoCollection<Patient> GetPatients();
+
     public void AddOrUpdatePatient(Patient patient);
-        
-    public Patient GetPatientByName(string name);
 
     public Patient GetPatientByFullName(string firstName, string lastName);
        
     public Patient GetPatientById(ObjectId id);
-        
 }

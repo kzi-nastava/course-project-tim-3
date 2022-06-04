@@ -6,15 +6,12 @@ public class Hospital
 {
     private MongoClient _dbClient = new MongoClient("mongodb://root:root@localhost:27017"); // TODO: move this
     public UserService UserService { get; }
-    public DoctorRepository DoctorRepo { get; }
-    public PatientRepository PatientRepo { get; }
-    public AppointmentRepository AppointmentRepo { get; }
     public DirectorRepository DirectorRepo { get; }
     public SecretaryRepository SecretaryRepo { get; }
     public RoomService RoomService { get; }
     public EquipmentBatchService EquipmentService { get; }
     public EquipmentRelocationService RelocationService { get; }
-    public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
+    public DoctorService DoctorService { get; }
     public RenovationService RenovationService { get; }
     public MedicationRepository MedicationRepo { get; }
     public MedicationRequestService MedicationRequestService { get; }
@@ -25,20 +22,17 @@ public class Hospital
     public Hospital()
     {
         UserService = new (new UserRepository(_dbClient));
-        DoctorRepo = new (_dbClient);
-        PatientRepo = new (_dbClient);
         DirectorRepo = new (_dbClient);
         SecretaryRepo = new (_dbClient);
         RoomService = new (new RoomRepository(_dbClient));
-        AppointmentRepo = new (_dbClient);
         // TODO : Might be a wrong way to create a service
-        PatientService = new (PatientRepo);
+        PatientService = new (new PatientRepository(_dbClient));
         // TODO : Might be a wrong way to create a service
-        AppointmentService = new (AppointmentRepo, RoomService, DoctorRepo);
+        DoctorService = new (new DoctorRepository(_dbClient));
+        AppointmentService = new (new AppointmentRepository(_dbClient), RoomService, DoctorService, PatientService);
         EquipmentService = new (new EquipmentBatchRepository(_dbClient));
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
-        CheckupChangeRequestRepo = new (_dbClient);
-        CheckupChangeRequestService = new (CheckupChangeRequestRepo);
+        CheckupChangeRequestService = new (new CheckupChangeRequestRepository(_dbClient));
         RenovationService = new (new RenovationRepository(_dbClient), RoomService,
             RelocationService, AppointmentService);
         MedicationRepo = new (_dbClient);
