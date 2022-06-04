@@ -1,5 +1,4 @@
 using HospitalSystem.Core.Utils;
-using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
@@ -38,11 +37,9 @@ public class AbortException : System.Exception
 
 public abstract class ConsoleUI
 {
-    protected Hospital _hospital;
-
-    protected ConsoleUI(Hospital hospital)
+    protected ConsoleUI()
     {
-        _hospital = hospital;
+
     }
 
     public abstract void Start();
@@ -88,4 +85,25 @@ public abstract class ConsoleUI
         return new DateRange(starts, ends, allowPast: false);
     }
 
+    protected string ReadUpdate(string defaultVal)
+    {
+        var val = ReadSanitizedLine();
+        if (val != "")
+            return val;
+        return defaultVal;
+    }
+
+    protected string ReadNotEmpty(string errMsg)
+    {
+        var val = ReadSanitizedLine();
+        if (val == "")
+            throw new InvalidInputException(errMsg);
+        return val;
+    }
+
+    protected bool ReadYes()
+    {
+        var choice = ReadSanitizedLine().Trim();
+        return choice == "y" || choice == "yes";
+    }
 }

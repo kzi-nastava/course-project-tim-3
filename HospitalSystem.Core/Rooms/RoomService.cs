@@ -9,12 +9,9 @@ public class RoomService
         _roomRepo = roomRepo;
     }
 
-    public IQueryable<Room> GetAll()
+    public IQueryable<Room> GetActive()
     {
-        return 
-            from room in _roomRepo.GetAll()
-            where room.Active
-            select room;
+        return _roomRepo.GetActive();
     }
 
     public void Delete(string location)

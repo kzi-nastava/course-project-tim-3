@@ -3,7 +3,7 @@ using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class EquipmentUI : ConsoleUI
+public class EquipmentUI : HospitalClientUI
 {
     private List<EquipmentBatch> _loadedBatches;
 
@@ -98,7 +98,7 @@ public class EquipmentUI : ConsoleUI
         var rawDate = ReadSanitizedLine();
         var endTime = DateTime.Parse(rawDate);
 
-        List<Room> rooms = _hospital.RoomService.GetAll().ToList();
+        List<Room> rooms = _hospital.RoomService.GetActive().ToList();
         rooms.RemoveAll(room => room.Location == equipmentBatch.RoomLocation);
         var roomUI = new RoomUI(_hospital, rooms);  // TODO: this ugly...
         roomUI.DisplayRooms();

@@ -2,7 +2,7 @@ using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class DirectorUI : ConsoleUI
+public class DirectorUI : HospitalClientUI
 {
     public DirectorUI(Hospital _hosptial) : base(_hosptial)
     {

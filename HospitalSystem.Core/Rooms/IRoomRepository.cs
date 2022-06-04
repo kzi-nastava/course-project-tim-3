@@ -4,7 +4,7 @@ namespace HospitalSystem.Core;
 
 public interface IRoomRepository
 {
-    public IQueryable<Room> GetAll();
+    public IQueryable<Room> GetActive();
 
     public void Insert(Room room);
 

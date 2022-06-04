@@ -229,8 +229,7 @@ public class DoctorUI : UserUI
                     _hospital.AppointmentService.UpsertCheckup(checkup);
 
                     Console.Write("\nDo you want to add a prescription? [y/n] >> ");
-                    string choice = ReadSanitizedLine();
-                    if (choice == "y")
+                    if (ReadYes())
                     {
                         PrescriptionMenu(patient);
                     }

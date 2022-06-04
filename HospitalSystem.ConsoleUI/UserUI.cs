@@ -2,7 +2,7 @@ using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
-public abstract class UserUI : ConsoleUI
+public abstract class UserUI : HospitalClientUI
 {
     protected User _user;
 
