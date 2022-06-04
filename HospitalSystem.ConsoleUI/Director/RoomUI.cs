@@ -178,8 +178,7 @@ public class RoomUI : HospitalClientUI
         {
             // TODO: make into a moving equipment submenu
             System.Console.Write("This room has equipment in it. This operation will delete it all. Are you sure? [y/N] >> ");
-            var answer = ReadSanitizedLine();
-            if (answer != "y")
+            if (!ReadYes())
                 throw new AbortException("Not a yes. Aborting.");
             _hospital.EquipmentService.DeleteAllInRoom(_loadedRooms[number]);
         }

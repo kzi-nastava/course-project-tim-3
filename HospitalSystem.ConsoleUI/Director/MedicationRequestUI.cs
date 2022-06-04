@@ -106,8 +106,7 @@ public class MedicationRequestUI : HospitalClientUI
         req.Requested.Name = ReadUpdate(req.Requested.Name);
 
         System.Console.Write("Edit ingredients? [y/N] >> ");
-        var choice = ReadSanitizedLine();
-        if (choice == "y")
+        if (ReadYes())
         {
             var ingredientUI = new IngredientsUI(req.Requested.Ingredients);
             ingredientUI.Start();

@@ -100,4 +100,10 @@ public abstract class ConsoleUI
             throw new InvalidInputException(errMsg);
         return val;
     }
+
+    protected bool ReadYes()
+    {
+        var choice = ReadSanitizedLine().Trim();
+        return choice == "y" || choice == "yes";
+    }
 }
