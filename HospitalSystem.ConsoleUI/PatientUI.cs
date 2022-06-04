@@ -52,7 +52,7 @@ public class PatientUI : UserUI
             ma - manage appointments
             vm - view medical record
             sd - search doctors
-            mn - show notifications
+            mn - manage notifications
             exit - quit the program
 
             ");
@@ -1055,6 +1055,7 @@ public class PatientUI : UserUI
             throw new QuitToMainMenuException("Wrong input");
         }
         _loggedInPatient.WhenToRemind = TimeSpan.FromMinutes(numberOfMinutes);
+        _hospital.PatientService.AddOrUpdatePatient(_loggedInPatient);
         Console.WriteLine("Preference saved.");
     }
 }
