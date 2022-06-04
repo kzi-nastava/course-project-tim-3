@@ -10,9 +10,6 @@ public interface IPatientRepository
     public void AddOrUpdatePatient(Patient patient);
         
     public Patient GetPatientByName(string name);
-
-    public Patient GetPatientByFullName(string firstName, string lastName);
        
     public Patient GetPatientById(ObjectId id);
-        
 }

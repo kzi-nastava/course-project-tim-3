@@ -69,4 +69,11 @@ public class PatientService
         _repo.AddOrUpdatePatient(patient);
         Console.WriteLine("\nReferral succesfully added");
     }
+
+    public Patient GetPatientByFullName(string firstName, string lastName)
+    {
+        var patients = _repo.GetPatients();
+        var foundPatient = patients.Find(patient => patient.FirstName == firstName && patient.LastName == lastName).FirstOrDefault();
+        return foundPatient;
+    }
 }

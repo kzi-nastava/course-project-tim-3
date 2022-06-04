@@ -281,11 +281,7 @@ public class DoctorUI : UserUI
             }
             case "3":
             {
-                Console.Write("\nEnter new allergy >>");
-                string? allergy = Console.ReadLine();
-                patient.MedicalRecord.Allergies.Add(allergy);
-                _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                Console.WriteLine("Edit successfull");
+                EditAllergies(patient);
                 break;
             }
             case "4":
@@ -325,6 +321,15 @@ public class DoctorUI : UserUI
         {
             Console.WriteLine("Please enter a valid number");
         }
+    }
+
+    public void EditAllergies(Patient patient)
+    {
+        Console.Write("\nEnter new allergy >>");
+        string? allergy = Console.ReadLine();
+        patient.MedicalRecord.Allergies.Add(allergy);
+        _hospital.PatientRepo.AddOrUpdatePatient(patient);
+        Console.WriteLine("Edit successfull");
     }
 
     public void EditCheckup(Checkup checkup)
