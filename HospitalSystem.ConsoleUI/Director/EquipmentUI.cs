@@ -98,7 +98,7 @@ public class EquipmentUI : HospitalClientUI
         var rawDate = ReadSanitizedLine();
         var endTime = DateTime.Parse(rawDate);
 
-        List<Room> rooms = _hospital.RoomService.GetAll().ToList();
+        List<Room> rooms = _hospital.RoomService.GetActive().ToList();
         rooms.RemoveAll(room => room.Location == equipmentBatch.RoomLocation);
         var roomUI = new RoomUI(_hospital, rooms);  // TODO: this ugly...
         roomUI.DisplayRooms();

@@ -17,11 +17,19 @@ public class RoomRepository : IRoomRepository
         return _dbClient.GetDatabase("hospital").GetCollection<Room>("rooms");
     }
 
-    public IQueryable<Room> GetAll()
+    private IQueryable<Room> GetAll()
     {
         return
             from room in GetMongoCollection().AsQueryable()
             where !room.Deleted
+            select room;
+    }
+
+    public IQueryable<Room> GetActive()
+    {
+        return
+            from room in GetMongoCollection().AsQueryable()
+            where !room.Deleted && room.Active
             select room;
     }
 

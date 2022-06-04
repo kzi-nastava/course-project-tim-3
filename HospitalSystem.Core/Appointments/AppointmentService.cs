@@ -60,7 +60,7 @@ public class AppointmentService
     {
         var unavailable = GetUnavailableRoomLocations(newAppointment, type);
         var available = 
-            from room in _roomService.GetAll()
+            from room in _roomService.GetActive()
             where room.Type == type && !unavailable.Contains(room.Location)
             select room;
         if (!available.Any())

@@ -8,7 +8,7 @@ public class RoomUI : HospitalClientUI
 
     public RoomUI(Hospital hospital) : base(hospital)
     {
-        _loadedRooms = _hospital.RoomService.GetAll().ToList();
+        _loadedRooms = _hospital.RoomService.GetActive().ToList();
     }
 
     public RoomUI(Hospital hospital, List<Room> loadedRooms) : base(hospital)
@@ -96,7 +96,7 @@ public class RoomUI : HospitalClientUI
             {
                 System.Console.Write(e.Message);
             }
-            _loadedRooms = _hospital.RoomService.GetAll().ToList();
+            _loadedRooms = _hospital.RoomService.GetActive().ToList();
             System.Console.Write("\nInput anything to continue >> ");
             ReadSanitizedLine();
         }
