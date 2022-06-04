@@ -378,7 +378,7 @@ public class DoctorUI : UserUI
         string? newName = Console.ReadLine();
         Console.Write("Enter new patient surname>> ");
         string? newSurname = Console.ReadLine();
-        Patient newPatient = _hospital.PatientRepo.GetPatientByFullName(newName,newSurname);
+        Patient newPatient = _hospital.PatientService.GetPatientByFullName(newName,newSurname);
         if (newPatient != null)
         {
            checkup.Patient = new MongoDB.Driver.MongoDBRef("patients", newPatient.Id);
