@@ -3,7 +3,7 @@ using MongoDB.Driver.Linq;
 
 namespace HospitalSystem.Core
 {
-    public class CheckupChangeRequestRepository
+    public class CheckupChangeRequestRepository : ICheckupChangeRequestRepository
     {
         private MongoClient _dbClient;
         
@@ -27,11 +27,6 @@ namespace HospitalSystem.Core
             return matches;
         }
 
-        public IMongoQueryable<CheckupChangeRequest> GetAllAsQueryable()
-        {
-            //there might be a better way to do this
-            return  GetAll().AsQueryable();
-        }
         public List<CheckupChangeRequest> GetCheckUpChangeRequests()
         {
             var requestsGet = GetAll();
@@ -57,7 +52,6 @@ namespace HospitalSystem.Core
          requests.DeleteOne(filter);
         }
 
-        
         public void UpdateRequest(int indexId, RequestState state)
         {   
             List<CheckupChangeRequest> requests = GetCheckUpChangeRequests();

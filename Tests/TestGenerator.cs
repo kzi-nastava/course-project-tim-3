@@ -45,7 +45,7 @@ public static class TestGenerator
                 DateTime newDateAndTime =  new DateTime(2077,10,10);
                 alteredCheckup.DateRange = new DateRange(newDateAndTime, newDateAndTime.Add(Checkup.DefaultDuration), true);
                 CheckupChangeRequest request = new CheckupChangeRequest(alteredCheckup,CRUDOperation.UPDATE,state);
-                hospital.CheckupChangeRequestRepo.AddOrUpdate(request);
+                hospital.CheckupChangeRequestService.AddOrUpdate(request);
             }
             else if (i % 2 == 1) 
             {
@@ -55,7 +55,7 @@ public static class TestGenerator
                     state = RequestState.DENIED;
                 }
                 CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],CRUDOperation.DELETE,state);
-                hospital.CheckupChangeRequestRepo.AddOrUpdate(request);
+                hospital.CheckupChangeRequestService.AddOrUpdate(request);
             }    
         }
     }
@@ -107,11 +107,15 @@ public static class TestGenerator
                 {   
                     // doing this to allow writing to the past
                     var range = new DateRange(dateTime, dateTime.Add(Checkup.DefaultDuration), allowPast: true);
+                    Random rand = new Random();
+                    var doctorSurvey = new DoctorSurvey("service opinion lorem ipsum",rand.Next(1, 5),"comment lorem ipsum");
                     Checkup check = new Checkup(range, new MongoDBRef("patients",patient.Id),
-                        new MongoDBRef("doctors", doctor.Id), "anamneza");
+                        new MongoDBRef("doctors", doctor.Id), "anamneza", doctorSurvey);
                     hospital.AppointmentService.UpsertCheckup(check);
                 } else if (i % 2 == 1) 
                 {
+                    Random rand = new Random();
+                    var doctorSurvey = new DoctorSurvey("service opinion lorem ipsum",rand.Next(1, 5),"comment lorem ipsum");
                     var range = new DateRange(dateTime, dateTime.Add(new TimeSpan(1, 15, 0)), allowPast: true);
                     Operation op = new Operation(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "report");
@@ -141,7 +145,8 @@ public static class TestGenerator
             else if (i % 4 == 1)
             {
                 int namesCount = Enum.GetNames(typeof(Specialty)).Length;
-                Specialty doctorsSpecialty = (Specialty)(doctorSpecialtynumber%namesCount);
+                // counts on derma being first
+                Specialty doctorsSpecialty = (Specialty)(doctorSpecialtynumber%namesCount+Specialty.DERMATOLOGY);
                 doctorSpecialtynumber++; 
                 var doctor = new Doctor("name" + i,"surname" + i, doctorsSpecialty);
                 user = new User("a" + i, "a" + i, doctor, Role.DOCTOR);
