@@ -14,7 +14,7 @@ public class DoctorUI : UserUI
         bool quit = false;
         while (!quit)
         {
-            Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Create checkup\n4. Quit");
+            Console.WriteLine("\nChoose an option below:\n\n1. View appointments for a specific day\n2. View timetable\n3. Create checkup\n4. Manage medication requests\n5. Quit");
             Console.Write("\n>>");
             var option = ReadSanitizedLine().Trim();
             switch (option)
@@ -36,6 +36,11 @@ public class DoctorUI : UserUI
                 }
                 case "4":
                 {
+                    MedicationRequestsMenu();
+                    break;
+                }
+                case "5":
+                {
                     quit = true;
                     break;
                 }
@@ -43,7 +48,7 @@ public class DoctorUI : UserUI
         }
     }
 
-    public bool CreateCheckup()
+    public void CreateCheckup()
     {
         Console.WriteLine("Creating new Checkup appointment...");
         Console.Write("\nEnter date >>");
@@ -55,24 +60,13 @@ public class DoctorUI : UserUI
         string? name = Console.ReadLine();
         Console.Write("\nEnter patient surname >>");
         string? surname = Console.ReadLine();
-        Patient patient = _hospital.PatientRepo.GetPatientByFullName(name,surname);
-        if (patient == null)
+        if (_hospital.AppointmentService.UpsertCheckup(_user, dateTime, name, surname) == true)
         {
-            Console.WriteLine("No such patient existst.");
-            return false;
-        }
-        Doctor doctor = _hospital.DoctorRepo.GetById((ObjectId)_user.Person.Id);
-        Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
-        if (_hospital.AppointmentRepo.IsDoctorAvailable(checkup.DateRange, doctor))
-        {
-            _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
             Console.WriteLine("\nCheckup successfully added");
-            return true;
         }
         else
         {
             Console.WriteLine("Doctor is not available at that time");
-            return false;
         }
     }
 
@@ -80,18 +74,17 @@ public class DoctorUI : UserUI
     {
         Console.Write("\nEnter date (dd.mm.yyyy) >> ");
         var date = Console.ReadLine();
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByDay(Convert.ToDateTime(date));
+        List<Checkup> checkups = _hospital.AppointmentService.GetCheckupsByDay(Convert.ToDateTime(date));
         PrintCheckups(checkups);
     }
 
     public void ShowNextThreeDays()
     {
         Console.WriteLine("\nThese are your checkups for the next 3 days:\n");
-        List<Checkup> checkups = _hospital.AppointmentRepo.GetCheckupsByDay(DateTime.Now);
-        checkups.AddRange(_hospital.AppointmentRepo.GetCheckupsByDay(DateTime.Today.AddDays(1)));
-        checkups.AddRange(_hospital.AppointmentRepo.GetCheckupsByDay(DateTime.Today.AddDays(2)));
+        List<Checkup> checkups = _hospital.AppointmentService.GetCheckupsByDay(DateTime.Now);
+        checkups.AddRange(_hospital.AppointmentService.GetCheckupsByDay(DateTime.Today.AddDays(1)));
+        checkups.AddRange(_hospital.AppointmentService.GetCheckupsByDay(DateTime.Today.AddDays(2)));
         PrintCheckups(checkups);
-
         TimetableMenu(checkups);
     }
 
@@ -183,7 +176,7 @@ public class DoctorUI : UserUI
         var isNumber = int.TryParse(Console.ReadLine(), out int checkupNumber);
         if (isNumber == true && checkupNumber >= 0 && checkupNumber <= checkups.Count())
         {
-            _hospital.AppointmentRepo.DeleteCheckup(checkups[checkupNumber-1]);
+            _hospital.AppointmentService.DeleteCheckup(checkups[checkupNumber-1]);
             Console.WriteLine("Deletion successfull"); 
         }
         else
@@ -198,7 +191,7 @@ public class DoctorUI : UserUI
         int i = 1;
         foreach (Checkup checkup in checkups)
         {
-            Patient patient = _hospital.PatientRepo.GetPatientById((ObjectId)checkup.Patient.Id);
+            Patient patient = _hospital.PatientService.GetPatientById((ObjectId)checkup.Patient.Id);
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 60)));
             Console.WriteLine(String.Format("{0,5} {1,24} {2,25}", i, checkup.DateRange, patient));
             i++;
@@ -207,7 +200,7 @@ public class DoctorUI : UserUI
 
     public Patient ShowPatientInfo(Checkup checkup)
     {
-        Patient patient = _hospital.PatientRepo.GetPatientById((ObjectId)checkup.Patient.Id);
+        Patient patient = _hospital.PatientService.GetPatientById((ObjectId)checkup.Patient.Id);
         Console.Write("\n" + patient.ToString() + "\n");
         Console.Write(patient.MedicalRecord.ToString() + "\n");
         return patient;
@@ -227,13 +220,13 @@ public class DoctorUI : UserUI
                 case "1":
                 {
                     Console.Write("\nEnter Anamnesis >> ");
-                    String anamnesis = Console.ReadLine();
+                    String? anamnesis = Console.ReadLine();
 
                     patient.MedicalRecord.AnamnesisHistory.Add(anamnesis);
-                    _hospital.PatientRepo.AddOrUpdatePatient(patient);
+                    _hospital.PatientService.AddOrUpdatePatient(patient);
 
                     checkup.Anamnesis = anamnesis;
-                    _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+                    _hospital.AppointmentService.UpsertCheckup(checkup);
 
                     Console.Write("\nDo you want to add a prescription? [y/n] >> ");
                     string choice = ReadSanitizedLine();
@@ -255,6 +248,7 @@ public class DoctorUI : UserUI
                 }
                 case "4":
                 {
+                    EquipmentStateUpdate(checkup);
                     quit = true;
                     break;
                 }
@@ -265,6 +259,7 @@ public class DoctorUI : UserUI
                 }
             } 
         }
+        
     }
 
     public void EditMedicalRecord(Patient patient)
@@ -286,11 +281,7 @@ public class DoctorUI : UserUI
             }
             case "3":
             {
-                Console.Write("\nEnter new allergy >>");
-                string allergy = Console.ReadLine();
-                patient.MedicalRecord.Allergies.Add(allergy);
-                _hospital.PatientRepo.AddOrUpdatePatient(patient);
-                Console.WriteLine("Edit successfull");
+                EditAllergies(patient);
                 break;
             }
             case "4":
@@ -307,7 +298,7 @@ public class DoctorUI : UserUI
         if (input == true && weight > 10 && weight < 400)
         {
             patient.MedicalRecord.WeightInKg = weight;
-            _hospital.PatientRepo.AddOrUpdatePatient(patient);
+            _hospital.PatientService.AddOrUpdatePatient(patient);
             Console.WriteLine("Edit successfull");
         }
         else
@@ -323,13 +314,22 @@ public class DoctorUI : UserUI
         if (input == true && height > 30 && height < 250)
         {
             patient.MedicalRecord.HeightInCm = height;
-            _hospital.PatientRepo.AddOrUpdatePatient(patient);
+            _hospital.PatientService.AddOrUpdatePatient(patient);
             Console.WriteLine("Edit successfull");
         }
         else
         {
             Console.WriteLine("Please enter a valid number");
         }
+    }
+
+    public void EditAllergies(Patient patient)
+    {
+        Console.Write("\nEnter new allergy >>");
+        string? allergy = Console.ReadLine();
+        patient.MedicalRecord.Allergies.Add(allergy);
+        _hospital.PatientService.AddOrUpdatePatient(patient);
+        Console.WriteLine("Edit successfull");
     }
 
     public void EditCheckup(Checkup checkup)
@@ -362,8 +362,8 @@ public class DoctorUI : UserUI
         var newDateTime = DateTime.TryParse(date + " " + time, out DateTime newStartDate);
         if (newDateTime == true)
         {
-            checkup.DateRange = new DateRange(newStartDate, checkup.DateRange.Ends, allowPast: false);
-            _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);
+            checkup.DateRange = new DateRange(newStartDate, newStartDate.Add(Checkup.DefaultDuration), allowPast: false);
+            _hospital.AppointmentService.UpsertCheckup(checkup);
             Console.WriteLine("\nEdit successfull");
         }
         else
@@ -378,11 +378,11 @@ public class DoctorUI : UserUI
         string? newName = Console.ReadLine();
         Console.Write("Enter new patient surname>> ");
         string? newSurname = Console.ReadLine();
-        Patient newPatient = _hospital.PatientRepo.GetPatientByFullName(newName,newSurname);
+        Patient newPatient = _hospital.PatientService.GetPatientByFullName(newName,newSurname);
         if (newPatient != null)
         {
            checkup.Patient = new MongoDB.Driver.MongoDBRef("patients", newPatient.Id);
-            _hospital.AppointmentRepo.AddOrUpdateCheckup(checkup);                
+            _hospital.AppointmentService.UpsertCheckup(checkup);                
             Console.WriteLine("Edit successfull"); 
         }
         else
@@ -412,53 +412,25 @@ public class DoctorUI : UserUI
 
     public void ReferralBySpecialtyMenu(Patient patient)
     {
-        Doctor doctor = null;
         Console.Write("\nChoose specialty:\n1. Dermatology\n2. Radiology\n3. Stomatology\n4. Ophthalmology\n5. Family medicine>> ");
-        string? specialty = Console.ReadLine();
-        switch (specialty)
+        var input = Int32.TryParse(Console.ReadLine(), out int specialty);
+        if (input)
         {
-            case "1":
+            Doctor doctor = _hospital.DoctorService.GetOneBySpecialty((Specialty)specialty);
+            if (doctor != null)
             {
-                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.DERMATOLOGY);
-                break;
+                _hospital.PatientService.AddReferral(patient, doctor);
             }
-            case "2":
+            else
             {
-                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.RADIOLOGY);
-                break;
+                Console.WriteLine("No adequate doctor found.");
             }
-            case "3":
-            {
-                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.STOMATOLOGY);
-                break;
-            }
-            case "4":
-            {
-                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.OPHTHALMOLOGY);
-                break;
-            }
-            case "5":
-            {
-                doctor = _hospital.DoctorRepo.GetOneBySpecialty(Specialty.FAMILY_MEDICINE);
-                break;
-            }
-            default:
-            {
-                Console.WriteLine("Wrong input");
-                break;
-            }
-        }
-        if (doctor != null)
-        {
-            Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-            patient.MedicalRecord.Referrals.Add(referral);
-            _hospital.PatientRepo.AddOrUpdatePatient(patient);
-            Console.WriteLine("\nReferral succesfully added");
         }
         else
         {
-            Console.WriteLine("No adequate doctor found.");
+            Console.Write("\nPlease input valid option.");
         }
+        
     }
 
     public void ReferralByDoctor(Patient patient)
@@ -469,12 +441,10 @@ public class DoctorUI : UserUI
         string? lastName = Console.ReadLine();
         if (firstName != null && lastName != null)
         {
-            Doctor doctor = _hospital.DoctorRepo.GetByFullName(firstName, lastName);
+            Doctor doctor = _hospital.DoctorService.GetByFullName(firstName, lastName);
             if (doctor != null)
             {
-                Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
-                patient.MedicalRecord.Referrals.Add(referral);
-                _hospital.PatientRepo.AddOrUpdatePatient(patient);
+                _hospital.PatientService.AddReferral(patient,doctor);
                 Console.WriteLine("\nReferral succesfully added");
             }
             else
@@ -490,7 +460,6 @@ public class DoctorUI : UserUI
 
     public void PrescriptionMenu(Patient patient)
     {
-        bool quit = false;
         while (true)
         {
             Console.Write("\nEnter medication name >> ");
@@ -500,23 +469,21 @@ public class DoctorUI : UserUI
             if (medication == null)
             {
                 Console.WriteLine("No such medication found in database");
-                break;
             }
-            if (patient.IsAllergicToMedication(medication)) 
+            else
             {
-                Console.WriteLine("Patient is allergic to given Medication. Cancelling prescription.");
-                break;
+                Console.Write("\nEnter amount of times the medication should be taken a day >> ");
+                int amount = Int32.Parse(ReadSanitizedLine());
+                Console.Write("\nEnter amount of hours inbetween medication intake >> ");
+                int hours = Int32.Parse(ReadSanitizedLine());
+                Console.Write("\nWhen to take in medication:\n1. Before Meal\n2. After Meal\n3. With Meal\n4. Anytime\n>> ");
+                var input = Int32.TryParse(ReadSanitizedLine(), out int bestTaken);
+                if (input)
+                    _hospital.PatientService.AddPrescription(medication, amount, (MedicationBestTaken)bestTaken, hours, patient);
+                else
+                    Console.Write("\nPlease enter a valid option.");
             }
 
-            Console.Write("\nEnter amount of times the medication should be taken a day >> ");
-            int amount = Int32.Parse(ReadSanitizedLine());
-            Console.Write("\nEnter amount of hours inbetween medication intake >> ");
-            int hours = Int32.Parse(ReadSanitizedLine());
-            Console.Write("\nWhen to take in medication:\n1. Before Meal\n2. After Meal\n3. With Meal\n4. Anytime\n>> ");
-            string bestTaken = ReadSanitizedLine();
-
-            WritePrescription(medication, amount, bestTaken, hours, patient);
-            
             string? choice = "n";
             while (choice != "y")
             {
@@ -531,37 +498,124 @@ public class DoctorUI : UserUI
         }
     }
 
-    public void WritePrescription(Medication medication, int amount, string bestTaken, int hours, Patient patient)
+    public void MedicationRequestsMenu()
     {
-        switch (bestTaken)
+        List<MedicationRequest> requested = _hospital.MedicationRequestService.GetSent().ToList();
+        PrintMedicationRequests(requested);
+        Console.Write("\nOptions:\n1. Review request\n2. Back\n");
+        Console.Write(">>");
+        string? input = Console.ReadLine();
+        switch (input)
         {
             case "1":
             {
-                AddPrescription(medication, amount, MedicationBestTaken.BEFORE_MEAL, hours, patient);
+                ReviewMedicationRequests(requested);
                 break;
             }
             case "2":
-            {
-                AddPrescription(medication, amount, MedicationBestTaken.AFTER_MEAL, hours, patient);
                 break;
-            }
-            case "3":
-            {
-                AddPrescription(medication, amount, MedicationBestTaken.WITH_MEAL, hours, patient);
+            default:
+                Console.WriteLine("Wrong input. Please choose a valid option.");
                 break;
-            }
-            case "4":
-            {
-                AddPrescription(medication, amount, MedicationBestTaken.ANY_TIME, hours, patient);
-                break;
-            }
-        }         
+        }
     }
 
-    public void AddPrescription(Medication medication, int amount, MedicationBestTaken bestTaken, int hours, Patient patient)
+    public void PrintMedicationRequests(List<MedicationRequest> requested)
     {
-        Prescription prescription = new Prescription(medication, amount, MedicationBestTaken.ANY_TIME, hours);
-        patient.MedicalRecord.Prescriptions.Add(prescription);
-        _hospital.PatientRepo.AddOrUpdatePatient(patient);
+        int i = 1;
+        Console.WriteLine(String.Format("\n{0,5} {1,24} {2,25} {3,20}", "Nr.", "Medication name", "Director comment", "Date of creation"));
+        foreach (MedicationRequest request in requested)
+        {
+            Console.WriteLine(string.Concat(Enumerable.Repeat("-", 60)));
+            Console.WriteLine(String.Format("{0,5} {1,24} {2,20} {3,30}", i, request.Requested.Name, request.DirectorComment, request.Created));
+            i++;
+        }
+    }
+
+    public void ReviewMedicationRequests(List<MedicationRequest> requested)
+    {
+        bool back = false;
+        while (!back)
+        {
+            Console.WriteLine("\nEnter request number");
+            Console.Write(">>");
+            var isNumber = int.TryParse(Console.ReadLine(), out int requestNumber);
+            if (isNumber == true && requestNumber > 0 && requestNumber <= requested.Count())
+            {
+                MedicationRequest request = requested[requestNumber-1];
+                Console.Write("\n" + request);
+                Console.WriteLine("\n1. Approve\n2. Deny\n3. Back");
+                Console.WriteLine(">>");
+                string? option = Console.ReadLine();
+                switch (option)
+                {
+                    case "1":
+                    {
+                        _hospital.MedicationRequestService.Approve(request);
+                        Console.WriteLine("Request approved.");
+                        back = true;
+                        break;
+                    }
+                    case "2":
+                    {
+                        Console.Write("\nWrite comment >>");
+                        string? comment = Console.ReadLine();
+                        if (comment != null)
+                            request.DoctorComment = comment;
+                        _hospital.MedicationRequestService.Deny(request);
+                        Console.WriteLine("\nRequest denied.");
+                        back = true;
+                        break;
+                    }
+                    case "3":
+                    {
+                        back = true;
+                        break;
+                    }
+                    default:
+                    {
+                        Console.WriteLine("Wrong input. Please enter a valid option.");
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Wrong input. Please enter a valid option.");
+            }
+        }
+    }
+
+    public void EquipmentStateUpdate(Checkup checkup)
+    {
+        List<EquipmentBatch> equipments = _hospital.EquipmentService.GetAllIn(checkup.RoomLocation).ToList();
+        PrintEquipmentState(equipments);
+
+        foreach (EquipmentBatch equipment in equipments)
+        {
+            while (true)
+            {
+               Console.Write("\nInsert amount of used " + equipment.Name + " >> ");
+                var isNumber = int.TryParse(Console.ReadLine(), out int amount);
+                if (isNumber == true && amount >= 0 && amount <=equipment.Count)
+                {
+                    _hospital.EquipmentService.Remove(new EquipmentBatch(equipment.RoomLocation, equipment.Name, amount, equipment.Type));
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("\nPlease enter a valid amount between 0 and " + equipment.Count);
+                } 
+            }
+        }
+    }
+
+    public void PrintEquipmentState(List<EquipmentBatch> equipments)
+    {
+        Console.Write("\nEquipment state before checkup:\n\n");
+        foreach (EquipmentBatch equipment in equipments)
+        {
+            Console.WriteLine(equipment);
+        }   
     }
 }

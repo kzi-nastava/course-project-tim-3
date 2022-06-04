@@ -32,8 +32,8 @@ public static class TestGenerator
     {
         for (int i = 0; i < 20; i++)
         {
-            Doctor doctor = hospital.DoctorRepo.GetByFullName("name1","surname1");
-            List<Checkup> checkups = hospital.AppointmentRepo.GetCheckupsByDoctor(doctor.Id);
+            Doctor doctor = hospital.DoctorService.GetByFullName("name1","surname1");
+            List<Checkup> checkups = hospital.AppointmentService.GetCheckupsByDoctor(doctor.Id);
 
             if (i % 2 == 0)
             {   RequestState state = RequestState.PENDING;
@@ -83,20 +83,24 @@ public static class TestGenerator
             {
                 var newRoom = new Room("55" + i, "NA" + i, RoomType.CHECKUP);
                 hospital.RoomService.Insert(newRoom);
+                var newEquipmentBatch = new EquipmentBatch(newRoom.Location, "syringe", 10, EquipmentType.CHECKUP);
+                hospital.EquipmentService.Add(newEquipmentBatch);
+                var newEquipmentBatch2 = new EquipmentBatch(newRoom.Location, "bandage", 10, EquipmentType.CHECKUP);
+                hospital.EquipmentService.Add(newEquipmentBatch2);
             }
         }
     }
 
     private static void GenerateCheckupsAndOperations(Hospital hospital)
     {
-        DateTime dateTime = new DateTime(2022, 5, 11, 4, 15, 0);
+        DateTime dateTime = new DateTime(2022, 6, 3, 4, 15, 0);
         int i = 0;
         try
         {
             for (; i < 100; i++)
             {
-                Doctor doctor = hospital.DoctorRepo.GetByFullName("name1","surname1");
-                Patient patient = hospital.PatientRepo.GetPatientByFullName("name2","surname2");
+                Doctor doctor = hospital.DoctorService.GetByFullName("name1","surname1");
+                Patient patient = hospital.PatientService.GetPatientByFullName("name2","surname2");
                 dateTime = dateTime.AddHours(1);
 
                 if (i % 2 == 0)
@@ -105,13 +109,13 @@ public static class TestGenerator
                     var range = new DateRange(dateTime, dateTime.Add(Checkup.DefaultDuration), allowPast: true);
                     Checkup check = new Checkup(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "anamneza");
-                    hospital.AppointmentRepo.AddOrUpdateCheckup(check);
+                    hospital.AppointmentService.UpsertCheckup(check);
                 } else if (i % 2 == 1) 
                 {
                     var range = new DateRange(dateTime, dateTime.Add(new TimeSpan(1, 15, 0)), allowPast: true);
                     Operation op = new Operation(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "report");
-                    hospital.AppointmentRepo.AddOrUpdateOperation(op);
+                    hospital.AppointmentService.UpsertOperation(op);
                 }
             }
         }
@@ -141,12 +145,12 @@ public static class TestGenerator
                 doctorSpecialtynumber++; 
                 var doctor = new Doctor("name" + i,"surname" + i, doctorsSpecialty);
                 user = new User("a" + i, "a" + i, doctor, Role.DOCTOR);
-                hospital.DoctorRepo.AddOrUpdateDoctor(doctor);
+                hospital.DoctorService.Upsert(doctor);
             }
             else if (i % 4 == 2) 
             {
                 var patient = new Patient("name" + i, "surname" + i, new MedicalRecord());
-                hospital.PatientRepo.AddOrUpdatePatient(patient);
+                hospital.PatientService.AddOrUpdatePatient(patient);
                 user = new User("a" + i, "a" + i, patient, Role.PATIENT);
             }  
             else

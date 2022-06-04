@@ -2,7 +2,7 @@ namespace HospitalSystem.Core
 {
     public enum MedicationBestTaken
     {
-        BEFORE_MEAL,
+        BEFORE_MEAL = 1,
         AFTER_MEAL,
         WITH_MEAL,
         ANY_TIME
