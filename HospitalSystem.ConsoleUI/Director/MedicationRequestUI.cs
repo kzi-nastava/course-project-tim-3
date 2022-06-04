@@ -78,15 +78,6 @@ public class MedicationRequestUI : ConsoleUI
         }
     }
 
-    private void DisplayIngredients(List<string> ingredients)
-    {
-        System.Console.WriteLine("No. | Ingredient");
-        for (int i = 0; i < ingredients.Count; i++)
-        {
-            System.Console.WriteLine(i + " | " + ingredients[i]);
-        }
-    }
-
     private void CreateRequest()
     {
         System.Console.Write("Enter Medication name >> ");
@@ -97,7 +88,8 @@ public class MedicationRequestUI : ConsoleUI
         }
 
         List<string> ingredients = new();
-        EditIngredients(ingredients);
+        var ingredientUI = new IngredientsUI(_hospital, ingredients);
+        ingredientUI.Start();
         System.Console.Write("Input your comment >> ");
         var comment = ReadSanitizedLine();
         if (comment == "")
@@ -127,7 +119,8 @@ public class MedicationRequestUI : ConsoleUI
         var choice = ReadSanitizedLine();
         if (choice == "y")
         {
-            EditIngredients(req.Requested.Ingredients);
+            var ingredientUI = new IngredientsUI(_hospital, req.Requested.Ingredients);
+            ingredientUI.Start();
         }
 
         System.Console.Write("Input your comment >> ");
@@ -140,95 +133,4 @@ public class MedicationRequestUI : ConsoleUI
         System.Console.Write("Success! ");
     }
 
-    private void EditIngredients(List<string> ingredients)
-    {
-        while (true)
-        {
-            System.Console.Clear();
-            System.Console.WriteLine("--- Editing ingredients ---");
-            DisplayIngredients(ingredients);
-            System.Console.WriteLine(@"
-            INPUT OPTION:
-                [add|a] Add ingredients
-                [remove|r] Remove ingredient
-                [edit|e] Edit an ingredient
-                [done|d] Finish editing ingredients
-                [quit|q] Quit to main menu
-                [exit|x] Exit program
-            ");
-            System.Console.Write(">> ");
-            var choice = ReadSanitizedLine();
-            if (choice == "a" || choice == "add")
-            {
-                AddIngredients(ingredients);
-            }
-            else if (choice == "r" || choice == "remove")
-            {
-                RemoveIngredient(ingredients);
-            }
-            else if (choice == "e" || choice == "edit")
-            {
-                EditIngredient(ingredients);
-            }
-            else if (choice == "d" || choice == "done")
-            {
-                if (ingredients.Count == 0)
-                {
-                    // TODO: move this to some med service
-                    throw new InvalidInputException("Can not have no ingredients.");
-                }
-                return;
-            }
-            else if (choice == "q" || choice == "quit")
-            {
-                throw new QuitToMainMenuException("From StartManageMedicationRequests.");
-            }
-            else if (choice == "x" || choice == "exit")
-            {
-                System.Environment.Exit(0);
-            }
-            else
-            {
-                System.Console.WriteLine("Invalid input - please read the available commands.");
-                System.Console.Write("Input anything to continue >> ");
-                ReadSanitizedLine();
-            }
-        }
-    }
-
-    private void RemoveIngredient(List<string> ingredients)
-    {
-        System.Console.Write("Input number to remove >> ");
-        var num = ReadInt(0, ingredients.Count - 1);
-        ingredients.RemoveAt(num);
-    }
-
-    private void EditIngredient(List<string> ingredients)
-    {
-        System.Console.Write("Input number to edit >> ");
-        var num = ReadInt(0, ingredients.Count - 1);
-        System.Console.Write("Input new ingredient >> ");
-        var ingredient = ReadSanitizedLine();
-        if (ingredient == "")
-        {
-            throw new InvalidInputException("Ingredient can not be empty.");
-        }
-        ingredients[num] = ingredient;
-    }
-
-    private void AddIngredients(List<string> ingredients)
-    {
-        System.Console.WriteLine("Input new ingredients. Each line is one ingredient. " + 
-            "Empty line means that you are done with inputting new ingredients");
-        var ingredient = "INVALID";
-        while (ingredient != "")
-        {
-            System.Console.Write(">> ");
-            ingredient = ReadSanitizedLine();
-            if (ingredient != "")
-            {
-                ingredients.Add(ingredient);
-            }
-        }
-    }
 }
