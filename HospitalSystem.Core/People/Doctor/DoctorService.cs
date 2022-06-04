@@ -28,6 +28,38 @@ public class DoctorService
             return specizedDoctors.ToList();
     }
 
+    public List<Doctor> GetManyBySpecialty(string keyword)
+    {
+        var doctors = GetAll();
+        var allDoctors =
+            from doctor in doctors.AsQueryable<Doctor>()
+            select doctor;
+
+        List<Doctor> filteredDoctors = allDoctors.ToList().FindAll(doctor => doctor.Specialty.ToString().Contains(keyword.ToUpper()));
+        return filteredDoctors;
+    }
+
+    public List<Doctor> GetManyByName(string keyword)
+    {
+        var doctors = GetAll();
+        var allDoctors =
+            from doctor in doctors.AsQueryable<Doctor>()
+            select doctor;
+
+        return allDoctors.ToList().FindAll(doctor => doctor.FirstName.Contains(keyword));
+    }
+
+    public List<Doctor> GetManyByLastName(string keyword)
+    {
+        var doctors = GetAll();
+        var allDoctors =
+            from doctor in doctors.AsQueryable<Doctor>()
+            select doctor;
+
+        List<Doctor> filteredDoctors = allDoctors.ToList().FindAll(doctor => doctor.LastName.Contains(keyword));
+        return filteredDoctors;
+    }
+
     public Doctor GetOneBySpecialty(Specialty specialty)
     {
         var doctors = _doctorRepo.GetAll();

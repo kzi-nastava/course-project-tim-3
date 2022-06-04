@@ -22,10 +22,11 @@ namespace HospitalSystem.Core
             var patients = GetPatients();
             patients.ReplaceOne(patient => patient.Id == newPatient.Id, newPatient, new ReplaceOptions {IsUpsert = true});
         }
-        public Patient GetPatientByName(string name)
+        public Patient GetPatientByFullName(string firstName, string lastName)
         {
             var patients = GetPatients();
-            var foundPatient = patients.Find(patient => patient.FirstName == name).FirstOrDefault();
+            var foundPatient = patients.Find(patient => patient.FirstName == firstName && patient.LastName == lastName)
+                .FirstOrDefault();
             return foundPatient;
         }
 

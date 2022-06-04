@@ -30,4 +30,20 @@ public class MedicationRequestRepository : IMedicationRequestRepository
     {
         return GetMongoCollection().AsQueryable();
     }
+
+    public IQueryable<MedicationRequest> GetSent()
+    {
+        return
+            from req in GetAll()
+            where req.Status == MedicationRequestStatus.SENT
+            select req;
+    }
+
+    public IQueryable<MedicationRequest> GetDenied()
+    {
+        return
+            from req in GetAll()
+            where req.Status == MedicationRequestStatus.DENIED
+            select req;
+    }
 }

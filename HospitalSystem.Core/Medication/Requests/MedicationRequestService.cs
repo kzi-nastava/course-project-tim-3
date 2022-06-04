@@ -38,17 +38,11 @@ public class MedicationRequestService
 
     public IQueryable<MedicationRequest> GetDenied()
     {
-        return
-            from req in _repo.GetAll()
-            where req.Status == MedicationRequestStatus.DENIED
-            select req;
+        return _repo.GetDenied();
     }
 
     public IQueryable<MedicationRequest> GetSent()
     {
-        return
-            from req in _repo.GetAll()
-            where req.Status == MedicationRequestStatus.SENT
-            select req;
+        return _repo.GetSent();
     }
 }

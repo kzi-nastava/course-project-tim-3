@@ -25,10 +25,7 @@ public class UserBlockedException : System.Exception
 
 public class PatientUI : UserUI
 {
-    //there might be a better way to set opening time, only time will be used
-    //those times should be stored somewhere else
-    private DateTime _now = DateTime.Now;
-    private TimeSpan _checkupDuration = new TimeSpan(0,0,15,0);
+    
     private Patient _loggedInPatient;
 
     public PatientUI(Hospital hospital, User user) : base(hospital, user) 
@@ -54,6 +51,7 @@ public class PatientUI : UserUI
             Commands:
             ma - manage appointments
             vm - view medical record
+            sd - search doctors
             exit - quit the program
 
             ");
@@ -68,6 +66,10 @@ public class PatientUI : UserUI
                 else if (selectedOption == "vm")
                 {
                     StartMedicalRecord();
+                }
+                else if (selectedOption == "sd")
+                {
+                    StartDoctorSearch();
                 }
                 else if (selectedOption == "exit")
                 {
@@ -96,9 +98,9 @@ public class PatientUI : UserUI
         Console.Write("Please enter a search keyword: ");
         string keyword = ReadSanitizedLine().Trim();
 
-        List<Checkup> filteredCheckups = _hospital.AppointmentService.SearchPastCheckups(_loggedInPatient.Id,keyword);
+        List<Checkup> filteredDoctors = _hospital.AppointmentService.SearchPastCheckups(_loggedInPatient.Id,keyword);
 
-        if (filteredCheckups.Count == 0)
+        if (filteredDoctors.Count == 0)
         {
             Console.WriteLine("No anamnesis found");
             return;
@@ -112,22 +114,22 @@ public class PatientUI : UserUI
             ");
         
         //there is probably a better way to do n and s, but idk
-        string sortSelection = ReadSanitizedLine().Trim();
-        if (sortSelection == "d")
+        string sortOption = ReadSanitizedLine().Trim();
+        if (sortOption == "d")
         {
-            filteredCheckups.Sort((checkup1, checkup2)=> 
+            filteredDoctors.Sort((checkup1, checkup2)=> 
                 DateTime.Compare(checkup1.DateRange.Starts, checkup2.DateRange.Ends));
         }
-        else if (sortSelection == "n")
+        else if (sortOption == "n")
         {
-            filteredCheckups.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsName);
+            filteredDoctors.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsName);
         }
-        else if (sortSelection == "s")
+        else if (sortOption == "s")
         {
-            filteredCheckups.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsSpecialty);
+            filteredDoctors.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsSpecialty);
         }
 
-        foreach (Checkup checkup in filteredCheckups)
+        foreach (Checkup checkup in filteredDoctors)
         {
            ShowCheckupsAnamnesis(checkup);
         }
@@ -364,13 +366,13 @@ public class PatientUI : UserUI
             return;
         }
 
-        if (selectedCheckup.DateRange.Starts < _now.AddDays(2))
+        if (selectedCheckup.DateRange.Starts < DateTime.Now.AddDays(2))
         {
             CheckupChangeRequest newRequest = new CheckupChangeRequest(
                 selectedCheckup,
                 CRUDOperation.DELETE);
                 Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
-                _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
+                _hospital.CheckupChangeRequestService.AddOrUpdate(newRequest);
         }
         else
         {
@@ -385,6 +387,30 @@ public class PatientUI : UserUI
             throw new UserBlockedException("Deleting too many checkups.");
         }
 
+    }
+    public Doctor ChangeDoctor(Doctor currentDoctor)
+    {
+
+        List<Doctor> alternativeDoctors =  _hospital.DoctorService.GetManyBySpecialty(currentDoctor.Specialty);
+        alternativeDoctors.Remove(currentDoctor);
+
+            if (alternativeDoctors.Count == 0)
+            {
+                Console.WriteLine("No doctors found in the same specialty.");
+                return currentDoctor;
+            }
+
+            for (int i=0; i<alternativeDoctors.Count; i++)
+            {
+                Console.WriteLine(i+" - "+alternativeDoctors[i].ToString());
+            }
+
+            int selectedDoctorIndex = -1;
+            
+            System.Console.Write("Please enter a number from the list: ");
+            selectedDoctorIndex = ReadInt(0, alternativeDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
+            
+            return alternativeDoctors[selectedDoctorIndex];
     }
 
     public void UpdateCheckup()
@@ -409,16 +435,10 @@ public class PatientUI : UserUI
 
         Doctor currentDoctor = _hospital.DoctorService.GetById((ObjectId)selectedCheckup.Doctor.Id);
         DateTime existingDate = selectedCheckup.DateRange.Starts;
-        
-        List<Doctor> alternativeDoctors =  _hospital.DoctorService.GetManyBySpecialty(currentDoctor.Specialty);
-        alternativeDoctors.Remove(currentDoctor);
         Doctor newDoctor = currentDoctor;
         DateTime newDate = existingDate;
-
-        // change doctor?
-
+        
         Console.WriteLine("Change doctor? Enter yes or no: ");
-
         string changeDoctorOpinion = ReadSanitizedLine().Trim();
 
         if (changeDoctorOpinion !="yes" && changeDoctorOpinion!="no")
@@ -429,33 +449,16 @@ public class PatientUI : UserUI
 
         if (changeDoctorOpinion == "yes")
         {
-            if (alternativeDoctors.Count == 0)
-            {
-                Console.WriteLine("No doctors found in the same specialty.");
-                return;
-            }
-
-            for (int i=0; i<alternativeDoctors.Count; i++)
-            {
-                Console.WriteLine(i+" - "+alternativeDoctors[i].ToString());
-            }
-
-            int selectedDoctorIndex = -1;
             try
             {
-                System.Console.Write("Please enter a number from the list: ");
-                selectedDoctorIndex = ReadInt(0, alternativeDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
+                newDoctor = ChangeDoctor(currentDoctor);
             }
             catch (InvalidInputException e)
             {
                 System.Console.Write(e.Message + " Aborting...");
                 return;
             }
-
-            newDoctor = alternativeDoctors[selectedDoctorIndex];
         }
-
-        //change date?
 
         Console.WriteLine("Change date? Enter yes or no: ");
 
@@ -473,11 +476,9 @@ public class PatientUI : UserUI
             Console.WriteLine("You have selected the following date - "+ newDate);
         }
 
-        //create checkup
         selectedCheckup.Doctor = new MongoDB.Driver.MongoDBRef("doctors", newDoctor.Id);
         DateTime oldDate = selectedCheckup.DateRange.Starts;
         selectedCheckup.DateRange = new DateRange(newDate, newDate.Add(Checkup.DefaultDuration), allowPast: false);
-        
         
         if (!_hospital.AppointmentService.IsDoctorAvailable(selectedCheckup.DateRange, newDoctor))
         {
@@ -485,13 +486,13 @@ public class PatientUI : UserUI
             return;
         }
         
-        if (oldDate < _now.AddDays(2))
+        if (oldDate < DateTime.Now.AddDays(2))
         {
             CheckupChangeRequest newRequest = new CheckupChangeRequest(
                 selectedCheckup,
                 CRUDOperation.UPDATE);
             Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
-            _hospital.CheckupChangeRequestRepo.AddOrUpdate(newRequest);
+            _hospital.CheckupChangeRequestService.AddOrUpdate(newRequest);
         }
         else
         {
@@ -620,7 +621,7 @@ public class PatientUI : UserUI
         while (iterationTime.TimeOfDay != Globals.ClosingTime.TimeOfDay)
         {
             Console.WriteLine(highestCheckupIndex + " - " + iterationTime.ToString("HH:mm"));
-            iterationTime = iterationTime.Add(_checkupDuration);
+            iterationTime = iterationTime.Add(Globals._checkupDuration);
             highestCheckupIndex += 1;
         }
 
@@ -628,7 +629,7 @@ public class PatientUI : UserUI
         int selectedIndex = ReadInt(0, highestCheckupIndex-1, "Number out of bounds!", "Number not recognized!");
 
         inputDate = inputDate.AddHours(Globals.OpeningTime.Hour);
-        inputDate = inputDate.Add(selectedIndex*_checkupDuration);
+        inputDate = inputDate.Add(selectedIndex*Globals._checkupDuration);
 
         return inputDate;
     }
@@ -648,7 +649,7 @@ public class PatientUI : UserUI
             throw new InvalidInputException("Wrong date entered.");  
         }
 
-        if (DateTime.Compare(result.Date, _now.Date) == -1 )
+        if (DateTime.Compare(result.Date, DateTime.Now.Date) == -1 )
         {
             throw new InvalidInputException("The date entered is in past.");
         }
@@ -664,7 +665,7 @@ public class PatientUI : UserUI
        
         //TODO: The listed times shouldnt be the ones that expired
 
-        if (DateTime.Compare(result, _now) == -1 )
+        if (DateTime.Compare(result, DateTime.Now) == -1 )
         {
              throw new InvalidInputException("Selected date and time expired.");
         } 
@@ -813,7 +814,7 @@ public class PatientUI : UserUI
         }
     }
 
-    public void CreateCheckup()
+    public void CreateCheckup(Doctor ?overrideDoctor = null)
     {
 
         //TODO: change this
@@ -833,24 +834,31 @@ public class PatientUI : UserUI
             System.Console.Write(e.Message + " Aborting...");
             return;
         }
-
+        
         Console.WriteLine("You have selected the following date - "+ selectedDate);
+        Doctor? selectedDoctor;
+        if (overrideDoctor is null)
+        {
+            Specialty selectedSpecialty;
+            try
+            {
+                selectedSpecialty = SelectSpecialty();
+            }
+            catch (InvalidInputException e)
+            {
+                System.Console.Write(e.Message + " Aborting...");
+                return;
+            }
 
-        Specialty selectedSpecialty;
-        try
-        {
-            selectedSpecialty = SelectSpecialty();
+            selectedDoctor = SelectDoctor(selectedSpecialty);
+            if (selectedDoctor == null)
+            {
+                return;
+            }
         }
-        catch (InvalidInputException e)
+        else
         {
-            System.Console.Write(e.Message + " Aborting...");
-            return;
-        }
-
-        Doctor? selectedDoctor = SelectDoctor(selectedSpecialty);
-        if (selectedDoctor == null)
-        {
-            return;
+            selectedDoctor = overrideDoctor;
         }
 
         //TODO: Might want to create an additional expiry check for checkup timedate
@@ -876,6 +884,106 @@ public class PatientUI : UserUI
             _hospital.UserService.BlockUser(_user);
             throw new UserBlockedException("Creating too many checkups.");
         }
+    }
+
+    public void StartDoctorSearch()
+    {
+        System.Console.WriteLine(@"
+            Search options:
+            n - search by name
+            l - search by last name
+            s - search by speciality
+            ");
+
+        Console.Write("Please enter a search option: ");
+        string searchOption = ReadSanitizedLine().Trim();
+        if (searchOption!= "n" && searchOption!= "l" && searchOption!= "s")
+        {
+            Console.WriteLine("Wrong option entered. Aborting...");
+        }
+
+        Console.Write("Please enter a search keyword: ");
+        string keyword = ReadSanitizedLine().Trim();
+
+        List<Doctor> filteredDoctors = new List<Doctor>();
+
+        switch (searchOption)
+        {
+            case "n":
+                filteredDoctors = _hospital.DoctorService.GetManyByName(keyword);
+                break;
+            case "l":
+                filteredDoctors = _hospital.DoctorService.GetManyByLastName(keyword);
+                break;
+            case "s":
+                filteredDoctors = _hospital.DoctorService.GetManyBySpecialty(keyword);
+                break;
+        }
+
+        if (filteredDoctors.Count == 0)
+        {
+            Console.WriteLine("No doctors found.");
+            return;
+        }
+
+        Console.WriteLine(filteredDoctors.Count + " doctors found.");
+        System.Console.WriteLine(@"
+            Sort options:
+            n - sort by name
+            l - sort by last name
+            s - sort by specialty
+            a - sort by average rating
+            ");
+        
+        string sortOption = ReadSanitizedLine().Trim();
+        if (sortOption == "n")
+        {
+            filteredDoctors.Sort((doctor1, doctor2)=> String.Compare(doctor1.FirstName, doctor2.FirstName));
+        }
+        else if (sortOption == "l")
+        {
+            filteredDoctors.Sort((doctor1, doctor2)=> String.Compare(doctor1.LastName, doctor2.LastName));
+        }
+        else if (sortOption == "s")
+        {
+            filteredDoctors.Sort((doctor1, doctor2)=> String.Compare(doctor1.Specialty.ToString(), doctor2.Specialty.ToString()));
+        }
+         else if (sortOption == "a")
+        {
+            filteredDoctors.Sort((doctor1, doctor2)=>  _hospital.AppointmentService.GetAverageRating(doctor1).CompareTo(_hospital.AppointmentService.GetAverageRating(doctor2)));
+        }
+
+        for (int i=0; i<filteredDoctors.Count; i++)
+        {
+            string rating = "no rating";
+            float averageRating = _hospital.AppointmentService.GetAverageRating(filteredDoctors[i]);
+            if (averageRating != 10){
+                rating = averageRating + "/5";
+            }
+            Console.WriteLine(i+" - "+filteredDoctors[i].ToString() + " " + rating);
+        }
+
+        System.Console.Write("Create checkup? Enter y to continue, anything else to return: ");
+        string continuteOpinion = ReadSanitizedLine().Trim().ToLower();
+        if (continuteOpinion != "y"){
+            return;
+        }
+
+        System.Console.Write("Please enter a number from the list: ");
+        int selectedIndex;
+        try
+        {
+            selectedIndex = ReadInt(0, filteredDoctors.Count-1, "Number out of bounds!", "Number not recognized!");
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
+            return;
+        }
+
+        CreateCheckup(filteredDoctors[selectedIndex]);
+        
+
     }
 
     

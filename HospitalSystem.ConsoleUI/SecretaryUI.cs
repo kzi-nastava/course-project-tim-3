@@ -412,8 +412,8 @@ public class SecretaryUI : UserUI
     //MAKE BETTER CONSOLE INTERFACE
     public void CheckRequests(){
         Console.Clear();
-        CheckupChangeRequestRepository cr = _hospital.CheckupChangeRequestRepo;
-        var requestsGet = cr.GetAll();
+        var crs = _hospital.CheckupChangeRequestService;
+        var requestsGet = crs.GetAll();
         List<User> requests = new List<User>();
         var matchingRequests = from request in requestsGet.AsQueryable() select request;
 
@@ -444,10 +444,10 @@ public class SecretaryUI : UserUI
         }
         if (stringState == "approved")
         {
-            cr.UpdateRequest(indexId, RequestState.APPROVED);
+            crs.UpdateRequest(indexId, RequestState.APPROVED);
         }
         if (stringState == "denied"){
-        cr.UpdateRequest(indexId, RequestState.DENIED);
+        crs.UpdateRequest(indexId, RequestState.DENIED);
         }
         Console.Clear();
         printCommands(CRUDCommands);

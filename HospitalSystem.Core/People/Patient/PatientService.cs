@@ -56,6 +56,14 @@ public class PatientService
         _repo.AddOrUpdatePatient(patient);
     }
 
+    public IMongoCollection<Patient> GetPatients()
+    {
+        return _repo.GetPatients();
+    }
+    public void AddOrUpdatePatient(Patient patient)
+    {
+        _repo.AddOrUpdatePatient(patient);
+    }
     public void AddPrescription(Medication medication, int amount, MedicationBestTaken bestTaken, int hours, Patient patient)
     {
         Prescription prescription = new Prescription(medication, amount, bestTaken, hours);
@@ -73,20 +81,10 @@ public class PatientService
 
     public Patient GetPatientByFullName(string firstName, string lastName)
     {
-        var patients = _repo.GetPatients();
-        var foundPatient = patients.Find(patient => patient.FirstName == firstName && patient.LastName == lastName).FirstOrDefault();
-        return foundPatient;
+        return _repo.GetPatientByFullName(firstName,lastName);
     }
-
-    public void AddOrUpdatePatient(Patient patient)
-    {
-        _repo.AddOrUpdatePatient(patient);
-    }
-
     public Patient GetPatientById(ObjectId id)
     {
-        var patients = _repo.GetPatients();
-        var foundPatient = patients.Find(patient => patient.Id == id).FirstOrDefault();
-        return foundPatient;
+        return _repo.GetPatientById(id);
     }
 }

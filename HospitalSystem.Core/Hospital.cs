@@ -11,13 +11,13 @@ public class Hospital
     public RoomService RoomService { get; }
     public EquipmentBatchService EquipmentService { get; }
     public EquipmentRelocationService RelocationService { get; }
-    public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
     public DoctorService DoctorService { get; }
     public RenovationService RenovationService { get; }
     public MedicationRepository MedicationRepo { get; }
     public MedicationRequestService MedicationRequestService { get; }
     public AppointmentService AppointmentService { get; }
     public PatientService PatientService { get; }
+    public CheckupChangeRequestService CheckupChangeRequestService  { get; }
 
     public Hospital()
     {
@@ -32,7 +32,7 @@ public class Hospital
         AppointmentService = new (new AppointmentRepository(_dbClient), RoomService, DoctorService, PatientService);
         EquipmentService = new (new EquipmentBatchRepository(_dbClient));
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
-        CheckupChangeRequestRepo = new (_dbClient);
+        CheckupChangeRequestService = new (new CheckupChangeRequestRepository(_dbClient));
         RenovationService = new (new RenovationRepository(_dbClient), RoomService,
             RelocationService, AppointmentService);
         MedicationRepo = new (_dbClient);
