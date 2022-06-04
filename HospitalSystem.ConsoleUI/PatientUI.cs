@@ -1043,7 +1043,19 @@ public class PatientUI : UserUI
     }
     public void SetNotificationSettings()
     {
-        
+        int numberOfMinutes;
+        Console.WriteLine("Please enter how many minutes before perscription should be considered (min 5, max 300): ");
+        try
+        {
+            numberOfMinutes = ReadInt(5, 300, "Number out of bounds!", "Number not recognized!");
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
+            throw new QuitToMainMenuException("Wrong input");
+        }
+        _loggedInPatient.WhenToRemind = TimeSpan.FromMinutes(numberOfMinutes);
+        Console.WriteLine("Preference saved.");
     }
 }
 
