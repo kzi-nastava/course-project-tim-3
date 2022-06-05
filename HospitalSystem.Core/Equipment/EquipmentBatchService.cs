@@ -71,10 +71,4 @@ public class EquipmentBatchService
     {
         return _repo.Search(query);
     }
-
-    public void RemoveSome(EquipmentBatch equipmentBatch, int amount)
-    {
-        equipmentBatch.Count -= amount;
-        _repo.Replace(equipmentBatch);
-    }
 }

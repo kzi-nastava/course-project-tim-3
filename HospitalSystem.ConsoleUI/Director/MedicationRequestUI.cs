@@ -118,5 +118,4 @@ public class MedicationRequestUI : HospitalClientUI
         _hospital.MedicationRequestService.Resend(req);
         System.Console.Write("Success! ");
     }
-
 }

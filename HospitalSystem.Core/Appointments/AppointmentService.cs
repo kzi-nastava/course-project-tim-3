@@ -202,13 +202,6 @@ public class AppointmentService
         return patientOperations;
     }
 
-    public Checkup GetCheckupById(ObjectId id)
-    {
-        var checkups = _appointmentRepo.GetCheckups();
-        Checkup checkup = checkups.Find(appointment => appointment.Id == id).FirstOrDefault();
-        return checkup;
-    }
-    
     public bool IsDoctorAvailable(DateRange range, Doctor doctor)
     {
         List<Checkup> checkups = GetCheckupsByDoctor(doctor.Id);

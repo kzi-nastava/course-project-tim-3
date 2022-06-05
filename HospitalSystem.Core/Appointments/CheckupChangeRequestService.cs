@@ -1,6 +1,4 @@
 using MongoDB.Driver;
-using MongoDB.Bson;
-using HospitalSystem.Core.Utils;
 using MongoDB.Driver.Linq;
 
 namespace HospitalSystem.Core;
@@ -48,5 +46,4 @@ public class CheckupChangeRequestService
     {   
         _requestRepo.UpdateRequest(indexId, state);
     }
-    
 }
