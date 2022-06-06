@@ -71,4 +71,9 @@ public class EquipmentBatchService
     {
         return _repo.Search(query);
     }
+    
+    public List<EquipmentAmount> GetEmpty()
+    {
+        return _repo.GetEmpty();
+    }
 }

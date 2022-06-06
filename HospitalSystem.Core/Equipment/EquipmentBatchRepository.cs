@@ -66,4 +66,16 @@ public class EquipmentBatchRepository : IEquipmentBatchRepository
             where batch.RoomLocation == roomLocation
             select batch;
     }
+
+    public List<EquipmentAmount> GetEmpty(){
+        var singleFieldAggregate = GetMongoCollection().Aggregate().Group(u => u.Name, ac => new{name = ac.Key, total = ac.Sum(u => u.Count)});
+        var groupedByNames = singleFieldAggregate.ToList();
+        List<EquipmentAmount> equipmentsAmount = new List<EquipmentAmount>();
+        foreach (var group in groupedByNames){
+            if(group.total == 0){
+                equipmentsAmount.Add(new EquipmentAmount(group.name, group.total));
+            }
+         }
+         return equipmentsAmount;
+    }
 }

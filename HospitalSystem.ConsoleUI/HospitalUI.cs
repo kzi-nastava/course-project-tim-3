@@ -47,7 +47,7 @@ public class HospitalUI : ConsoleUI
                     myUI = new PatientUI(_hospital, user);
                     break;
                 case Role.SECRETARY:
-                    myUI = new SecretaryUI(_hospital, user);
+                    myUI = new SecretaryUI(_hospital);
                     break;
                 default:
                     System.Console.WriteLine("Something went horribly wrong. Terminating");

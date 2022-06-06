@@ -19,4 +19,7 @@ public interface IEquipmentBatchRepository
     public IQueryable<EquipmentBatch> Search(EquipmentQuery query);
 
     public IQueryable<EquipmentBatch> GetAllIn(string roomLocation);
+
+    public List<EquipmentAmount> GetEmpty();
+
 }

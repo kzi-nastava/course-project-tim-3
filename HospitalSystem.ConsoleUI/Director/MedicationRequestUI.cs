@@ -222,5 +222,6 @@ public class MedicationRequestUI : ConsoleUI
                 ingredients.Add(ingredient);
             }
         }
+ 
     }
 }
