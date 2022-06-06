@@ -29,7 +29,7 @@ public class EquipUI : ConsoleUI
                 }
                 else if(choice == "move equipment" || choice == "me")
                 {
-                    continue;
+                    MoveEquipment();
                 }
                 else if(choice == "quit" || choice == "q")
                 {
@@ -51,12 +51,13 @@ public class EquipUI : ConsoleUI
             }
         }
     }
-    public void ProcureEquipment(){
+    public void ProcureEquipment()
+    {
         System.Console.Clear();
 
         List<EquipmentAmount> emptyEquipments = _hospital.EquipmentService.GetEmpty();
         System.Console.WriteLine("Out of stock: ");
-        showEmptyEquipment(emptyEquipments);
+        ShowEmptyEquipment(emptyEquipments);
 
         System.Console.Write("\nEnter the number of equipment: ");
         var number = ReadInt();
@@ -81,11 +82,12 @@ public class EquipUI : ConsoleUI
         }
 
         List<Room> rooms = _hospital.RoomService.GetAll().ToList();
-        showStockRooms(rooms);
+        ShowStockRooms(rooms);
         System.Console.Write("Chose a stock location to store: ");
         var location = ReadSanitizedLine();
         bool contains = rooms.Any(u => u.Location == location);
-        if(!contains){
+        if(!contains)
+        {
             throw new InvalidInputException("Stock with that location does not exist!");
         }
 
@@ -95,23 +97,97 @@ public class EquipUI : ConsoleUI
         _hospital.EquipmentRequestService.Schedule(request);
         System.Console.Write("Successfully ordered equipment. Press anything to continue.");
         ReadSanitizedLine();
-
-
     }
 
-    public void showEmptyEquipment(List<EquipmentAmount> emptyEquipments)
+    public void ShowEmptyEquipment(List<EquipmentAmount> emptyEquipments)
     {
-        for(var i = 0; i < emptyEquipments.Count; i++){
+        for(var i = 0; i < emptyEquipments.Count; i++)
+        {
             System.Console.WriteLine(i + ". " + emptyEquipments[i].Name);
         }
     }
 
-    public void showStockRooms(List<Room> rooms)
+    public void ShowStockRooms(List<Room> rooms)
     {
         rooms.RemoveAll(room => room.Type != RoomType.STOCK);
         var roomUI = new RoomUI(_hospital, rooms);  
         System.Console.WriteLine("");
         roomUI.DisplayRooms();
+    }
+
+    public void MoveEquipment()
+    {   
+        System.Console.Clear();
+
+        List<EquipmentBatch> missingEquipments = _hospital.EquipmentService.GetAll().ToList();
+        missingEquipments.RemoveAll(u => u.Count > 5);
+        missingEquipments.Sort(delegate(EquipmentBatch x, EquipmentBatch y){
+            return x.Count.CompareTo(y.Count);
+        });
+
+        EquipmentTable(missingEquipments, "Missing");
+
+        System.Console.Write("Chose location: ");
+        var toLocation = ReadSanitizedLine();
+
+        System.Console.Write("Chose equipment: ");
+        var name = ReadSanitizedLine();
+        bool contains = missingEquipments.Any(u => u.RoomLocation == toLocation && u.Name == name);
+        if(!contains)
+        {
+            throw new InvalidInputException("Location or equipment inside the location does not exist!");
+        }
+
+        System.Console.Clear();
+
+        List<EquipmentBatch> equipmentRoom = _hospital.EquipmentService.GetAll().ToList();
+        equipmentRoom.RemoveAll(u => u.Name != name);
+        equipmentRoom.RemoveAll(u => u.Count == 0);
+        equipmentRoom.Sort(delegate(EquipmentBatch x, EquipmentBatch y){
+            return x.Count.CompareTo(y.Count);
+        });
+        EquipmentTable(equipmentRoom, "To move");
+
+        System.Console.Write("Chose location: ");
+        var fromLocation = ReadSanitizedLine();
+
+        System.Console.Write("Chose equipment: ");
+        var count = ReadInt();
+        bool succes = equipmentRoom.Any(u => u.RoomLocation == fromLocation && u.Count >= count);
+        if(!succes)
+        {
+            throw new InvalidInputException("Location or equipment inside the location does not exist!");
+        }
+
+        DateTime endTime = DateTime.Now;
+
+        var relocation = new EquipmentRelocation(name, count, EquipmentType.OPERATION, endTime, fromLocation, toLocation);
+        _hospital.RelocationService.Schedule(relocation);
+        System.Console.Write("Relocation scheduled successfully. Input anything to continue >> ");
+        ReadSanitizedLine();
+    }
+
+    public void EquipmentTable(List<EquipmentBatch> equipments, string tableType)
+    {   
+        System.Console.WriteLine("~" + tableType + "~");
+        System.Console.WriteLine("________________________________");
+        System.Console.WriteLine(String.Format("| {0,-8} | {1,-9} | {2, -5} |","Location", "Equipment", "Count"));
+        System.Console.WriteLine("|__________|___________|_______|");
+
+        foreach(var equipment in equipments)
+        {
+            if (equipments.Count == 0)
+            {
+            System.Console.WriteLine(String.Format("|[{0,-8}]|[{1,-9}]|[{2, -5}]|", equipment.RoomLocation, equipment.Name, equipment.Count));
+            }
+            else
+            {
+            System.Console.WriteLine(String.Format("| {0,-8} | {1,-9} | {2, -5} |", equipment.RoomLocation, equipment.Name, equipment.Count));
+            }
+        }
+
+        System.Console.WriteLine("|__________|___________|_______|");
+
     }
 }
 
