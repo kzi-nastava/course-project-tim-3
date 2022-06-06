@@ -21,17 +21,16 @@ public class SecretaryUI : ConsoleUI
             {
                 System.Console.Clear();
                 System.Console.WriteLine("Available commands:");
-                System.Console.WriteLine("1. CRUD");
-                System.Console.WriteLine("2. Requests");
-                System.Console.WriteLine("3. Schedule");
-                System.Console.WriteLine("4. SOS schedule");
-                System.Console.WriteLine("5. Get equipment");
-                System.Console.WriteLine("6. Deploy equipment");
-                System.Console.WriteLine("7. Log out");
-                System.Console.WriteLine("8. Exit");
+                System.Console.WriteLine("  1. CRUD options");
+                System.Console.WriteLine("  2. Requests");
+                System.Console.WriteLine("  3. Schedule");
+                System.Console.WriteLine("  4. SOS schedule");
+                System.Console.WriteLine("  5. Equipment options");
+                System.Console.WriteLine("  6. Log out");
+                System.Console.WriteLine("  7. Exit");
                 System.Console.Write(">> ");
                 var choice = ReadSanitizedLine();
-                if (choice == "crud" || choice == "cr")
+                if (choice == "crud options" || choice == "cr")
                 {
                     var crudUI = new CrudUI(_hospital);
                     crudUI.Start();
@@ -48,14 +47,10 @@ public class SecretaryUI : ConsoleUI
                 {
                     continue;
                 }
-                else if(choice == "get equipment" || choice == "ge")
+                else if(choice == "equipment options" || choice == "eq")
                 {
                     var equipUI = new EquipUI(_hospital);
                     equipUI.Start();
-                }
-                else if(choice == "deploy equipment" || choice == "de")
-                {
-                    continue;
                 }
                 else if (choice == "log out" || choice == "lo")
                 {

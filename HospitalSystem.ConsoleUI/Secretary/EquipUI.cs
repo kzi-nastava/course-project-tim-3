@@ -17,10 +17,10 @@ public class EquipUI : ConsoleUI
             {
                 System.Console.Clear();
                 System.Console.WriteLine("INPUT OPTIONS:");
-                System.Console.WriteLine("1. Procure equipment-(pe)");
-                System.Console.WriteLine("2. Move equipment-(me)");
-                System.Console.WriteLine("3. Quit-(q)");
-                System.Console.WriteLine("4. Exit-(x)");
+                System.Console.WriteLine("  1. Procure equipment-(pe)");
+                System.Console.WriteLine("  2. Move equipment-(me)");
+                System.Console.WriteLine("  3. Quit-(q)");
+                System.Console.WriteLine("  4. Exit-(x)");
                 System.Console.Write(">> ");
                 var choice = ReadSanitizedLine();
                 if (choice == "procure equipment" || choice == "pe")
@@ -33,7 +33,7 @@ public class EquipUI : ConsoleUI
                 }
                 else if(choice == "quit" || choice == "q")
                 {
-                    continue;
+                    return;
                 }
                 else if (choice == "exit" || choice == "x")
                 {
@@ -125,6 +125,14 @@ public class EquipUI : ConsoleUI
             return x.Count.CompareTo(y.Count);
         });
 
+        if (missingEquipments.Count() == 0)
+        {
+            System.Console.Clear();
+            System.Console.Write("There are no missing equipments. Press enything to continue: ");
+            ReadSanitizedLine();
+            return;
+        }
+
         EquipmentTable(missingEquipments, "Missing");
 
         System.Console.Write("Chose location: ");
@@ -163,7 +171,7 @@ public class EquipUI : ConsoleUI
 
         var relocation = new EquipmentRelocation(name, count, EquipmentType.OPERATION, endTime, fromLocation, toLocation);
         _hospital.RelocationService.Schedule(relocation);
-        System.Console.Write("Relocation scheduled successfully. Input anything to continue >> ");
+        System.Console.Write("Successfully ordered equipment. Press anything to continue.");
         ReadSanitizedLine();
     }
 
