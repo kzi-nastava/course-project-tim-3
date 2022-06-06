@@ -60,22 +60,41 @@ public class EquipUI : ConsoleUI
 
         System.Console.Write("\nEnter the number of equipment: ");
         var number = ReadInt();
-        
+        if(number >= emptyEquipments.Count() || number < 0)
+        {
+            throw new InvalidInputException("That number does not exist");
+        }
+
         System.Console.Write("Enter the amount: ");
         var ammount = ReadInt();
+        if(ammount <= 0)
+        {
+            throw new InvalidInputException("Ammount cant be negative or zero");
+        }
 
         System.Console.Write("Enter the equipment type (checkup, operation, furniture, hallway): ");
-        var type = 1;
+        var equipmentType = ReadSanitizedLine();
+        bool success = Enum.TryParse(equipmentType, true, out EquipmentType type);
+        if (!success)
+        {
+            throw new InvalidInputException("Not a valid type.");
+        }
 
-        showStockRooms();
-        System.Console.Write("Chose a stock to store: ");
+        List<Room> rooms = _hospital.RoomService.GetAll().ToList();
+        showStockRooms(rooms);
+        System.Console.Write("Chose a stock location to store: ");
+        var location = ReadSanitizedLine();
+        bool contains = rooms.Any(u => u.Location == location);
+        if(!contains){
+            throw new InvalidInputException("Stock with that location does not exist!");
+        }
+
+        DateTime dateTime = DateTime.Now.AddMinutes(2);
+        var request = new EquipmentRequest(emptyEquipments[number].Name, ammount, 
+            type, dateTime, location);
+        _hospital.EquipmentRequestService.Schedule(request);
+        System.Console.Write("Successfully ordered equipment. Press anything to continue.");
         ReadSanitizedLine();
-
-        DateTime c = DateTime.Now.AddDays(1);
-
-        var relocation = new EquipmentRelocation(emptyEquipments[number].Name, ammount, 
-            EquipmentType.OPERATION, c, "OutSide", "a");
-        _hospital.RelocationService.Schedule(relocation);
 
 
     }
@@ -87,12 +106,11 @@ public class EquipUI : ConsoleUI
         }
     }
 
-    public void showStockRooms()
+    public void showStockRooms(List<Room> rooms)
     {
-        List<Room> rooms = _hospital.RoomService.GetAll().ToList();
         rooms.RemoveAll(room => room.Type != RoomType.STOCK);
         var roomUI = new RoomUI(_hospital, rooms);  
-        System.Console.WriteLine("\n");
+        System.Console.WriteLine("");
         roomUI.DisplayRooms();
     }
 }
