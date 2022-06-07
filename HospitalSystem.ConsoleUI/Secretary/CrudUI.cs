@@ -1,18 +1,12 @@
-using System.Text.RegularExpressions;
 using HospitalSystem.Core;
-using MongoDB.Driver;
 using MongoDB.Bson;
 
 namespace HospitalSystem.ConsoleUI;
-[System.Serializable]
 
 public class CrudUI : ConsoleUI
 {
 
-    public CrudUI(Hospital hospital) : base(hospital)
-    {
-        // _loadedBatches = _hospital.EquipmentRepo.GetAll().ToList();
-    }
+    public CrudUI(Hospital hospital) : base(hospital){}
 
     public override void Start()
     {
@@ -20,48 +14,47 @@ public class CrudUI : ConsoleUI
         {
             System.Console.Clear();
             System.Console.WriteLine("INPUT OPTIONS:");
-             System.Console.WriteLine("   1. Read patients-(rps)");
-             System.Console.WriteLine("   2. Create patient-(cp)");
-             System.Console.WriteLine("   3. Read patient-(rp)");
-             System.Console.WriteLine("   4. Update patient-(up)");
-             System.Console.WriteLine("   5. Delete patient-(dp)");
-             System.Console.WriteLine("   6. Blocked patients-(bps)");
-             System.Console.WriteLine("   7. Block patient-(bp)");
-             System.Console.WriteLine("   8. Quit-(q)");
-             System.Console.WriteLine("   9. Exit-(x)");
+            System.Console.WriteLine("   1. View patients-(rps)");
+            System.Console.WriteLine("   2. Create patient-(cp)");
+            System.Console.WriteLine("   3. View patient-(rp)");
+            System.Console.WriteLine("   4. Update patient-(up)");
+            System.Console.WriteLine("   5. Delete patient-(dp)");
+            System.Console.WriteLine("   6. Block patient-(bp)");
+            System.Console.WriteLine("   7. Blocked patients-(bps)");
+            System.Console.WriteLine("   8. Quit-(q)");
+            System.Console.WriteLine("   9. Exit-(x)");
             System.Console.Write(">> ");
             var choice = ReadSanitizedLine();
             try
             {
                 if (choice == "read patients" || choice == "rps")
                 {
-                    System.Console.Write("BBB");
                     PagesUI pages = new PagesUI(_hospital);
                     pages.Start();
                 }
                 else if (choice == "create patient" || choice == "cp")
                 {
-                    CreateUserPatient();
+                    CreatePatientAccount();
                 }
                 else if (choice == "read patient" || choice == "rp")
                 {
-                    ReadUserPatient();
+                    ViewPatientAccount();
                 }
                 else if (choice == "update patient" || choice == "up")
                 {
-                    updateUserPatient();
+                    UpdatePatientAccount();
                 }
                 else if (choice == "delete patient" || choice == "dp")
                 {
-                    DeleteUserPatient();
-                }
-                else if (choice == "blocked patients" || choice == "bps")
-                {
-                    SelectBlockedPatients();
+                    DeletePatientAccount();
                 }
                 else if (choice == "block patient" || choice == "bp")
                 {
-                    BlockUserPatients();
+                    BlockPatientAccount();
+                }
+                else if (choice == "blocked patients" || choice == "bps")
+                {
+                    BlockedPatientAccounts();
                 }
                 else if (choice == "quit" || choice == "q")
                 {
@@ -73,239 +66,160 @@ public class CrudUI : ConsoleUI
                 }
                 else
                 {
-                    System.Console.WriteLine("INVALID INPUT - READ THE AVAILABLE COMMANDS!");
-                    System.Console.Write("INPUT ANYTHING TO CONTINUE >> ");
+                    System.Console.WriteLine("Invalit input - read the available commands!");
+                    System.Console.Write("Input anything to continue >> ");
                     ReadSanitizedLine();
                 }
             }
             catch (InvalidInputException e)
             {
-                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+                System.Console.Write(e.Message + " Input anything to continue >> ");
                 ReadSanitizedLine();
             }
             catch (FormatException e)
             {
-                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+                System.Console.Write(e.Message + " Input anything to continue >> ");
                 ReadSanitizedLine();
             }
         }
     }
 
-    public void CreateUserPatient()
+    public string EnterEmail(UserService us)
+    {
+        string email = ReadSanitizedLine();
+        bool success = us.GetAll().Any(u => u.Email == email);
+        if (!success)
+        {
+            throw new InvalidInputException("User with this email does not exist");
+        }
+        return email;
+    }
+
+    public void EnterNewEmail(UserService us)
+    {
+        System.Console.Write("Enter user email: ");
+        string email = EnterEmail(us);
+        System.Console.Write("Enter new email: ");
+        string newEmail = ReadSanitizedLine();
+        us.UpdateEmail(email,newEmail);
+    }
+
+    public void EnterNewPassword(UserService us)
+    {
+        System.Console.Write("Enter user email: ");
+        string email = EnterEmail(us);
+        System.Console.Write("Enter new password: ");
+        string newPassword = ReadSanitizedLine(); 
+        us.UpdatePassword(email,newPassword);
+    }
+
+    public void CreatePatientAccount()
     {   
         Console.Clear();
         UserService us = _hospital.UserService;
 
         System.Console.WriteLine("Enter the following data: ");
+
         System.Console.Write("email >> ");
-        string? email = Console.ReadLine();
-        if (email is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
+        string email = ReadSanitizedLine();
+
         System.Console.Write("password >> ");
-        string? password = Console.ReadLine();
-        if (password is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
+        string password = ReadSanitizedLine();
+
         System.Console.Write("first name >> ");
-        string? firstName = Console.ReadLine();
-        if (firstName is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
+        string firstName = ReadSanitizedLine();
+
         System.Console.Write("last name >> ");
-        string? lastName = Console.ReadLine();
-        if (lastName is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
-        System.Console.WriteLine(email);
-        if(email == "back"){
-            Console.Clear();
-            System.Console.WriteLine("Returning...");
-        }
-        else if(password == "back"){
-            Console.Clear();
-            System.Console.WriteLine("Returning...");
+        string lastName = ReadSanitizedLine();
 
-        }
-        else if(firstName == "back"){
-            Console.Clear();
-            System.Console.WriteLine("Returning...");
+        Patient patient = new Patient(email, lastName, new MedicalRecord());
+        _hospital.PatientRepo.AddOrUpdatePatient(patient);
+        us.Upsert(new User(email, password,patient,Role.PATIENT));
 
-        }
-        else if(lastName == "back"){
-            Console.Clear();
-            System.Console.WriteLine("Returning...");
-        }
-        else{
-            Console.Clear();
-            Patient patient = new Patient(email, lastName, new MedicalRecord());
-            _hospital.PatientRepo.AddOrUpdatePatient(patient);
-            // ur.AddOrUpdateUser(new User(email, password,patient,Role.PATIENT));
-            us.Upsert(new User(email, password,patient,Role.PATIENT));
-        }
+        System.Console.Write("Successfuly created a user. Type anything to get back to menu: ");
+        ReadSanitizedLine();
     }
 
-    public void ReadUserPatient(){
+    
+    public void ViewPatientAccount()
+    {
         Console.Clear();
         UserService us = _hospital.UserService;
         
         System.Console.Write("Enter the user mail to view his data: ");
-        string? email = Console.ReadLine();
-        if (email is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
+        string email = EnterEmail(us);
+
         var user = us.Get(email);
         Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) user.Person.Id);
+
         System.Console.WriteLine("Email : " + user.Email.ToString());
         System.Console.WriteLine("Password : " + user.Password.ToString());
         System.Console.WriteLine("First Name : " + pat.FirstName);
         System.Console.WriteLine("Last Name : " + pat.LastName);
-        System.Console.WriteLine("");
-        System.Console.Write("Type back to get to menu: ");
-        string? back = Console.ReadLine();
 
-        while(back != "back"){
-        Console.Clear();
-        System.Console.Write("Type back to get to menu: ");
-        back = Console.ReadLine();
-        }
-
-        Console.Clear();
+        System.Console.Write("\nType anything to get to menu: ");
+        ReadSanitizedLine();
     }
 
-    public void updateUserPatient()
+    public void UpdatePatientAccount()
     {
         Console.Clear();
         UserService us = _hospital.UserService;
+
         System.Console.Write("Enter <email> or <password> depending of what you want update: ");
-        
-        string? enter = Console.ReadLine();
-        if(enter == "email"){
-            System.Console.Write("Enter users email: ");
-            string? email = Console.ReadLine();
-            if (email is null)
-            {
-                throw new NullInputException("Null value as input");
-            }
-            System.Console.Write("Enter new email: ");
-            string? emailNew = Console.ReadLine();
-            if (emailNew is null)
-            {
-                throw new NullInputException("Null value as input");
-            }
-            us.UpdateEmail(email,emailNew);
+        string enter = ReadSanitizedLine();
+
+        if(enter == "email")
+        {
+            EnterNewEmail(us);
         }
-        else if(enter == "password"){
-            System.Console.Write("Enter users password : ");
-            string? email = Console.ReadLine();
-            if (email is null)
-            {
-                throw new NullInputException("Null value as input");
-            }
-            System.Console.Write("Enter new password: ");
-            string? passwordNew = Console.ReadLine();
-            if (passwordNew is null)
-            {
-                throw new NullInputException("Null value as input");
-            }
-            us.UpdatePassword(email,passwordNew);
+        else if(enter == "password")
+        {
+            EnterNewPassword(us);
         }
-        Console.Clear();
+        else
+        {
+            throw new InvalidInputException("Invalid input");
+        }
     }
 
-    public void DeleteUserPatient()
+    public void DeletePatientAccount()
     {
         Console.Clear();
         UserService us = _hospital.UserService;
-        System.Console.Write("Enter the user mail to delete: ");
-        string? email = Console.ReadLine();
-        if (email is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
+
+        System.Console.Write("Enter user email to delete: ");
+        string email = EnterEmail(us);
+
         us.Delete(email);
-        Console.Clear();
     }
 
-    public void BlockUserPatients()
+    public void BlockPatientAccount()
     {
         Console.Clear();
         UserService us = _hospital.UserService;
+
         System.Console.Write("Enter the user mail to block: ");
-        string? email = Console.ReadLine();
-        if (email is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
+        string email = EnterEmail(us);
+
         us.BlockPatient(email);
-        Console.Clear();
     }
-    public void SelectBlockedPatients()
+
+    public void BlockedPatientAccounts()
     {
         Console.Clear();
         UserService us = _hospital.UserService;
-        IQueryable<User> blockedUsers = us.GetAllBlocked();
-        System.Console.WriteLine("Blocked users(email): ");
-        foreach(var b in blockedUsers){
-            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) b.Person.Id);
-            System.Console.WriteLine(" << User: " + pat.FirstName.ToString() + " " + pat.LastName.ToString() + ", Email: " + b.Email.ToString() + " >> ");
-        }
-        System.Console.WriteLine();
-        System.Console.Write("Enter the user mail to unblock: ");
-        string? email = Console.ReadLine();
-        if (email is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
-         us.UnblockPatient(email);
-        Console.Clear();
-    }
+        List<User> blockedUsers = us.GetAllBlocked().ToList();
 
-    //MAKE BETTER CONSOLE INTERFACE
-    public void CheckRequests(){
-        Console.Clear();
-        CheckupChangeRequestRepository cr = _hospital.CheckupChangeRequestRepo;
-        var requestsGet = cr.GetAllAsQueryable();
-        // List<User> requests = new List<User>();
-        var matchingRequests = from request in requestsGet.AsQueryable() select request;
+        System.Console.WriteLine("Blocked users: ");
+        foreach(var blockedUser in blockedUsers){
+            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) blockedUser.Person.Id);
+            System.Console.WriteLine(" << User: " + pat.FirstName.ToString() + " " + pat.LastName.ToString() + ", Email: " + blockedUser.Email.ToString() + " >> ");
+        }
 
-        int buffer = 1;
-        foreach(var m in matchingRequests){
-            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) m.Checkup.Patient.Id);
-            Doctor doc = _hospital.DoctorRepo.GetById((ObjectId) m.Checkup.Doctor.Id);
-            System.Console.WriteLine("Index ID: " + buffer);
-            System.Console.WriteLine("ID: " + m.Id.ToString());
-            System.Console.WriteLine("Patient: " +  pat.FirstName + " " + pat.LastName);
-            System.Console.WriteLine("Doctor: " +  doc.FirstName + " " + doc.LastName);
-            System.Console.WriteLine("Start time: " + m.Checkup.DateRange.Starts);
-            System.Console.WriteLine("End time: " + m.Checkup.DateRange.Ends);
-            // System.Console.WriteLine("Duration: " + m.Checkup.DateRange);
-            System.Console.WriteLine("RequestState: " + m.RequestState);
-            System.Console.WriteLine("--------------------------------------------------------------------");
-            System.Console.WriteLine();
-            buffer = buffer + 1;
-        }
-        System.Console.Write("Enter id: ");
-        string? stringId = Console.ReadLine();
-        int indexId = Int16.Parse(stringId);
-        System.Console.Write("Enter state(approved, denied): ");
-        string? stringState = Console.ReadLine();
-        if (stringState is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
-        if (stringState == "approved")
-        {
-            cr.UpdateRequest(indexId, RequestState.APPROVED);
-        }
-        if (stringState == "denied"){
-        cr.UpdateRequest(indexId, RequestState.DENIED);
-        }
-        Console.Clear();
+        System.Console.Write("\nEnter the user mail to unblock: ");
+        string email = EnterEmail(us);
+
+        us.UnblockPatient(email);
     }
 }

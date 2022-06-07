@@ -1,10 +1,7 @@
-using System.Text.RegularExpressions;
 using HospitalSystem.Core;
-using MongoDB.Driver;
 using MongoDB.Bson;
 
 namespace HospitalSystem.ConsoleUI;
-[System.Serializable]
 
 public class PagesUI : ConsoleUI
 {
@@ -78,12 +75,8 @@ public class PagesUI : ConsoleUI
     public string selectOption()
     {
         Console.Write("Please enter a command: ");
-        string? input = Console.ReadLine();
-        if (input is null)
-        {
-            throw new NullInputException("Null value as input");
-        }
-        return input.ToLower().Trim();
+        string input = ReadSanitizedLine();
+        return input.Trim();
     }
 
         public void header()

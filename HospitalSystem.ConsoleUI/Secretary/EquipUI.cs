@@ -1,9 +1,6 @@
-// using MongoDB.Driver;
-// using MongoDB.Bson;
 using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
-// [System.Serializable]
 
 public class EquipUI : ConsoleUI
 {   
@@ -44,45 +41,83 @@ public class EquipUI : ConsoleUI
                     System.Console.Write("UNRECOGNIZED OPTION. INPUT ANYTHING TO CONTINUE >> ");
                     ReadSanitizedLine();
                 }
+                
             }
-            catch (QuitToMainMenuException)
+            catch (InvalidInputException e)
             {
-
+                System.Console.Write(e.Message + " Input anything to continue >> ");
+                ReadSanitizedLine();
+            }
+            catch (FormatException e)
+            {
+                System.Console.Write(e.Message + " Input anything to continue >> ");
+                ReadSanitizedLine();
             }
         }
     }
+    
     public void ProcureEquipment()
     {
         System.Console.Clear();
 
         List<EquipmentAmount> emptyEquipments = _hospital.EquipmentService.GetEmpty();
+
         System.Console.WriteLine("Out of stock: ");
         ShowEmptyEquipment(emptyEquipments);
 
+        var number = EnterEquipmentNumber(emptyEquipments);
+        var ammount = EnterEquipmentAmmount(emptyEquipments);
+        EquipmentType type = EnterEquipmentType(emptyEquipments);
+
+        List<Room> rooms = _hospital.RoomService.GetAll().ToList();
+        ShowStockRooms(rooms);
+
+        var location = EnterStockLocation(rooms);
+        DateTime dateTime = DateTime.Now.AddDays(1);
+
+        var request = new EquipmentRequest(emptyEquipments[number].Name, ammount, type, dateTime, location);
+        _hospital.EquipmentRequestService.Schedule(request);
+        System.Console.Write("Successfully ordered equipment. Press anything to continue.");
+        ReadSanitizedLine();
+    }
+
+    public int EnterEquipmentNumber(List<EquipmentAmount> emptyEquipments)
+    {
         System.Console.Write("\nEnter the number of equipment: ");
         var number = ReadInt();
         if(number >= emptyEquipments.Count() || number < 0)
         {
             throw new InvalidInputException("That number does not exist");
         }
+        return number;
+    }
 
+    public int EnterEquipmentAmmount(List<EquipmentAmount> emptyEquipments)
+    {
         System.Console.Write("Enter the amount: ");
         var ammount = ReadInt();
         if(ammount <= 0)
         {
             throw new InvalidInputException("Ammount cant be negative or zero");
         }
+        return ammount;
+    }
 
+    public EquipmentType EnterEquipmentType(List<EquipmentAmount> emptyEquipments)
+    {
         System.Console.Write("Enter the equipment type (checkup, operation, furniture, hallway): ");
         var equipmentType = ReadSanitizedLine();
+        
         bool success = Enum.TryParse(equipmentType, true, out EquipmentType type);
         if (!success)
         {
             throw new InvalidInputException("Not a valid type.");
         }
+        return type;
+    }
 
-        List<Room> rooms = _hospital.RoomService.GetAll().ToList();
-        ShowStockRooms(rooms);
+    public string EnterStockLocation( List<Room> rooms)
+    {
         System.Console.Write("Chose a stock location to store: ");
         var location = ReadSanitizedLine();
         bool contains = rooms.Any(u => u.Location == location);
@@ -90,13 +125,7 @@ public class EquipUI : ConsoleUI
         {
             throw new InvalidInputException("Stock with that location does not exist!");
         }
-
-        DateTime dateTime = DateTime.Now.AddMinutes(2);
-        var request = new EquipmentRequest(emptyEquipments[number].Name, ammount, 
-            type, dateTime, location);
-        _hospital.EquipmentRequestService.Schedule(request);
-        System.Console.Write("Successfully ordered equipment. Press anything to continue.");
-        ReadSanitizedLine();
+        return location;
     }
 
     public void ShowEmptyEquipment(List<EquipmentAmount> emptyEquipments)
@@ -156,10 +185,10 @@ public class EquipUI : ConsoleUI
         });
         EquipmentTable(equipmentRoom, "To move");
 
-        System.Console.Write("Chose location: ");
+        System.Console.Write("Choose location: ");
         var fromLocation = ReadSanitizedLine();
 
-        System.Console.Write("Chose equipment: ");
+        System.Console.Write("Choose equipment: ");
         var count = ReadInt();
         bool succes = equipmentRoom.Any(u => u.RoomLocation == fromLocation && u.Count >= count);
         if(!succes)

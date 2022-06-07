@@ -1,5 +1,3 @@
-// using MongoDB.Driver;
-// using MongoDB.Bson;
 using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
@@ -21,23 +19,22 @@ public class SecretaryUI : ConsoleUI
             {
                 System.Console.Clear();
                 System.Console.WriteLine("Available commands:");
-                System.Console.WriteLine("  1. CRUD options");
-                System.Console.WriteLine("  2. Requests");
-                System.Console.WriteLine("  3. Schedule");
-                System.Console.WriteLine("  4. SOS schedule");
-                System.Console.WriteLine("  5. Equipment options");
-                System.Console.WriteLine("  6. Log out");
-                System.Console.WriteLine("  7. Exit");
+                System.Console.WriteLine("   1. Patients options-(po)");
+                System.Console.WriteLine("   2. Checkup options-(co)");
+                System.Console.WriteLine("   5. Equipment options-(eo)");
+                System.Console.WriteLine("   6. Log out-(lo)");
+                System.Console.WriteLine("   7. Exit-(x)");
                 System.Console.Write(">> ");
                 var choice = ReadSanitizedLine();
-                if (choice == "crud options" || choice == "cr")
+                if (choice == "patients options" || choice == "po")
                 {
                     var crudUI = new CrudUI(_hospital);
                     crudUI.Start();
                 }
-                else if(choice == "requests" || choice == "re")
+                else if(choice == "Checkup options" || choice == "co")
                 {
-                    continue;
+                    var checkupUI = new CheckupUI(_hospital);
+                    checkupUI.Start();
                 }
                 else if(choice == "schedule" || choice == "sc")
                 {
