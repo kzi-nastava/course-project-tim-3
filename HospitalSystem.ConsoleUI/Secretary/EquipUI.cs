@@ -149,54 +149,58 @@ public class EquipUI : ConsoleUI
         System.Console.Clear();
 
         List<EquipmentBatch> missingEquipments = _hospital.EquipmentService.GetMissing();
-        
-        if (missingEquipments.Count() == 0)
-        {
-            System.Console.Write("\n There are no missing equipments. Press enything to continue: ");
-            ReadSanitizedLine();
-            return;
-        }
-
         EquipmentTable(missingEquipments, "Missing");
-
-        System.Console.Write("Chose location: ");
-        var toLocation = ReadSanitizedLine();
-
-        System.Console.Write("Chose equipment: ");
-        var name = ReadSanitizedLine();
-        bool contains = missingEquipments.Any(u => u.RoomLocation == toLocation && u.Name == name);
-        if(!contains)
-        {
-            throw new InvalidInputException("Location or equipment inside the location does not exist!");
-        }
-
+        var toLocation = EnterLocation(missingEquipments);
+        var name = EnterName(missingEquipments);
+        
         System.Console.Clear();
 
-        List<EquipmentBatch> equipmentRoom = _hospital.EquipmentService.GetAll().ToList();
-        equipmentRoom.RemoveAll(u => u.Name != name);
-        equipmentRoom.RemoveAll(u => u.Count == 0);
-        equipmentRoom.Sort(delegate(EquipmentBatch x, EquipmentBatch y){
-            return x.Count.CompareTo(y.Count);
-        });
+        List<EquipmentBatch> equipmentRoom = _hospital.EquipmentService.GetFilledRoomsByEquipmentName(name);
         EquipmentTable(equipmentRoom, "To move");
-
-        System.Console.Write("Choose location: ");
-        var fromLocation = ReadSanitizedLine();
-
-        System.Console.Write("Choose equipment: ");
-        var count = ReadInt();
-        bool succes = equipmentRoom.Any(u => u.RoomLocation == fromLocation && u.Count >= count);
-        if(!succes)
-        {
-            throw new InvalidInputException("Location or equipment inside the location does not exist!");
-        }
-
+        var fromLocation = EnterLocation(missingEquipments);
+        var count = EnterCount(missingEquipments);
         DateTime endTime = DateTime.Now;
 
         var relocation = new EquipmentRelocation(name, count, EquipmentType.OPERATION, endTime, fromLocation, toLocation);
         _hospital.RelocationService.Schedule(relocation);
         System.Console.Write("Successfully ordered equipment. Press anything to continue.");
         ReadSanitizedLine();
+    }
+
+    public string EnterLocation(List<EquipmentBatch> equipments)
+    {
+        System.Console.Write("Chose location: ");
+        var location = ReadSanitizedLine();
+        bool success = equipments.Any(u => u.RoomLocation == location);
+        if(!success)
+        {
+            throw new InvalidInputException("Location or equipment inside the location does not exist!");
+        }
+        return location;
+    }
+
+    public string EnterName(List<EquipmentBatch> equipments)
+    {
+        System.Console.Write("Chose location: ");
+        var name = ReadSanitizedLine();
+        bool success = equipments.Any(u => u.Name == name);
+        if(!success)
+        {
+            throw new InvalidInputException("Location or equipment inside the location does not exist!");
+        }
+        return name;
+    }
+
+    public int EnterCount(List<EquipmentBatch> equipments)
+    {
+        System.Console.Write("Choose equipment: ");
+        var count = ReadInt();
+        bool succes = equipments.Any(u => u.Count >= count);
+        if(!succes)
+        {
+            throw new InvalidInputException("Location or equipment inside the location does not exist!");
+        }
+        return count;
     }
 
     public void EquipmentTable(List<EquipmentBatch> equipments, string tableType)

@@ -83,7 +83,18 @@ public class EquipmentBatchService
         return equipments;
     }
 
-    public 
+    //TODO: Change or discuss about this method name with team members
+    public  List<EquipmentBatch> GetFilledRoomsByEquipmentName(string name)
+    {
+        List<EquipmentBatch> equipments = _repo.GetAll().ToList();
+        equipments.RemoveAll(u => u.Name != name);
+        equipments.RemoveAll(u => u.Count == 0);
+        equipments.Sort(delegate(EquipmentBatch x, EquipmentBatch y)
+        {
+            return x.Count.CompareTo(y.Count);
+        });
+        return equipments;
+    }
     
     public List<EquipmentAmount> GetEmpty()
     {
