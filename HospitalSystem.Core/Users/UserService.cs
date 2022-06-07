@@ -73,10 +73,7 @@ public class UserService
 
     public IQueryable<User> GetPatients()
     {
-        return 
-            from user in _repo.GetAll()
-            where user.Role == Role.PATIENT
-            select user;
+        return _repo.GetPatients();
     }
 
     public void Upsert(User user)  // DOES NOT CHECK IF EMAIL IS TAKEN!!

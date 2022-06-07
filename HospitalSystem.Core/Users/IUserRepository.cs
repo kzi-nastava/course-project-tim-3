@@ -9,4 +9,6 @@ public interface IUserRepository
     public void Upsert(User user);
 
     public bool Delete(string email);
+
+    public IQueryable<User> GetPatients();
 }
