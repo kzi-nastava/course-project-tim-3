@@ -99,6 +99,4 @@ public class EquipmentBatchService
     {
         return _repo.GetEmpty();
     }
-
-
 }

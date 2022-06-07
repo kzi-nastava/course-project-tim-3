@@ -103,13 +103,13 @@ public class PagesUI : ConsoleUI
 
     }
 
-    public void Page(List<User> patients, int startIndex, int endIndex)
+    public void Page(List<User> patientAccounts, int startIndex, int endIndex)
     {   
         int i;
         for(i = startIndex; i < endIndex; i++ ){
-            var patient = patients.ElementAt(i);
-            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) patient.Person.Id);
-            System.Console.WriteLine(String.Format("| {0,-21} | {1,-20} | {2, -40} |", pat.FirstName, pat.LastName, patient.Email));
+            var patientAccount = patientAccounts.ElementAt(i);
+            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) patientAccount.Person.Id);
+            System.Console.WriteLine(String.Format("| {0,-21} | {1,-20} | {2, -40} |", pat.FirstName, pat.LastName, patientAccount.Email));
         }
 
         System.Console.WriteLine("|_______________________|______________________|__________________________________________|");
