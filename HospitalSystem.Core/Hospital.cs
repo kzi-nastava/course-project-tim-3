@@ -13,7 +13,7 @@ public class Hospital
     public SecretaryRepository SecretaryRepo { get; }
     public RoomService RoomService { get; }
     public EquipmentBatchService EquipmentService { get; }
-    public EquipmentRequestService EquipmentRequestService { get; }
+    public EquipmentOrderService EquipmentOrderService { get; }
     public EquipmentRelocationService RelocationService { get; }
     public CheckupChangeRequestRepository CheckupChangeRequestRepo { get; }
     public RenovationService RenovationService { get; }
@@ -30,7 +30,7 @@ public class Hospital
         RoomService = new (new RoomRepository(_dbClient));
         AppointmentRepo = new (_dbClient, RoomService);
         EquipmentService = new (new EquipmentBatchRepository(_dbClient));
-        EquipmentRequestService = new (new EquipmentRequestRepository(_dbClient), EquipmentService); 
+        EquipmentOrderService = new (new EquipmentOrderRepository(_dbClient), EquipmentService); 
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
         CheckupChangeRequestRepo = new (_dbClient);
         RenovationService = new (new RenovationRepository(_dbClient), RoomService, RelocationService, AppointmentRepo);
@@ -39,6 +39,6 @@ public class Hospital
         // TODO: this maybe shouldn't be here
         RelocationService.ScheduleAll();
         RenovationService.ScheduleAll();
-        EquipmentRequestService.ScheduleAll();
+        EquipmentOrderService.ScheduleAll();
     }
 }

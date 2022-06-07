@@ -38,7 +38,7 @@ public class EquipUI : ConsoleUI
                 }
                 else
                 {
-                    System.Console.Write("UNRECOGNIZED OPTION. INPUT ANYTHING TO CONTINUE >> ");
+                    System.Console.Write("Unrecognized option. Intput anything to continue >> ");
                     ReadSanitizedLine();
                 }
                 
@@ -75,8 +75,8 @@ public class EquipUI : ConsoleUI
         var location = EnterStockLocation(rooms);
         DateTime dateTime = DateTime.Now.AddDays(1);
 
-        var request = new EquipmentRequest(emptyEquipments[number].Name, ammount, type, dateTime, location);
-        _hospital.EquipmentRequestService.Schedule(request);
+        var order = new EquipmentOrder(emptyEquipments[number].Name, ammount, type, dateTime, location);
+        _hospital.EquipmentOrderService.Schedule(order);
         System.Console.Write("Successfully ordered equipment. Press anything to continue.");
         ReadSanitizedLine();
     }

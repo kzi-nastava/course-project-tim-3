@@ -89,8 +89,7 @@ public class EquipmentBatchService
         List<EquipmentBatch> equipments = _repo.GetAll().ToList();
         equipments.RemoveAll(u => u.Name != name);
         equipments.RemoveAll(u => u.Count == 0);
-        equipments.Sort(delegate(EquipmentBatch x, EquipmentBatch y)
-        {
+        equipments.Sort(delegate(EquipmentBatch x, EquipmentBatch y){
             return x.Count.CompareTo(y.Count);
         });
         return equipments;

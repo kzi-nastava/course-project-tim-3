@@ -45,19 +45,19 @@ public class CheckupUI : ConsoleUI
                 }
                 else
                 {
-                    System.Console.WriteLine("INVALID INPUT - READ THE AVAILABLE COMMANDS!");
-                    System.Console.Write("INPUT ANYTHING TO CONTINUE >> ");
+                    System.Console.WriteLine("Invalid input - read the available commands!");
+                    System.Console.Write("Intput anything to continue >> ");
                     ReadSanitizedLine();
                 }
             }
             catch (InvalidInputException e)
             {
-                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+                System.Console.Write(e.Message + " Intput anything to continue >> ");
                 ReadSanitizedLine();
             }
             catch (FormatException e)
             {
-                System.Console.Write(e.Message + " INPUT ANYTHING TO CONTINUE >> ");
+                System.Console.Write(e.Message + " Intput anything to continue >> ");
                 ReadSanitizedLine();
             }
         }

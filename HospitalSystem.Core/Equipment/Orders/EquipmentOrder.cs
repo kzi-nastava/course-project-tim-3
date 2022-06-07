@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace HospitalSystem.Core;
 
-public class EquipmentRequest
+public class EquipmentOrder
 {
     [BsonId]
     public ObjectId Id { get; set; }
@@ -15,7 +15,7 @@ public class EquipmentRequest
     public DateTime EndTime { get; set; }
     public bool IsDone { get; set; }
 
-    public EquipmentRequest(string name, int count, EquipmentType type, 
+    public EquipmentOrder(string name, int count, EquipmentType type, 
         DateTime endTime, string toStockLocation)
     {
         Id = ObjectId.GenerateNewId();

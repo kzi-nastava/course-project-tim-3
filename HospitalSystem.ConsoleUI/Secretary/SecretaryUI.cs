@@ -6,7 +6,7 @@ public class SecretaryUI : ConsoleUI
 {   
     public SecretaryUI(Hospital _hospital) : base(_hospital){}
 
-        public override void Start()
+    public override void Start()
     {
         while (true)
         {
@@ -54,14 +54,11 @@ public class SecretaryUI : ConsoleUI
                 }
                 else
                 {
-                    System.Console.Write("UNRECOGNIZED OPTION. INPUT ANYTHING TO CONTINUE >> ");
+                    System.Console.Write("Unrecognized option. Intput anything to continue >> ");
                     ReadSanitizedLine();
                 }
             }
-            catch (QuitToMainMenuException)
-            {
-
-            }
+            catch (QuitToMainMenuException){}
         }
     }
 }
