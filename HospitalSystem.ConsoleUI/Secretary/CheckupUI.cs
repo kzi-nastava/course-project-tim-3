@@ -15,8 +15,8 @@ public class CheckupUI : HospitalClientUI
             System.Console.Clear();
             System.Console.WriteLine("INPUT OPTIONS:");
              System.Console.WriteLine("   1. View requests, change/delete-(vr)");
-             System.Console.WriteLine("   2. ???");
-             System.Console.WriteLine("   3. ????");
+             System.Console.WriteLine("   2. ");
+             System.Console.WriteLine("   3. ");
              System.Console.WriteLine("   4. Quit-(q)");
              System.Console.WriteLine("   5. Exit-(x)");
             System.Console.Write(">> ");
@@ -27,11 +27,11 @@ public class CheckupUI : HospitalClientUI
                 {
                     CheckRequests();
                 }
-                else if (choice == "???" || choice == "?")
+                else if (choice == "" || choice == "")
                 {
                     continue;
                 }
-                else if (choice == "????" || choice == "??")
+                else if (choice == "" || choice == "")
                 {
                     continue;
                 }
