@@ -155,7 +155,7 @@ public class EquipUI : ConsoleUI
 
         System.Console.Clear();
 
-        List<EquipmentBatch> equipmentRoom = _hospital.EquipmentService.GetFilledRoomsByEquipmentName(name);
+        List<EquipmentBatch> equipmentRoom = _hospital.EquipmentService.GetExistingByName(name);
         EquipmentTable(equipmentRoom, "To move");
         var fromLocation = EnterLocation(missingEquipments);
         var count = EnterCount(missingEquipments);

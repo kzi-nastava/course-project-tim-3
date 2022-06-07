@@ -75,7 +75,7 @@ public class EquipmentBatchService
     public List<EquipmentBatch> GetMissing()
     {
         List<EquipmentBatch> equipments = _repo.GetAll().ToList();
-        equipments.RemoveAll(u => u.Count > 5);
+        equipments.RemoveAll(eq => eq.Count > 5);
         equipments.Sort(delegate(EquipmentBatch x, EquipmentBatch y)
         {
             return x.Count.CompareTo(y.Count);
@@ -84,13 +84,13 @@ public class EquipmentBatchService
     }
 
     //TODO: Change or discuss about this method name with team members
-    public  List<EquipmentBatch> GetFilledRoomsByEquipmentName(string name)
+    public  List<EquipmentBatch> GetExistingByName(string name)
     {
         List<EquipmentBatch> equipments = _repo.GetAll().ToList();
-        equipments.RemoveAll(u => u.Name != name);
-        equipments.RemoveAll(u => u.Count == 0);
-        equipments.Sort(delegate(EquipmentBatch x, EquipmentBatch y){
-            return x.Count.CompareTo(y.Count);
+        equipments.RemoveAll(eq => eq.Name != name);
+        equipments.RemoveAll(eq => eq.Count == 0);
+        equipments.Sort(delegate(EquipmentBatch left, EquipmentBatch right){
+            return left.Count.CompareTo(right.Count);
         });
         return equipments;
     }
