@@ -148,16 +148,11 @@ public class EquipUI : ConsoleUI
     {   
         System.Console.Clear();
 
-        List<EquipmentBatch> missingEquipments = _hospital.EquipmentService.GetAll().ToList();
-        missingEquipments.RemoveAll(u => u.Count > 5);
-        missingEquipments.Sort(delegate(EquipmentBatch x, EquipmentBatch y){
-            return x.Count.CompareTo(y.Count);
-        });
-
+        List<EquipmentBatch> missingEquipments = _hospital.EquipmentService.GetMissing();
+        
         if (missingEquipments.Count() == 0)
         {
-            System.Console.Clear();
-            System.Console.Write("There are no missing equipments. Press enything to continue: ");
+            System.Console.Write("\n There are no missing equipments. Press enything to continue: ");
             ReadSanitizedLine();
             return;
         }

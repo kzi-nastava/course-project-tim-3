@@ -71,9 +71,24 @@ public class EquipmentBatchService
     {
         return _repo.Search(query);
     }
+
+    public List<EquipmentBatch> GetMissing()
+    {
+        List<EquipmentBatch> equipments = _repo.GetAll().ToList();
+        equipments.RemoveAll(u => u.Count > 5);
+        equipments.Sort(delegate(EquipmentBatch x, EquipmentBatch y)
+        {
+            return x.Count.CompareTo(y.Count);
+        });
+        return equipments;
+    }
+
+    public 
     
     public List<EquipmentAmount> GetEmpty()
     {
         return _repo.GetEmpty();
     }
+
+
 }
