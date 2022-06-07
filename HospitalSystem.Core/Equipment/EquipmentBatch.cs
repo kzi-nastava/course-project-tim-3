@@ -46,4 +46,9 @@ public class EquipmentBatch
             throw new Exception("NOPE, CAN'T REMOVE MORE THAN YOU HAVE");  // TODO: change this exception
         Count -= other.Count;
     }
+
+    public override string ToString()
+    {
+        return Name + ", amount: " + Count;
+    }
 }

@@ -2,7 +2,7 @@ using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class EquipUI : ConsoleUI
+public class EquipUI : HospitalClientUI
 {   
     public EquipUI(Hospital _hospital) : base(_hospital) {}
 
@@ -69,7 +69,7 @@ public class EquipUI : ConsoleUI
         var ammount = EnterEquipmentAmmount(emptyEquipments);
         EquipmentType type = EnterEquipmentType(emptyEquipments);
 
-        List<Room> rooms = _hospital.RoomService.GetAll().ToList();
+        List<Room> rooms = _hospital.RoomService.GetActive().ToList();
         ShowStockRooms(rooms);
 
         var location = EnterStockLocation(rooms);

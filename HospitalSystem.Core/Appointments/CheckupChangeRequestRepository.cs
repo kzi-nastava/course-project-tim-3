@@ -3,7 +3,7 @@ using MongoDB.Driver.Linq;
 
 namespace HospitalSystem.Core
 {
-    public class CheckupChangeRequestRepository
+    public class CheckupChangeRequestRepository : ICheckupChangeRequestRepository
     {
         private MongoClient _dbClient;
         
@@ -21,7 +21,6 @@ namespace HospitalSystem.Core
         {
             return GetMongoCollection().AsQueryable();
         }
-        
 
         public IQueryable<CheckupChangeRequest> GetByState(RequestState state)
         {
@@ -33,10 +32,16 @@ namespace HospitalSystem.Core
             return matches;
         }
 
-        public IQueryable<CheckupChangeRequest> GetAllAsQueryable()
+        public List<CheckupChangeRequest> GetCheckUpChangeRequests()
         {
-            //there might be a better way to do this
-            return  GetAll();
+            var requestsGet = GetAll();
+            List<CheckupChangeRequest> requests = new List<CheckupChangeRequest>();
+            var matchingRequests = from request in requestsGet.AsQueryable() select request;
+
+            foreach(var p in matchingRequests){
+                    requests.Add(p);
+            }   
+            return requests;
         }
 
         public void AddOrUpdate(CheckupChangeRequest newRequest)
@@ -53,12 +58,11 @@ namespace HospitalSystem.Core
          requests.DeleteOne(filter);
         }
 
-        
-        public void UpdatePendingRequest(int index, RequestState state)
+        public void UpdateRequest(int indexId, RequestState state)
         {   
             List<CheckupChangeRequest> requests = GetAll().ToList();
             requests.RemoveAll(u => u.RequestState != RequestState.PENDING);
-            var request = requests[index];
+            var request = requests[indexId];
             var requestsGet = GetMongoCollection();
             request.RequestState = state;
             requestsGet.ReplaceOne(req => req.Id == request.Id , request, new ReplaceOptions {IsUpsert = true} );

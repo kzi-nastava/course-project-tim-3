@@ -3,7 +3,7 @@ namespace HospitalSystem.Core
 {
     public enum Specialty
     {
-        DERMATOLOGY,
+        DERMATOLOGY = 1,
         RADIOLOGY,
         STOMATOLOGY,
         OPHTHALMOLOGY,

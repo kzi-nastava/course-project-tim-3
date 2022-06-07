@@ -2,7 +2,7 @@ using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class HospitalUI : ConsoleUI
+public class HospitalUI : HospitalClientUI
 {
     public HospitalUI(Hospital _hospital) : base(_hospital) {}
 
@@ -34,7 +34,7 @@ public class HospitalUI : ConsoleUI
             }
             Console.Clear();
             System.Console.WriteLine("Welcome, " + user.Email + "!");
-            ConsoleUI myUI;
+            HospitalClientUI myUI;
             switch (user.Role)
             {
                 case Role.DIRECTOR:

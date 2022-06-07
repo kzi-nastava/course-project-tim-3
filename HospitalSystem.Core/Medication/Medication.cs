@@ -28,6 +28,6 @@ public class Medication
 
     public override string ToString()
     {
-        return  Name;
+        return  "Name: " + Name + ", ingredients: " + Ingredients.ToString();
     }
 }

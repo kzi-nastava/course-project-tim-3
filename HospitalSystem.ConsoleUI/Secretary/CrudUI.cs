@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class CrudUI : ConsoleUI
+public class CrudUI : HospitalClientUI
 {
 
     public CrudUI(Hospital hospital) : base(hospital){}
@@ -133,7 +133,7 @@ public class CrudUI : ConsoleUI
         string lastName = ReadSanitizedLine();
 
         Patient patient = new Patient(email, lastName, new MedicalRecord());
-        _hospital.PatientRepo.AddOrUpdatePatient(patient);
+        _hospital.PatientService.AddOrUpdatePatient(patient);
         us.Upsert(new User(email, password,patient,Role.PATIENT));
 
         System.Console.Write("Successfuly created a user. Type anything to get back to menu: ");
@@ -150,7 +150,7 @@ public class CrudUI : ConsoleUI
         string email = EnterEmail(us);
 
         var user = us.Get(email);
-        Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) user.Person.Id);
+        Patient pat = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
 
         System.Console.WriteLine("Email : " + user.Email.ToString());
         System.Console.WriteLine("Password : " + user.Password.ToString());
@@ -213,7 +213,7 @@ public class CrudUI : ConsoleUI
 
         System.Console.WriteLine("Blocked users: ");
         foreach(var blockedUser in blockedUsers){
-            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) blockedUser.Person.Id);
+            Patient pat = _hospital.PatientService.GetPatientById((ObjectId) blockedUser.Person.Id);
             System.Console.WriteLine(" << User: " + pat.FirstName.ToString() + " " + pat.LastName.ToString() + ", Email: " + blockedUser.Email.ToString() + " >> ");
         }
 

@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class PagesUI : ConsoleUI
+public class PagesUI : HospitalClientUI
 {
     List<User> patients;
     int size;
@@ -108,7 +108,7 @@ public class PagesUI : ConsoleUI
         int i;
         for(i = startIndex; i < endIndex; i++ ){
             var patientAccount = patientAccounts.ElementAt(i);
-            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) patientAccount.Person.Id);
+            Patient pat = _hospital.PatientService.GetPatientById((ObjectId) patientAccount.Person.Id);
             System.Console.WriteLine(String.Format("| {0,-21} | {1,-20} | {2, -40} |", pat.FirstName, pat.LastName, patientAccount.Email));
         }
 

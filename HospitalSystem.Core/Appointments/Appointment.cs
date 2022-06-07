@@ -10,6 +10,7 @@ public class Appointment
 {
     [BsonId]
     public ObjectId Id { get; set; }
+    [BsonElement]
     public DateRange DateRange { get; set; }
     public MongoDBRef Patient { get; set; }
     public MongoDBRef Doctor { get; set; }

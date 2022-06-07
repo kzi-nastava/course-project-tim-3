@@ -18,22 +18,22 @@ public class RenovationService
     private IRenovationRepository _repo;
     private RoomService _roomService;
     private EquipmentRelocationService _relocationService;
-    private AppointmentRepository _appointmentRepo;
+    private AppointmentService _appointmentService;
 
     public RenovationService(IRenovationRepository repo, RoomService roomService,
-        EquipmentRelocationService relocationService, AppointmentRepository appointmentRepo)
+        EquipmentRelocationService relocationService, AppointmentService appointmentService)
     {
         _repo = repo;
         _roomService = roomService;
         _relocationService = relocationService;
-        _appointmentRepo = appointmentRepo;
+        _appointmentService = appointmentService;
     }
 
     public void Schedule(Renovation renovation, IList<Room> newRooms)
     {
         foreach (var loc in renovation.OldLocations)
         {
-            if (!_appointmentRepo.IsRoomAvailableForRenovation(loc, renovation.BusyRange.Starts))
+            if (!_appointmentService.IsRoomAvailableForRenovation(loc, renovation.BusyRange.Starts))
             {  
                 throw new RenovationException("Room " + loc + " has appointments scheduled, can't renovate.");
             }

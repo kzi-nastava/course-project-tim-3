@@ -3,7 +3,7 @@ using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class EquipmentUI : ConsoleUI
+public class EquipmentUI : HospitalClientUI
 {
     private List<EquipmentBatch> _loadedBatches;
 
@@ -34,6 +34,7 @@ public class EquipmentUI : ConsoleUI
                 if (choice == "se" || choice == "search" || choice == "search equipment")
                 {
                     Search();
+                    continue;
                 }
                 else if (choice == "me" || choice == "move" || choice == "move equipment")
                 {
@@ -50,25 +51,22 @@ public class EquipmentUI : ConsoleUI
                 else
                 {
                     System.Console.WriteLine("Invalid input - please read the available commands.");
-                    System.Console.Write("Input anything to continue >> ");
-                    ReadSanitizedLine();
                 }
             }
             catch (InvalidInputException e)
             {
-                System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
+                System.Console.WriteLine(e.Message);
             }
             catch (InvalidTokenException e)
             {
-                System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
+                System.Console.WriteLine(e.Message);
             }
             catch (FormatException e)
             {
-                System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
+                System.Console.WriteLine(e.Message);
             }
+            System.Console.Write("Input anything to continue >> ");
+            ReadSanitizedLine();
         }
     }
 
@@ -98,7 +96,7 @@ public class EquipmentUI : ConsoleUI
         var rawDate = ReadSanitizedLine();
         var endTime = DateTime.Parse(rawDate);
 
-        List<Room> rooms = _hospital.RoomService.GetAll().ToList();
+        List<Room> rooms = _hospital.RoomService.GetActive().ToList();
         rooms.RemoveAll(room => room.Location == equipmentBatch.RoomLocation);
         var roomUI = new RoomUI(_hospital, rooms);  // TODO: this ugly...
         roomUI.DisplayRooms();
@@ -108,8 +106,7 @@ public class EquipmentUI : ConsoleUI
         var relocation = new EquipmentRelocation(equipmentBatch.Name, amount, 
             equipmentBatch.Type, endTime, equipmentBatch.RoomLocation, rooms[number].Location);
         _hospital.RelocationService.Schedule(relocation);
-        System.Console.Write("Relocation scheduled successfully. Input anything to continue >> ");
-        ReadSanitizedLine();
+        System.Console.Write("Relocation scheduled successfully. ");
     }
 
     private void Search()

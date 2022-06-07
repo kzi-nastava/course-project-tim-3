@@ -101,4 +101,8 @@ public class UserService
         if (!success)
             throw new UserDoesNotExistException("User " + email + " does not exist.");
     }
+    public void BlockUser(User user){
+        user.BlockStatus = Block.BY_SYSTEM;
+        Upsert(user);
+    }
 }

@@ -1,5 +1,4 @@
 using HospitalSystem.Core.Utils;
-using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
 
@@ -38,11 +37,9 @@ public class AbortException : System.Exception
 
 public abstract class ConsoleUI
 {
-    protected Hospital _hospital;
-
-    protected ConsoleUI(Hospital hospital)
+    protected ConsoleUI()
     {
-        _hospital = hospital;
+
     }
 
     public abstract void Start();
@@ -59,18 +56,16 @@ public abstract class ConsoleUI
     }
 
     // the bounds are both inclusive
-    public int ReadInt(int lowerBound = Int32.MinValue, int upperBound = Int32.MaxValue,
-                       string errorMessageBounds = "NUMBER OUT OF BOUNDS!",
-                       string errorMessageWrongInput = "NUMBER NOT RECOGNIZED!")
+    public int ReadInt(int lowerBound = Int32.MinValue, int upperBound = Int32.MaxValue)
     {
         var rawNumber = ReadSanitizedLine();
         bool success = Int32.TryParse(rawNumber, out int number);
         
         if (!success)
-            throw new InvalidInputException(errorMessageWrongInput);
+            throw new InvalidInputException("Invalid input: Number not recognized.");
 
         if (number < lowerBound || number > upperBound)
-            throw new InvalidInputException(errorMessageBounds);
+            throw new InvalidInputException("Invalid input: Number out of bounds.");
 
         return number;
     }
@@ -88,4 +83,25 @@ public abstract class ConsoleUI
         return new DateRange(starts, ends, allowPast: false);
     }
 
+    protected string ReadUpdate(string defaultVal)
+    {
+        var val = ReadSanitizedLine();
+        if (val != "")
+            return val;
+        return defaultVal;
+    }
+
+    protected string ReadNotEmpty(string errMsg)
+    {
+        var val = ReadSanitizedLine();
+        if (val == "")
+            throw new InvalidInputException(errMsg);
+        return val;
+    }
+
+    protected bool ReadYes()
+    {
+        var choice = ReadSanitizedLine().Trim();
+        return choice == "y" || choice == "yes";
+    }
 }

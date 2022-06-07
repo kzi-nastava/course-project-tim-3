@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class CheckupUI : ConsoleUI
+public class CheckupUI : HospitalClientUI
 {
 
     public CheckupUI(Hospital hospital) : base(hospital){}
@@ -66,13 +66,13 @@ public class CheckupUI : ConsoleUI
     public void CheckRequests()
     {
         System.Console.Clear();
-        CheckupChangeRequestRepository cr = _hospital.CheckupChangeRequestRepo;
-        List<CheckupChangeRequest> requests = _hospital.CheckupChangeRequestRepo.GetAll().ToList();
+        CheckupChangeRequestService cs = _hospital.CheckupChangeRequestService;
+        List<CheckupChangeRequest> requests = cs.GetAll().ToList();
         requests.RemoveAll(u => u.RequestState != RequestState.PENDING);
         
         for(var i = 0; i < requests.Count; i++){
-            Patient pat = _hospital.PatientRepo.GetPatientById((ObjectId) requests[i].Checkup.Patient.Id);
-            Doctor doc = _hospital.DoctorRepo.GetById((ObjectId) requests[i].Checkup.Doctor.Id);
+            Patient pat = _hospital.PatientService.GetPatientById((ObjectId) requests[i].Checkup.Patient.Id);
+            Doctor doc = _hospital.DoctorService.GetById((ObjectId) requests[i].Checkup.Doctor.Id);
 
             System.Console.WriteLine("Index ID: " + i);
             System.Console.WriteLine("ID: " + requests[i].Id.ToString());
@@ -98,13 +98,13 @@ public class CheckupUI : ConsoleUI
  
         if (stringState == "approved")
         {
-            cr.UpdatePendingRequest(indexId, RequestState.APPROVED);
+            cs.UpdateRequest(indexId, RequestState.APPROVED);
             System.Console.Write("Successfully approved request. Press anything to continue: ");
             ReadSanitizedLine();
         }
         else if(stringState == "denied")
         {
-            cr.UpdatePendingRequest(indexId, RequestState.DENIED);
+            cs.UpdateRequest(indexId, RequestState.DENIED);
             System.Console.Write("Successfully denied request. Press anything to continue: ");
             ReadSanitizedLine();
         }
