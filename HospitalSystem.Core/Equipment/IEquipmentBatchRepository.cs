@@ -20,6 +20,6 @@ public interface IEquipmentBatchRepository
 
     public IQueryable<EquipmentBatch> GetAllIn(string roomLocation);
 
-    public List<EquipmentAmount> GetEmpty();
+    public List<EquipmentAmount> GetMissing();
 
 }

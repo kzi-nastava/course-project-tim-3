@@ -148,7 +148,7 @@ public class EquipUI : HospitalClientUI
     {   
         System.Console.Clear();
 
-        List<EquipmentBatch> missingEquipments = _hospital.EquipmentService.GetMissing();
+        List<EquipmentBatch> missingEquipments = _hospital.EquipmentService.GetLow();
         EquipmentTable(missingEquipments, "Missing");
         var toLocation = EnterLocation(missingEquipments);
         var name = EnterName(missingEquipments);

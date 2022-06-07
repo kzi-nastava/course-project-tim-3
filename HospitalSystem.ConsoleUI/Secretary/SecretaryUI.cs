@@ -16,9 +16,9 @@ public class SecretaryUI : HospitalClientUI
                 System.Console.WriteLine("Available commands:");
                 System.Console.WriteLine("   1. Patients options-(po)");
                 System.Console.WriteLine("   2. Checkup options-(co)");
-                System.Console.WriteLine("   5. Equipment options-(eo)");
-                System.Console.WriteLine("   6. Log out-(lo)");
-                System.Console.WriteLine("   7. Exit-(x)");
+                System.Console.WriteLine("   3. Equipment options-(eq)");
+                System.Console.WriteLine("   4. Log out-(lo)");
+                System.Console.WriteLine("   5. Exit-(x)");
                 System.Console.Write(">> ");
                 var choice = ReadSanitizedLine();
                 if (choice == "patients options" || choice == "po")
@@ -30,14 +30,6 @@ public class SecretaryUI : HospitalClientUI
                 {
                     var checkupUI = new CheckupUI(_hospital);
                     checkupUI.Start();
-                }
-                else if(choice == "schedule" || choice == "sc")
-                {
-                    continue;
-                }
-                else if(choice == "sos schedule" || choice == "sos")
-                {
-                    continue;
                 }
                 else if(choice == "equipment options" || choice == "eq")
                 {

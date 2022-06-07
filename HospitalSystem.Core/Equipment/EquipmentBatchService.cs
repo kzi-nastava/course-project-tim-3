@@ -72,7 +72,7 @@ public class EquipmentBatchService
         return _repo.Search(query);
     }
 
-    public List<EquipmentBatch> GetMissing()
+    public List<EquipmentBatch> GetLow()
     {
         List<EquipmentBatch> equipments = _repo.GetAll().ToList();
         equipments.RemoveAll(eq => eq.Count > 5);
@@ -96,6 +96,6 @@ public class EquipmentBatchService
     
     public List<EquipmentAmount> GetEmpty()
     {
-        return _repo.GetEmpty();
+        return _repo.GetMissing();
     }
 }
