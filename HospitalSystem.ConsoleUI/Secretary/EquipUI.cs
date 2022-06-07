@@ -152,7 +152,7 @@ public class EquipUI : ConsoleUI
         EquipmentTable(missingEquipments, "Missing");
         var toLocation = EnterLocation(missingEquipments);
         var name = EnterName(missingEquipments);
-        
+
         System.Console.Clear();
 
         List<EquipmentBatch> equipmentRoom = _hospital.EquipmentService.GetFilledRoomsByEquipmentName(name);
@@ -203,9 +203,9 @@ public class EquipUI : ConsoleUI
         return count;
     }
 
-    public void EquipmentTable(List<EquipmentBatch> equipments, string tableType)
+    public void EquipmentTable(List<EquipmentBatch> equipments, string header)
     {   
-        System.Console.WriteLine("~" + tableType + "~");
+        System.Console.WriteLine("~" + header + "~");
         System.Console.WriteLine("________________________________");
         System.Console.WriteLine(String.Format("| {0,-8} | {1,-9} | {2, -5} |","Location", "Equipment", "Count"));
         System.Console.WriteLine("|__________|___________|_______|");

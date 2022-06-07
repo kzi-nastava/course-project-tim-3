@@ -1,15 +1,10 @@
 using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;
-// [System.Serializable]
 
 public class SecretaryUI : ConsoleUI
 {   
-    // public SecretaryUI(Hospital _hospital, User? _user) : base(_hospital) 
-    public SecretaryUI(Hospital _hospital) : base(_hospital) 
-    {
-        // this._user = _user;
-    }
+    public SecretaryUI(Hospital _hospital) : base(_hospital){}
 
         public override void Start()
     {

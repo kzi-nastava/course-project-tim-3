@@ -5,66 +5,34 @@ namespace HospitalSystem.ConsoleUI;
 
 public class PagesUI : ConsoleUI
 {
-    public PagesUI(Hospital hospital) : base(hospital){}
+    List<User> patients;
+    int size;
+    int startIndex = 0;
+    int endIndex = 10;
+
+    public PagesUI(Hospital hospital) : base(hospital)
+    {
+        patients = _hospital.UserService.GetPatients().ToList();
+        size = patients.Count();
+    }
 
     public override void Start()
     {   
         Console.Clear();
-        UserService us= _hospital.UserService;
-        IQueryable<User> list = us.GetPatients();
-        List<User> users = new List<User>();
-        foreach(var u in list){
-            users.Add(u);
-        }
-        
-        int usersListSize = users.Count();
-        int startIndex = 0;
-        int endIndex = 10;
 
-        header();
-        page(users, startIndex, endIndex);   
+        Header();
+        Page(patients, startIndex, endIndex);   
 
         while(true){
-            string selectedOption = selectOption();
+            string selectedOption = SelectOption();
             Console.Clear();
             if (selectedOption == "left")
             {
-                startIndex = startIndex-10;
-                endIndex = endIndex-10;
-                if(startIndex >= 0)
-                { 
-                    header();
-                    page(users, startIndex, endIndex);
-                }
-                else{
-                    startIndex = startIndex+10;
-                    endIndex = endIndex+10;
-                    header();
-                    page(users, startIndex, endIndex);
-                    System.Console.WriteLine("There are no more previous pages");
-                }
+                MoveLeft();
             }
             else if(selectedOption == "right")
             {   
-                startIndex = startIndex+10;
-                endIndex = endIndex+10;
-                if(endIndex <= usersListSize)
-                {   
-                    header();
-                    page(users, startIndex, endIndex);
-                }
-                else if((10 - (endIndex-usersListSize)) >= 0){
-                    int newEndIndex = 10 - (endIndex-usersListSize);
-                    header();
-                    page(users, startIndex, usersListSize);
-                }
-                else{
-                    header();
-                    page(users, startIndex-10, usersListSize);
-                    startIndex = startIndex-10;
-                    endIndex = endIndex-10;
-                    System.Console.WriteLine("There are no more next pages");
-                }
+                MoveRight();
             }
             else if(selectedOption == "back"){
                 return;
@@ -72,14 +40,60 @@ public class PagesUI : ConsoleUI
         }
     }
 
-    public string selectOption()
+    public void MoveLeft()
+    {
+        startIndex = startIndex-10;
+        endIndex = endIndex-10;
+        
+        if(startIndex >= 0)
+        { 
+            Header();
+            Page(patients, startIndex, endIndex);
+        }
+        else
+        {
+            startIndex = startIndex+10;
+            endIndex = endIndex+10;
+            Header();
+            Page(patients, startIndex, endIndex);
+            System.Console.WriteLine("There are no more previous pages");
+        }
+    }
+
+    public void MoveRight()
+    {
+        startIndex = startIndex+10;
+        endIndex = endIndex+10;
+
+        if(endIndex <= size)
+        {   
+            Header();
+            Page(patients, startIndex, endIndex);
+        }
+        else if((10 - (endIndex-size)) >= 0)
+        {
+            int newEndIndex = 10 - (endIndex-size);
+            Header();
+            Page(patients, startIndex, size);
+        }
+        else
+        {
+            Header();
+            Page(patients, startIndex-10, size);
+            startIndex = startIndex-10;
+            endIndex = endIndex-10;
+            System.Console.WriteLine("There are no more next pages");
+        }
+    }
+
+    public string SelectOption()
     {
         Console.Write("Please enter a command: ");
         string input = ReadSanitizedLine();
         return input.Trim();
     }
 
-        public void header()
+    public void Header()
     {
         System.Console.WriteLine("__________________________________________________________________________________________");
         System.Console.WriteLine("|                       |                      |                                          |");
@@ -89,7 +103,7 @@ public class PagesUI : ConsoleUI
 
     }
 
-        public void page(List<User> usersList, int startIndex, int endIndex)
+    public void Page(List<User> usersList, int startIndex, int endIndex)
     {   
         int i;
         for(i = startIndex; i < endIndex; i++ ){
@@ -104,6 +118,5 @@ public class PagesUI : ConsoleUI
         System.Console.WriteLine("       <Right> (next 10 users)");
         System.Console.WriteLine("       <Back>");
         System.Console.WriteLine("");
-
     }
 }
