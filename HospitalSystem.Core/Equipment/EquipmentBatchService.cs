@@ -83,7 +83,6 @@ public class EquipmentBatchService
         return equipments;
     }
 
-    //TODO: Change or discuss about this method name with team members
     public  List<EquipmentBatch> GetExistingByName(string name)
     {
         List<EquipmentBatch> equipments = _repo.GetAll().ToList();
