@@ -71,4 +71,31 @@ public class EquipmentBatchService
     {
         return _repo.Search(query);
     }
+
+    public List<EquipmentBatch> GetLow()
+    {
+        List<EquipmentBatch> equipments = _repo.GetAll().ToList();
+        equipments.RemoveAll(eq => eq.Count > 5);
+        equipments.Sort(delegate(EquipmentBatch x, EquipmentBatch y)
+        {
+            return x.Count.CompareTo(y.Count);
+        });
+        return equipments;
+    }
+
+    public  List<EquipmentBatch> GetExistingByName(string name)
+    {
+        List<EquipmentBatch> equipments = _repo.GetAll().ToList();
+        equipments.RemoveAll(eq => eq.Name != name);
+        equipments.RemoveAll(eq => eq.Count == 0);
+        equipments.Sort(delegate(EquipmentBatch left, EquipmentBatch right){
+            return left.Count.CompareTo(right.Count);
+        });
+        return equipments;
+    }
+    
+    public List<EquipmentAmount> GetEmpty()
+    {
+        return _repo.GetMissing();
+    }
 }

@@ -6,9 +6,9 @@ using MongoDB.Driver.Linq;
 namespace HospitalSystem.Core;
 
 public interface ICheckupChangeRequestRepository{
-    public IMongoCollection<CheckupChangeRequest> GetAll();
+    public IQueryable<CheckupChangeRequest> GetAll();
 
-    public IMongoQueryable<CheckupChangeRequest> GetByState(RequestState state);
+    public IQueryable<CheckupChangeRequest> GetByState(RequestState state);
     
     public List<CheckupChangeRequest> GetCheckUpChangeRequests();
 
