@@ -120,7 +120,7 @@ public class EquipUI : HospitalClientUI
     {
         System.Console.Write("Chose a stock location to store: ");
         var location = ReadSanitizedLine();
-        bool contains = rooms.Any(u => u.Location == location);
+        bool contains = rooms.Any(room => room.Location == location);
         if(!contains)
         {
             throw new InvalidInputException("Stock with that location does not exist!");
@@ -156,6 +156,7 @@ public class EquipUI : HospitalClientUI
         System.Console.Clear();
 
         List<EquipmentBatch> equipmentRoom = _hospital.EquipmentService.GetExistingByName(name);
+        equipmentRoom.RemoveAll(equipment => equipment.RoomLocation == toLocation && equipment.Name == name);
         EquipmentTable(equipmentRoom, "To move");
         var fromLocation = EnterLocation(missingEquipments);
         var count = EnterCount(missingEquipments);
@@ -171,34 +172,34 @@ public class EquipUI : HospitalClientUI
     {
         System.Console.Write("Chose location: ");
         var location = ReadSanitizedLine();
-        bool success = equipments.Any(u => u.RoomLocation == location);
+        bool success = equipments.Any(equipment => equipment.RoomLocation == location);
         if(!success)
         {
-            throw new InvalidInputException("Location or equipment inside the location does not exist!");
+            throw new InvalidInputException("Location inside the table does not exist!");
         }
         return location;
     }
 
     public string EnterName(List<EquipmentBatch> equipments)
     {
-        System.Console.Write("Chose location: ");
+        System.Console.Write("Choose equipment: ");
         var name = ReadSanitizedLine();
-        bool success = equipments.Any(u => u.Name == name);
+        bool success = equipments.Any(equipment => equipment.Name == name);
         if(!success)
         {
-            throw new InvalidInputException("Location or equipment inside the location does not exist!");
+            throw new InvalidInputException("Equipment inside the table does not exist!");
         }
         return name;
     }
 
     public int EnterCount(List<EquipmentBatch> equipments)
     {
-        System.Console.Write("Choose equipment: ");
+        System.Console.Write("Enter amount: ");
         var count = ReadInt();
-        bool succes = equipments.Any(u => u.Count >= count);
+        bool succes = equipments.Any(equipment => equipment.Count <= count);
         if(!succes)
         {
-            throw new InvalidInputException("Location or equipment inside the location does not exist!");
+            throw new InvalidInputException("Invalid amount!");
         }
         return count;
     }
@@ -212,18 +213,19 @@ public class EquipUI : HospitalClientUI
 
         foreach(var equipment in equipments)
         {
-            if (equipments.Count == 0)
-            {
-            System.Console.WriteLine(String.Format("|[{0,-8}]|[{1,-9}]|[{2, -5}]|", equipment.RoomLocation, equipment.Name, equipment.Count));
-            }
-            else
-            {
-            System.Console.WriteLine(String.Format("| {0,-8} | {1,-9} | {2, -5} |", equipment.RoomLocation, equipment.Name, equipment.Count));
+            List<Room> stocks = _hospital.RoomService.GetStocks().ToList();
+            if(!stocks.Any(stock => stock.Location == equipment.RoomLocation)){
+                if (equipment.Count == 0)
+                {
+                System.Console.WriteLine(String.Format("|[{0,-8}]|[{1,-9}]|[{2, -5}]|", equipment.RoomLocation, equipment.Name, equipment.Count));
+                }
+                else
+                {
+                System.Console.WriteLine(String.Format("| {0,-8} | {1,-9} | {2, -5} |", equipment.RoomLocation, equipment.Name, equipment.Count));
+                }
             }
         }
-
         System.Console.WriteLine("|__________|___________|_______|");
-
     }
 }
 

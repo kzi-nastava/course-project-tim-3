@@ -69,4 +69,12 @@ public class RoomRepository : IRoomRepository
             where room.Location == location
             select room).Any();
     }
+
+    public IQueryable<Room> GetStocks()
+    {
+        return 
+            from stock in GetAll()
+            where stock.Type == RoomType.STOCK
+            select stock;
+    }
 }

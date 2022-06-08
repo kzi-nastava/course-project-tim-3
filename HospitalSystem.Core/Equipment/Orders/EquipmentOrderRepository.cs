@@ -13,7 +13,7 @@ public class EquipmentOrderRepository : IEquipmentOrderRepository
 
     private IMongoCollection<EquipmentOrder> GetMongoCollection()
     {
-        return _dbClient.GetDatabase("hospital").GetCollection<EquipmentOrder>("equipment_requests");
+        return _dbClient.GetDatabase("hospital").GetCollection<EquipmentOrder>("equipment_orders");
     }
 
     public IQueryable<EquipmentOrder> GetAll()

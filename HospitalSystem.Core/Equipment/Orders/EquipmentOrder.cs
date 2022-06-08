@@ -9,6 +9,8 @@ public class EquipmentOrder
     public ObjectId Id { get; set; }
     public string ToStockLocation { get; set; }
     public string Name { get; set; }
+    
+    [BsonRepresentation(MongoDB.Bson.BsonType.String)]
     public EquipmentType Type { get; set; }
     public int Count { get; set; }
     [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
