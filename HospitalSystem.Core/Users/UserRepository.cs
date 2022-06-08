@@ -43,4 +43,12 @@ public class UserRepository : IUserRepository
     {
         return GetMongoCollection().DeleteOne(user => user.Email == email).DeletedCount == 1;
     }
+
+    public IQueryable<User> GetPatients()
+    {
+        return 
+            from user in GetAll()
+            where user.Role == Role.PATIENT
+            select user;
+    }
 }

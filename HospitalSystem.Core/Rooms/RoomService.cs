@@ -58,4 +58,9 @@ public class RoomService
         room.Active = false;
         Replace(room);
     }
+
+    public IQueryable<Room> GetStocks()
+    {
+        return _roomRepo.GetStocks();
+    }
 }

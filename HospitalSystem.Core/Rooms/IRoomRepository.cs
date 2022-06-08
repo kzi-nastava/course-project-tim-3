@@ -17,4 +17,6 @@ public interface IRoomRepository
     public void Upsert(Room room, Expression<Func<Room, bool>> filter);
 
     public bool DoesExist(string location);
+
+    public IQueryable<Room> GetStocks();
 }

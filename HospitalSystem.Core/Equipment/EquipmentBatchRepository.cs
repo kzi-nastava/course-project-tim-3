@@ -66,4 +66,20 @@ public class EquipmentBatchRepository : IEquipmentBatchRepository
             where batch.RoomLocation == roomLocation
             select batch;
     }
+
+    //TODO: Find a better name, GetMissing is taken...
+    public List<EquipmentAmount> GetMissing()
+    {
+        var equipments =  GetMongoCollection().Aggregate().Group(equipment => equipment.Name, 
+            group => new EquipmentAmount(group.Key, group.Sum(equipment => equipment.Count))).ToList();
+        var emtpyEquipment = new List<EquipmentAmount>();
+        foreach(var equipment in equipments)
+        {
+            if(equipment.Amount == 0)
+            {
+                emtpyEquipment.Add(equipment);
+            }
+        }
+        return emtpyEquipment;
+    }
 }
