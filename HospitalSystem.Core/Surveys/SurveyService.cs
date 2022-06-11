@@ -29,22 +29,26 @@ public class SurveyService
         return _repo.GetHospitalUnansweredBy(person);
     }
 
-    public IList<Survey> GetDoctorUnansweredBy(Patient pat)
-    {
-        return _repo.GetDoctorUnansweredBy(pat, _appointmentService.GetAllAppointmentDoctors(pat));
-    }
-
-    public IList<(Doctor, int, int)> GetBestDoctors(Survey survey, int count = 3)
+    public IEnumerable<(Survey, IEnumerable<Doctor>)> GetDoctorUnansweredBy(Patient pat)
     {
         return 
-            (from res in _repo.GetBestDoctors(survey, count)
+            from notAnsweredSurveyDoctors in _repo.GetDoctorUnansweredBy(pat, 
+                _appointmentService.GetAllAppointmentDoctors(pat))
+            select (notAnsweredSurveyDoctors.Item1, 
+                notAnsweredSurveyDoctors.Item2.Select(id => _doctorService.GetById(id)));
+    }
+
+    public IList<(Doctor, double?, int)> GetBestDoctors(Survey survey, int count = 3)
+    {
+        return 
+            (from res in survey.GetBestDoctors(survey, count)
             select (_doctorService.GetById(res.Item1), res.Item2, res.Item3)).ToList();
     }
 
-    public IList<(Doctor, int, int)> GetWorstDoctors(Survey survey, int count = 3)
+    public IList<(Doctor, double?, int)> GetWorstDoctors(Survey survey, int count = 3)
     {
         return 
-            (from res in _repo.GetWorstDoctors(survey, count)
+            (from res in survey.GetWorstDoctors(survey, count)
             select (_doctorService.GetById(res.Item1), res.Item2, res.Item3)).ToList();
     }
 }

@@ -28,8 +28,7 @@ public class Survey
     public string Title { get; set; }
     public List<string> Questions { get; set; }
     public List<string> RatingQuestions { get; set; }
-    [BsonElement]
-    private List<SurveyAnswer> _answers;
+    public List<SurveyAnswer> Answers { get; set; }
 
     public Survey(List<string> questions, List<string> ratingQuestions, string title,
         SurveyType type = SurveyType.HOSPITAL)
@@ -39,7 +38,7 @@ public class Survey
         RatingQuestions = ratingQuestions;
         Title = title;
         Type = type;
-        _answers = new();
+        Answers = new();
     }
 
     public void AddAnswer(SurveyAnswer answer)
@@ -64,6 +63,42 @@ public class Survey
         {
             throw new InvalidSurveyException("Hospital survey must not refer to a doctor");
         }
-        _answers.Add(answer);
+        Answers.Add(answer);
+    }
+
+    public bool WasAnsweredBy(Person person)
+    {
+        return
+            (from ans in Answers
+            where ans.AnsweredBy == person.Id
+            select ans).Any();
+    }
+
+    // TODO: sloppy casts all over, do a polymorphism
+    public HashSet<ObjectId> AnsweredFor(Patient pat)
+    {
+        return
+            (from ans in Answers
+            where ans.AnsweredBy == pat.Id && ans.DoctorId != null
+            select (ObjectId) ans.DoctorId).ToHashSet();
+    }
+
+    public IEnumerable<(ObjectId, double?, int)> GetBestDoctors(Survey survey, int count)
+    {
+        return
+            (from ans in Answers
+            group ans by ans.DoctorId into grp
+            orderby grp.Average(ans => ans.Ratings.Average()) descending
+            select ((ObjectId) grp.Key, grp.Average(ans => ans.Ratings.Average()), grp.Count())).Take(count);
+
+    }
+
+    public IEnumerable<(ObjectId, double?, int)> GetWorstDoctors(Survey survey, int count)
+    {
+        return
+            (from ans in Answers
+            group ans by ans.DoctorId into grp
+            orderby grp.Average(ans => ans.Ratings.Average()) ascending
+            select ((ObjectId) grp.Key, grp.Average(ans => ans.Ratings.Average()), grp.Count())).Take(count);
     }
 }
