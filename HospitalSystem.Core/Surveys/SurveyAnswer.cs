@@ -19,4 +19,12 @@ public class SurveyAnswer
         Answers = answers;
         Ratings = ratings;
     }
+
+    public SurveyAnswer(List<string?> answers, List<int?> ratings, ObjectId doctorId)
+    {
+        Id = ObjectId.GenerateNewId();
+        Answers = answers;
+        Ratings = ratings;
+        DoctorId = doctorId;
+    }
 }

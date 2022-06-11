@@ -2,6 +2,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using HospitalSystem.Core;
+using HospitalSystem.Core.Surveys;
 using HospitalSystem.Core.Utils;
 
 public static class TestGenerator
@@ -20,6 +21,7 @@ public static class TestGenerator
         GenerateCheckupChangeRequests(hospital);
         GenerateMedication(hospital);
         GenerateMedicationRequests(hospital);
+        GenerateSurveys(hospital);
 
         System.Console.WriteLine("GENERATED TESTS IN DB");
 
@@ -184,6 +186,27 @@ public static class TestGenerator
             new Medication("ultra amoxicillin", new List<string> {"ultra penicillin","mega magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}), "ULTRA2"));
         hospital.MedicationRequestService.Send(new MedicationRequest(
             new Medication("ultra oxacillin", new List<string> {"ultra penicillin"}), "ULTRA3"));
+    }
+
+    private static void GenerateSurveys(Hospital hospital)
+    {
+        var hospitalSurvey = new Survey(new List<string> {"Opininion?"},
+            new List<string>{"Overall"}, "Hospital1");
+        hospital.SurveyService.Insert(hospitalSurvey);
+        hospital.SurveyService.AddAnswer(hospitalSurvey,
+            new SurveyAnswer(new List<string?>{null}, new List<int?>{3}));
+
+        var doctorSurvey = new Survey(new List<string> {"Opininion?"},
+            new List<string>{"Overall"}, "Doctor1", SurveyType.DOCTOR);
+        hospital.SurveyService.Insert(doctorSurvey);
+        hospital.SurveyService.AddAnswer(doctorSurvey,
+            new SurveyAnswer(new List<string?>{"ANSDR1"}, new List<int?>{4}, 
+                hospital.DoctorService.GetOneBySpecialty(Specialty.STOMATOLOGY).Id));
+
+        hospital.SurveyService.Insert(new Survey(new List<string> {"Opininion2?"},
+            new List<string>{"Overall2"}, "Hospital2"));
+        hospital.SurveyService.Insert(new Survey(new List<string> {"Opininion2?"},
+            new List<string>{"Overall2"}, "Doctor2", SurveyType.DOCTOR));
     }
 
     private static void WriteDatabaseToFile(MongoClient dbClient)

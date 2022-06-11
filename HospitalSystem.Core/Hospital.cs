@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using HospitalSystem.Core.Surveys;
 
 namespace HospitalSystem.Core;
 
@@ -19,6 +20,7 @@ public class Hospital
     public AppointmentService AppointmentService { get; }
     public PatientService PatientService { get; }
     public CheckupChangeRequestService CheckupChangeRequestService  { get; }
+    public SurveyService SurveyService { get; set; }
 
     public Hospital()
     {
@@ -39,6 +41,8 @@ public class Hospital
         RelocationService, AppointmentService);
         MedicationRepo = new (_dbClient);
         MedicationRequestService = new (new MedicationRequestRepository(_dbClient), MedicationRepo);
+        SurveyService = new SurveyService(new SurveyRepository(_dbClient),
+            AppointmentService, DoctorService);
         
         // TODO: this maybe shouldn't be here
         RelocationService.ScheduleAll();
