@@ -11,4 +11,8 @@ public interface ISurveyRepository
     public IList<Survey> GetHospitalUnansweredBy(Person person);
 
     public IList<Survey> GetDoctorUnansweredBy(Person person, HashSet<ObjectId> myDoctors);
+
+    public IList<(ObjectId, int, int)> GetBestDoctors(Survey survey, int count);
+
+    public IList<(ObjectId, int, int)> GetWorstDoctors(Survey survey, int count);
 }
