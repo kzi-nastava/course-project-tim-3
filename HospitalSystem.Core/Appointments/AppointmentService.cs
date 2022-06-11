@@ -412,4 +412,9 @@ public class AppointmentService
         }
         return sum/count;
     }
+
+    public HashSet<ObjectId> GetAllAppointmentDoctors(Patient pat)
+    {
+        return _appointmentRepo.GetAllAppointmentDoctors(pat);
+    }
 }

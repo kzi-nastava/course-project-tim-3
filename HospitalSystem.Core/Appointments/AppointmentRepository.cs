@@ -58,4 +58,13 @@ public class AppointmentRepository : IAppointmentRepository
         checkups.DeleteOne(filter);
     }
 
+    public HashSet<ObjectId> GetAllAppointmentDoctors(Patient pat)
+    {
+        return
+            (from checkup in GetCheckups().AsQueryable()
+            select (ObjectId) checkup.Doctor.Id)
+            .Union(
+            from operation in GetOperations().AsQueryable()
+            select (ObjectId) operation.Doctor.Id).ToHashSet();
+    }
 }
