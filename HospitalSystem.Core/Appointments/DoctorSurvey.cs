@@ -19,6 +19,8 @@ namespace HospitalSystem.Core
             Comment = comment;
         }
 
+        public DoctorSurvey(){}
+
         public override string ToString()
         {
             return "Service opinion: " + ServiceOpinion + "\nRating: " + Rating + "\nComment: " + Comment;

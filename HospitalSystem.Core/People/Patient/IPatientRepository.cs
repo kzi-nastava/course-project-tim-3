@@ -6,7 +6,10 @@ namespace HospitalSystem.Core;
 
 public interface IPatientRepository
 {
-    public IMongoCollection<Patient> GetPatients();
+
+    public IMongoCollection<Patient> GetMongoCollection();
+
+    public IQueryable<Patient> GetPatients();
 
     public void AddOrUpdatePatient(Patient patient);
 
