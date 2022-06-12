@@ -4,57 +4,58 @@ namespace HospitalSystem.Core.Surveys;
 
 public class DoctorSurvey : Survey
 {
-    public List<DoctorSurveyAnswer> Answers { get; set; }
+    public List<DoctorSurveyResponse> Responses { get; set; }
 
     public DoctorSurvey(List<string> questions, List<string> ratingQuestions, string title)
         : base(questions, ratingQuestions, title)
     {
-        Answers = new();
+        Responses = new();
     }
 
     public override bool WasAnsweredBy(Person person)
     {
         return
-            (from ans in Answers
-            where ans.AnsweredBy == person.Id
-            select ans).Any();
+            (from response in Responses
+            where response.AnsweredBy == person.Id
+            select response).Any();
     }
 
-    public override void AddAnswer(SurveyAnswer answer)
+    public override void AddResponse(SurveyResponse response)
     {
-        if (!(answer is DoctorSurveyAnswer))
+        if (!(response is DoctorSurveyResponse))
         {
             throw new InvalidSurveyException("A doctor survey can only take doctor answers.");
         }
-        var doctorAnswer = (DoctorSurveyAnswer) answer;
-        doctorAnswer.Validate(this);
-        Answers.Add(doctorAnswer);
+        var doctorResponse = (DoctorSurveyResponse) response;
+        doctorResponse.Validate(this);
+        Responses.Add(doctorResponse);
     }
 
-    public HashSet<ObjectId> AnsweredFor(Patient pat)
+    public HashSet<ObjectId> GetDoctorsRespondedToBy(Patient pat)
     {
         return
-            (from ans in Answers
-            where ans.AnsweredBy == pat.Id
-            select ((DoctorSurveyAnswer) ans).DoctorId).ToHashSet();
+            (from response in Responses
+            where response.AnsweredBy == pat.Id
+            select ((DoctorSurveyResponse) response).DoctorId).ToHashSet();
     }
 
+    // TODO: write best and worst in a better way, too similar functions. Better grouping maybe?
     public IEnumerable<(ObjectId, double?, int)> GetBestDoctors(int count)
     {
         return
-            (from ans in Answers
-            group ans by ((DoctorSurveyAnswer) ans).DoctorId into grp
-            orderby grp.Average(ans => ans.Ratings.Average()) descending
-            select (grp.Key, grp.Average(ans => ans.Ratings.Average()), grp.Count())).Take(count);
+            (from response in Responses
+            group response by ((DoctorSurveyResponse) response).DoctorId into grp
+            orderby grp.Average(response => response.Ratings.Average()) descending
+            select (grp.Key, grp.Average(response => response.Ratings.Average()), grp.Count())).Take(count);
 
     }
 
     public IEnumerable<(ObjectId, double?, int)> GetWorstDoctors(int count)
     {
         return
-            (from ans in Answers
-            group ans by ((DoctorSurveyAnswer) ans).DoctorId into grp
-            orderby grp.Average(ans => ans.Ratings.Average()) ascending
-            select (grp.Key, grp.Average(ans => ans.Ratings.Average()), grp.Count())).Take(count);
+            (from response in Responses
+            group response by ((DoctorSurveyResponse) response).DoctorId into grp
+            orderby grp.Average(response => response.Ratings.Average()) ascending
+            select (grp.Key, grp.Average(response => response.Ratings.Average()), grp.Count())).Take(count);
     }
 }

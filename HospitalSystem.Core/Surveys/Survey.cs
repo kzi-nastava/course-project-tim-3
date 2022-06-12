@@ -31,7 +31,7 @@ public abstract class Survey
         Title = title;
     }
 
-    public abstract void AddAnswer(SurveyAnswer answer);
+    public abstract void AddResponse(SurveyResponse response);
 
     public abstract bool WasAnsweredBy(Person person);
 }

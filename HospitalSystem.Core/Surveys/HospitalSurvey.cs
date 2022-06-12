@@ -2,26 +2,26 @@ namespace HospitalSystem.Core.Surveys;
 
 public class HospitalSurvey : Survey
 {
-    public List<SurveyAnswer> Answers { get; set; }
+    public List<SurveyResponse> Responses { get; set; }
 
     public HospitalSurvey(List<string> questions, List<string> ratingQuestions, string title)
         : base(questions, ratingQuestions, title)
     {
-        Answers = new();
+        Responses = new();
     }
 
-    public override void AddAnswer(SurveyAnswer answer)
+    public override void AddResponse(SurveyResponse response)
     {
-        answer.Validate(this);
-        Answers.Add(answer);
+        response.Validate(this);  // TODO: might want to move validation to survey, so you don't pass this
+        Responses.Add(response);
     }
 
     public override bool WasAnsweredBy(Person person)
     {
         return
-            (from ans in Answers
-            where ans.AnsweredBy == person.Id
-            select ans).Any();
+            (from response in Responses
+            where response.AnsweredBy == person.Id
+            select response).Any();
     }
 
     public IEnumerable<(string, double?, int)> AggregateRatings()
@@ -29,10 +29,10 @@ public class HospitalSurvey : Survey
         return RatingQuestions.Select((question, i) => 
             (
                 question, 
-                (from answer in Answers
-                select answer.Ratings[i]).Average(),
-                (from answer in Answers
-                select answer.Ratings[i]).Count()
+                (from response in Responses
+                select response.Ratings[i]).Average(),
+                (from response in Responses
+                select response.Ratings[i]).Count()
             ));
     }
 }

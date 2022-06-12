@@ -191,22 +191,22 @@ public static class TestGenerator
         var hospitalSurvey = new HospitalSurvey(new List<string> {"Opininion?"},
             new List<string>{"Overall"}, "Hospital1");
         hospital.SurveyService.Insert(hospitalSurvey);
-        hospital.SurveyService.AddAnswer(hospitalSurvey,
-            new SurveyAnswer(new List<string?>{null}, new List<int?>{4},
+        hospital.SurveyService.AddResponse(hospitalSurvey,
+            new SurveyResponse(new List<string?>{null}, new List<int?>{4},
             hospital.PatientService.GetPatientByFullName("name2", "surname2").Id));
-        hospital.SurveyService.AddAnswer(hospitalSurvey,
-            new SurveyAnswer(new List<string?>{"Bad hospital! Hate it!"}, new List<int?>{5},
+        hospital.SurveyService.AddResponse(hospitalSurvey,
+            new SurveyResponse(new List<string?>{"Bad hospital! Hate it!"}, new List<int?>{5},
             hospital.PatientService.GetPatientByFullName("name6", "surname6").Id));
 
         var doctorSurvey = new DoctorSurvey(new List<string> {"Opininion?"},
             new List<string>{"Overall"}, "Doctor1");
         hospital.SurveyService.Insert(doctorSurvey);
-        hospital.SurveyService.AddAnswer(doctorSurvey,
-            new DoctorSurveyAnswer(new List<string?>{"Good good"}, new List<int?>{null},
+        hospital.SurveyService.AddResponse(doctorSurvey,
+            new DoctorSurveyResponse(new List<string?>{"Good good"}, new List<int?>{null},
                 hospital.PatientService.GetPatientByFullName("name2", "surname2").Id,
                 hospital.DoctorService.GetOneBySpecialty(Specialty.STOMATOLOGY).Id));
-        hospital.SurveyService.AddAnswer(doctorSurvey,
-            new DoctorSurveyAnswer(new List<string?>{"BAD Doctor"}, new List<int?>{1},
+        hospital.SurveyService.AddResponse(doctorSurvey,
+            new DoctorSurveyResponse(new List<string?>{"BAD Doctor"}, new List<int?>{1},
                 hospital.PatientService.GetPatientByFullName("name2", "surname2").Id,
                 hospital.DoctorService.GetOneBySpecialty(Specialty.RADIOLOGY).Id));
 

@@ -3,14 +3,14 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace HospitalSystem.Core.Surveys;
 
-[BsonKnownTypes(typeof(DoctorSurveyAnswer))]
-public class SurveyAnswer
+[BsonKnownTypes(typeof(DoctorSurveyResponse))]
+public class SurveyResponse
 {
     public List<string?> Answers { get; set; }
     public List<int?> Ratings { get; set; }
     public ObjectId AnsweredBy { get; set; }
 
-    public SurveyAnswer(List<string?> answers, List<int?> ratings, ObjectId answeredBy)
+    public SurveyResponse(List<string?> answers, List<int?> ratings, ObjectId answeredBy)
     {
         Answers = answers;
         Ratings = ratings;
@@ -21,11 +21,11 @@ public class SurveyAnswer
     {
         if (Ratings.Count != parent.RatingQuestions.Count)
         {
-            throw new InvalidSurveyException("Wrong rating count for answer.");
+            throw new InvalidSurveyException("Wrong rating count for response to that survey.");
         }
         if (Answers.Count != parent.Questions.Count)
         {
-            throw new InvalidSurveyException("Wrong amount of answered questions for that answer.");
+            throw new InvalidSurveyException("Wrong amount of answered questions for that response.");
         }
         if (Ratings.Any(rating => rating is not null && (rating > 5 || rating < 0)))
         {

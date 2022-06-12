@@ -18,9 +18,9 @@ public class SurveyService
         _repo.Insert(survey);
     }
 
-    public void AddAnswer(Survey survey, SurveyAnswer answer)
+    public void AddResponse(Survey survey, SurveyResponse response)
     {
-        survey.AddAnswer(answer);
+        survey.AddResponse(response);
         _repo.Replace(survey);
     }
 
@@ -42,7 +42,7 @@ public class SurveyService
     public IEnumerable<(DoctorSurvey, IEnumerable<Doctor>)> GetDoctorUnansweredBy(Patient pat)
     {
         return 
-            from notAnsweredSurveyDoctors in _repo.GetDoctorUnansweredBy(pat, 
+            from notAnsweredSurveyDoctors in _repo.GetDoctorUnansweredBy(pat,   // TODO: think up a better name
                 _appointmentService.GetAllAppointmentDoctors(pat))
             select (notAnsweredSurveyDoctors.Item1, 
                 notAnsweredSurveyDoctors.Item2.Select(id => _doctorService.GetById(id)));
@@ -51,7 +51,7 @@ public class SurveyService
     public IList<(Doctor, double?, int)> GetBestDoctors(DoctorSurvey survey, int count = 3)
     {
         return 
-            (from res in survey.GetBestDoctors(count)
+            (from res in survey.GetBestDoctors(count)  // TODO: think up a better name than res
             select (_doctorService.GetById(res.Item1), res.Item2, res.Item3)).ToList();
     }
 

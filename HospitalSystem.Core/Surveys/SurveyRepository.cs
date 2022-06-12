@@ -55,7 +55,7 @@ public class SurveyRepository : ISurveyRepository
     {
         return
             (from survey in GetAllDoctor().AsEnumerable()
-            where myDoctors.Except(survey.AnsweredFor(pat)).Any()
-            select (survey, myDoctors.Except(survey.AnsweredFor(pat)))).ToList();
+            where myDoctors.Except(survey.GetDoctorsRespondedToBy(pat)).Any()
+            select (survey, myDoctors.Except(survey.GetDoctorsRespondedToBy(pat)))).ToList();
     }
 }

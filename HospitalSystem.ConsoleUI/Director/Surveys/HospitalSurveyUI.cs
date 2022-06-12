@@ -69,7 +69,7 @@ public class HospitalSurveyUI : HospitalClientUI
         System.Console.WriteLine("Showing survey: " + survey.Title);
         System.Console.WriteLine("Ratings:");
         DisplayAggregatedRatings(survey);
-        DisplayAnswers(survey);
+        DisplayResponses(survey);
     }
 
     private void DisplayAggregatedRatings(HospitalSurvey survey)
@@ -83,29 +83,29 @@ public class HospitalSurveyUI : HospitalClientUI
         }
     }
 
-    private void DisplayAnswers(HospitalSurvey survey)
+    private void DisplayResponses(HospitalSurvey survey)
     {
         int ansCount = 0;
-        for (int i = 0; i < survey.Answers.Count; i++)
+        for (int i = 0; i < survey.Responses.Count; i++)
         {
-            if (survey.Answers[i].Answers.Any(ans => ans != null))
+            if (survey.Responses[i].Answers.Any(ans => ans != null))
             {
-                DisplayAnswer(ansCount, survey.Questions, survey.Answers[i].Answers);
+                DisplayResponse(ansCount, survey.Questions, survey.Responses[i].Answers);
                 ansCount++;
             }
         }
     }
 
-    private void DisplayAnswer(int num, List<string> questions, List<string?> answers)
+    private void DisplayResponse(int num, List<string> questions, List<string?> answers)
     {
-        System.Console.WriteLine("Answer #" + num);
+        System.Console.WriteLine("Response #" + num);
         for (int j = 0; j < questions.Count; j++)
         {
             if (answers[j] != null)
             {
                 System.Console.WriteLine(questions[j]);
                 System.Console.Write("Answer: ");
-                System.Console.WriteLine(answers[j]);  // TODO: rename answer to response
+                System.Console.WriteLine(answers[j]);
                 System.Console.WriteLine();
             }
         }
