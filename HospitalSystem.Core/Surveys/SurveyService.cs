@@ -41,14 +41,14 @@ public class SurveyService
     public IList<(Doctor, double?, int)> GetBestDoctors(DoctorSurvey survey, int count = 3)
     {
         return 
-            (from res in survey.GetBestDoctors(survey, count)
+            (from res in survey.GetBestDoctors(count)
             select (_doctorService.GetById(res.Item1), res.Item2, res.Item3)).ToList();
     }
 
     public IList<(Doctor, double?, int)> GetWorstDoctors(DoctorSurvey survey, int count = 3)
     {
         return 
-            (from res in survey.GetWorstDoctors(survey, count)
+            (from res in survey.GetWorstDoctors(count)
             select (_doctorService.GetById(res.Item1), res.Item2, res.Item3)).ToList();
     }
 }

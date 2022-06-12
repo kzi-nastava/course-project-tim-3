@@ -39,7 +39,7 @@ public class DoctorSurvey : Survey
             select ((DoctorSurveyAnswer) ans).DoctorId).ToHashSet();
     }
 
-    public IEnumerable<(ObjectId, double?, int)> GetBestDoctors(Survey survey, int count)
+    public IEnumerable<(ObjectId, double?, int)> GetBestDoctors(int count)
     {
         return
             (from ans in Answers
@@ -49,7 +49,7 @@ public class DoctorSurvey : Survey
 
     }
 
-    public IEnumerable<(ObjectId, double?, int)> GetWorstDoctors(Survey survey, int count)
+    public IEnumerable<(ObjectId, double?, int)> GetWorstDoctors(int count)
     {
         return
             (from ans in Answers
