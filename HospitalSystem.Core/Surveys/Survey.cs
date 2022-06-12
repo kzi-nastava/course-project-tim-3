@@ -32,6 +32,4 @@ public abstract class Survey
     }
 
     public abstract void AddResponse(SurveyResponse response);
-
-    public abstract bool WasAnsweredBy(Person person);
 }

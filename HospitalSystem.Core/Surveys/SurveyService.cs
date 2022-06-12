@@ -34,6 +34,13 @@ public class SurveyService
         return _repo.GetAllDoctor();
     }
 
+    public IList<(Doctor, IEnumerable<DoctorSurveyResponse>)> GetResponsesGroupedByDoctor(DoctorSurvey survey)
+    {
+        return 
+            (from pair in survey.GetResponsesGroupedByDoctor()
+            select (_doctorService.GetById(pair.Item1), pair.Item2)).ToList();
+    }
+
     public IList<HospitalSurvey> GetHospitalUnansweredBy(Person person)
     {
         return _repo.GetHospitalUnansweredBy(person);

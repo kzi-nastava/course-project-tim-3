@@ -16,7 +16,7 @@ public class HospitalSurvey : Survey
         Responses.Add(response);
     }
 
-    public override bool WasAnsweredBy(Person person)
+    public bool WasAnsweredBy(Person person)
     {
         return
             (from response in Responses

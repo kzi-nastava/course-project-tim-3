@@ -4,20 +4,12 @@ namespace HospitalSystem.Core.Surveys;
 
 public class DoctorSurvey : Survey
 {
-    public List<DoctorSurveyResponse> Responses { get; set; }
+    public  List<DoctorSurveyResponse> Responses { get; set; }
 
     public DoctorSurvey(List<string> questions, List<string> ratingQuestions, string title)
         : base(questions, ratingQuestions, title)
     {
         Responses = new();
-    }
-
-    public override bool WasAnsweredBy(Person person)
-    {
-        return
-            (from response in Responses
-            where response.AnsweredBy == person.Id
-            select response).Any();
     }
 
     public override void AddResponse(SurveyResponse response)
@@ -31,12 +23,20 @@ public class DoctorSurvey : Survey
         Responses.Add(doctorResponse);
     }
 
+    public IEnumerable<(ObjectId, IEnumerable<DoctorSurveyResponse>)> GetResponsesGroupedByDoctor()
+    {
+        return
+            (from response in Responses
+            group response by response.DoctorId into grp
+            select (grp.Key, grp.AsEnumerable()));
+    }
+
     public HashSet<ObjectId> GetDoctorsRespondedToBy(Patient pat)
     {
         return
             (from response in Responses
             where response.AnsweredBy == pat.Id
-            select ((DoctorSurveyResponse) response).DoctorId).ToHashSet();
+            select response.DoctorId).ToHashSet();
     }
 
     // TODO: write best and worst in a better way, too similar functions. Better grouping maybe?
@@ -44,7 +44,7 @@ public class DoctorSurvey : Survey
     {
         return
             (from response in Responses
-            group response by ((DoctorSurveyResponse) response).DoctorId into grp
+            group response by response.DoctorId into grp
             orderby grp.Average(response => response.Ratings.Average()) descending
             select (grp.Key, grp.Average(response => response.Ratings.Average()), grp.Count())).Take(count);
 
@@ -54,7 +54,7 @@ public class DoctorSurvey : Survey
     {
         return
             (from response in Responses
-            group response by ((DoctorSurveyResponse) response).DoctorId into grp
+            group response by response.DoctorId into grp
             orderby grp.Average(response => response.Ratings.Average()) ascending
             select (grp.Key, grp.Average(response => response.Ratings.Average()), grp.Count())).Take(count);
     }
