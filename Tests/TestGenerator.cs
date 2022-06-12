@@ -202,13 +202,13 @@ public static class TestGenerator
             new List<string>{"Overall"}, "Doctor1");
         hospital.SurveyService.Insert(doctorSurvey);
         hospital.SurveyService.AddResponse(doctorSurvey,
-            new DoctorSurveyResponse(new List<string?>{"Good good"}, new List<int?>{null},
-                hospital.PatientService.GetPatientByFullName("name2", "surname2").Id,
-                hospital.DoctorService.GetOneBySpecialty(Specialty.STOMATOLOGY).Id));
+            new SurveyResponse(new List<string?>{"Good good"}, new List<int?>{null},
+                hospital.PatientService.GetPatientByFullName("name2", "surname2").Id),
+                hospital.DoctorService.GetOneBySpecialty(Specialty.STOMATOLOGY));
         hospital.SurveyService.AddResponse(doctorSurvey,
-            new DoctorSurveyResponse(new List<string?>{"BAD Doctor"}, new List<int?>{1},
-                hospital.PatientService.GetPatientByFullName("name2", "surname2").Id,
-                hospital.DoctorService.GetOneBySpecialty(Specialty.RADIOLOGY).Id));
+            new SurveyResponse(new List<string?>{"BAD Doctor"}, new List<int?>{1},
+                hospital.PatientService.GetPatientByFullName("name2", "surname2").Id),
+                hospital.DoctorService.GetOneBySpecialty(Specialty.RADIOLOGY));
 
         hospital.SurveyService.Insert(new HospitalSurvey(new List<string> {"Opininion2?"},
             new List<string>{"Overall2"}, "Hospital2"));

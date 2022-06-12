@@ -3,7 +3,7 @@ using HospitalSystem.Core.Surveys;
 
 namespace HospitalSystem.ConsoleUI.Director.Surveys;
 
-public class DoctorSurveyUI : HospitalClientUI
+public class DoctorSurveyUI : SurveyUI
 {
     private List<DoctorSurvey> _loadedSurveys;
 
@@ -24,7 +24,7 @@ public class DoctorSurveyUI : HospitalClientUI
             System.Console.Clear();
             System.Console.WriteLine("--- AVAILABLE SURVEYS ---");
             RefreshSurveys();
-            DisplaySurveys();
+            DisplaySurveys(_loadedSurveys.Cast<Survey>().ToList());
             System.Console.WriteLine(@"
             INPUT OPTION:
                 [view|v] View survey
@@ -63,34 +63,26 @@ public class DoctorSurveyUI : HospitalClientUI
 
     private void DisplaySurvey()
     {
-        System.Console.Write("Input number >> ");
+        System.Console.Write("Input survey number >> ");
         var survey = _loadedSurveys[ReadInt(0, _loadedSurveys.Count-1)];
         System.Console.Clear();
-        var groupedSurveys = _hospital.SurveyService.GetResponsesGroupedByDoctor(survey);
-        DisplayGroups(groupedSurveys);
-        DisplayResponses(groupedSurveys[ReadInt(0, groupedSurveys.Count - 1)].Item2);
+        var allDrResponses = _hospital.SurveyService.GetDoctorsWithResponsesFor(survey);
+        DisplayDoctors(allDrResponses);
+        System.Console.Write("Input doctor number >> ");
+        var drResponses = allDrResponses[ReadInt(0, allDrResponses.Count - 1)];
+        System.Console.Clear();
+        System.Console.WriteLine("Showing survey: " + survey.Title);
+        System.Console.WriteLine("For doctor: " + drResponses.Item1.ToString());
+        DisplayAggregatedRatings(survey.AggregateRatingsFor(drResponses.Item1));
+        DisplayResponses(survey.Questions, drResponses.Item2);
     }
 
-    private void DisplayGroups(IList<(Doctor, IEnumerable<DoctorSurveyResponse>)> groupedSurveys)
+    private void DisplayDoctors(IList<(Doctor, List<SurveyResponse>)> drResponses)
     {
         System.Console.WriteLine("No. | Doctor");
-        for (int i = 0; i < groupedSurveys.Count; i++)
+        for (int i = 0; i < drResponses.Count; i++)
         {
-            System.Console.WriteLine(i + " | " + groupedSurveys[i].Item1.ToString());
-        }
-    }
-
-    private void DisplayResponses(IEnumerable<DoctorSurveyResponse> responses)
-    {
-        // TODO: refactor so it is Survey -> DoctorId -> responses_list
-    }
-
-    private void DisplaySurveys()
-    {
-        System.Console.WriteLine("No. | Title");
-        for (int i = 0; i < _loadedSurveys.Count; i++)
-        {
-            System.Console.WriteLine(i + " | " + _loadedSurveys[i].Title);
+            System.Console.WriteLine(i + " | " + drResponses[i].Item1.ToString());
         }
     }
 }

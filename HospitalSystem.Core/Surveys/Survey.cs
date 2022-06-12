@@ -31,5 +31,15 @@ public abstract class Survey
         Title = title;
     }
 
-    public abstract void AddResponse(SurveyResponse response);
+    protected IEnumerable<(string, double?, int)> AggregateRatings(IEnumerable<SurveyResponse> responses)
+    {
+        return RatingQuestions.Select((question, i) => 
+            (
+                question, 
+                (from response in responses
+                select response.Ratings[i]).Average(),
+                (from response in responses
+                select response.Ratings[i]).Count()
+            ));
+    }
 }

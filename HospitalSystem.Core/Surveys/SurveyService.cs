@@ -18,9 +18,15 @@ public class SurveyService
         _repo.Insert(survey);
     }
 
-    public void AddResponse(Survey survey, SurveyResponse response)
+    public void AddResponse(HospitalSurvey survey, SurveyResponse response)
     {
         survey.AddResponse(response);
+        _repo.Replace(survey);
+    }
+
+    public void AddResponse(DoctorSurvey survey, SurveyResponse response, Doctor forDoctor)
+    {
+        survey.AddResponse(response, forDoctor.Id);
         _repo.Replace(survey);
     }
 
@@ -34,11 +40,11 @@ public class SurveyService
         return _repo.GetAllDoctor();
     }
 
-    public IList<(Doctor, IEnumerable<DoctorSurveyResponse>)> GetResponsesGroupedByDoctor(DoctorSurvey survey)
+    public IList<(Doctor, List<SurveyResponse>)> GetDoctorsWithResponsesFor(DoctorSurvey survey)
     {
         return 
-            (from pair in survey.GetResponsesGroupedByDoctor()
-            select (_doctorService.GetById(pair.Item1), pair.Item2)).ToList();
+            (from drResponse in survey.Responses
+            select (_doctorService.GetById(drResponse.Key), drResponse.Value)).ToList();
     }
 
     public IList<HospitalSurvey> GetHospitalUnansweredBy(Person person)

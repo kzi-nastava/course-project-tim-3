@@ -3,7 +3,7 @@ using HospitalSystem.Core.Surveys;
 
 namespace HospitalSystem.ConsoleUI.Director.Surveys;
 
-public class HospitalSurveyUI : HospitalClientUI
+public class HospitalSurveyUI : SurveyUI
 {
     private List<HospitalSurvey> _loadedSurveys;
 
@@ -24,7 +24,7 @@ public class HospitalSurveyUI : HospitalClientUI
             System.Console.Clear();
             System.Console.WriteLine("--- AVAILABLE SURVEYS ---");
             RefreshSurveys();
-            DisplaySurveys();
+            DisplaySurveys(_loadedSurveys.Cast<Survey>().ToList());
             System.Console.WriteLine(@"
             INPUT OPTION:
                 [view|v] View survey
@@ -69,55 +69,11 @@ public class HospitalSurveyUI : HospitalClientUI
         System.Console.WriteLine("Showing survey: " + survey.Title);
         System.Console.WriteLine("Ratings:");
         DisplayAggregatedRatings(survey);
-        DisplayResponses(survey);
+        DisplayResponses(survey.Questions, survey.Responses);
     }
 
     private void DisplayAggregatedRatings(HospitalSurvey survey)
     {
-        var aggregatedRatings = survey.AggregateRatings();
-        foreach (var aggregate in aggregatedRatings)
-        {
-            System.Console.WriteLine(aggregate.Item1);
-            System.Console.WriteLine("Average: " + (aggregate.Item2?.ToString() ?? "/") + ", Count: " + aggregate.Item3);
-            System.Console.WriteLine();
-        }
-    }
-
-    private void DisplayResponses(HospitalSurvey survey)
-    {
-        int ansCount = 0;
-        foreach (var response in survey.Responses)
-        {
-            if (response.Answers.Any(ans => ans != null))
-            {
-                DisplayResponse(ansCount, survey.Questions, response.Answers);
-                ansCount++;
-            }
-        }
-    }
-
-    private void DisplayResponse(int num, List<string> questions, List<string?> answers)
-    {
-        System.Console.WriteLine("Response #" + num);
-        for (int j = 0; j < questions.Count; j++)
-        {
-            if (answers[j] != null)
-            {
-                System.Console.WriteLine(questions[j]);
-                System.Console.Write("Answer: ");
-                System.Console.WriteLine(answers[j]);
-                System.Console.WriteLine();
-            }
-        }
-        System.Console.WriteLine();
-    }
-
-    private void DisplaySurveys()
-    {
-        System.Console.WriteLine("No. | Title");
-        for (int i = 0; i < _loadedSurveys.Count; i++)
-        {
-            System.Console.WriteLine(i + " | " + _loadedSurveys[i].Title);
-        }
+        DisplayAggregatedRatings(survey.AggregateRatings());
     }
 }

@@ -1,9 +1,7 @@
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace HospitalSystem.Core.Surveys;
 
-[BsonKnownTypes(typeof(DoctorSurveyResponse))]
 public class SurveyResponse
 {
     public List<string?> Answers { get; set; }

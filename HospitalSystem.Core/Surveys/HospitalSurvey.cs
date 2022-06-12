@@ -10,7 +10,7 @@ public class HospitalSurvey : Survey
         Responses = new();
     }
 
-    public override void AddResponse(SurveyResponse response)
+    public void AddResponse(SurveyResponse response)
     {
         response.Validate(this);  // TODO: might want to move validation to survey, so you don't pass this
         Responses.Add(response);
@@ -26,13 +26,6 @@ public class HospitalSurvey : Survey
 
     public IEnumerable<(string, double?, int)> AggregateRatings()
     {
-        return RatingQuestions.Select((question, i) => 
-            (
-                question, 
-                (from response in Responses
-                select response.Ratings[i]).Average(),
-                (from response in Responses
-                select response.Ratings[i]).Count()
-            ));
+        return AggregateRatings(Responses);
     }
 }
