@@ -39,7 +39,7 @@ public abstract class Survey
                 (from response in responses
                 select response.Ratings[i]).Average(),
                 (from response in responses
-                select response.Ratings[i]).Count()
+                select response.Ratings[i]).Count(rating => rating != null)
             ));
     }
 }

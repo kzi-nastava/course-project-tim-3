@@ -38,7 +38,7 @@ public class DoctorSurvey : Survey
             select drResponse.Key).ToHashSet();
     }
 
-    // TODO: write best and worst in a better way, too similar functions. Better grouping maybe?
+    // TODO: write best and worst in a better way, too similar functions
     public IEnumerable<(ObjectId, double?, int)> GetBestDoctors(int count)
     {
         return
