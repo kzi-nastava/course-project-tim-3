@@ -24,6 +24,16 @@ public class SurveyService
         _repo.Replace(survey);
     }
 
+    public IQueryable<HospitalSurvey> GetAllHospital()
+    {
+        return _repo.GetAllHospital();
+    }
+
+    public IQueryable<DoctorSurvey> GetAllDoctor()
+    {
+        return _repo.GetAllDoctor();
+    }
+
     public IList<HospitalSurvey> GetHospitalUnansweredBy(Person person)
     {
         return _repo.GetHospitalUnansweredBy(person);

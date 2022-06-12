@@ -1,4 +1,5 @@
 using HospitalSystem.Core;
+using HospitalSystem.ConsoleUI.Director.Surveys;
 
 namespace HospitalSystem.ConsoleUI.Director;
 
@@ -21,6 +22,7 @@ public class DirectorUI : HospitalClientUI
                     [manage rooms|mr] Manage rooms and stockrooms
                     [manage equipment|me] Manage equipment
                     [manage medication requests|mmr] Manage medication requests
+                    [view surveys|vs] View survey results
                     [log out|lo] Log out
                     [exit|x] Exit program
                 ");
@@ -40,6 +42,11 @@ public class DirectorUI : HospitalClientUI
                 {
                     var medicationRequestUI = new MedicationRequestUI(_hospital);
                     medicationRequestUI.Start();
+                }
+                else if (choice == "vs" || choice == "view surveys")
+                {
+                    var surveyUI = new SurveyUI(_hospital);
+                    surveyUI.Start();
                 }
                 else if (choice == "lo" || choice == "log out")
                 {

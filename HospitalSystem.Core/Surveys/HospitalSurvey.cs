@@ -23,4 +23,16 @@ public class HospitalSurvey : Survey
             where ans.AnsweredBy == person.Id
             select ans).Any();
     }
+
+    public IEnumerable<(string, double?, int)> AggregateRatings()
+    {
+        return RatingQuestions.Select((question, i) => 
+            (
+                question, 
+                (from answer in Answers
+                select answer.Ratings[i]).Average(),
+                (from answer in Answers
+                select answer.Ratings[i]).Count()
+            ));
+    }
 }
