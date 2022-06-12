@@ -8,7 +8,7 @@ public interface ISurveyRepository
 
     public void Replace(Survey survey);
 
-    public IList<Survey> GetHospitalUnansweredBy(Person person);
+    public IList<HospitalSurvey> GetHospitalUnansweredBy(Person person);
 
-    public IList<(Survey, IEnumerable<ObjectId>)> GetDoctorUnansweredBy(Patient pat, HashSet<ObjectId> myDoctors);
+    public IList<(DoctorSurvey, IEnumerable<ObjectId>)> GetDoctorUnansweredBy(Patient pat, HashSet<ObjectId> myDoctors);
 }

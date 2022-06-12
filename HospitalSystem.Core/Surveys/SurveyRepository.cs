@@ -32,21 +32,19 @@ public class SurveyRepository : ISurveyRepository
         GetMongoCollection().ReplaceOne(survey => survey.Id == replacement.Id, replacement);
     }
 
-    public IList<Survey> GetHospitalUnansweredBy(Person person)
+    public IList<HospitalSurvey> GetHospitalUnansweredBy(Person person)
     {
         return
-            (from survey in GetAll().AsEnumerable()
-            where survey.Type == SurveyType.HOSPITAL
-            && !survey.WasAnsweredBy(person)
+            (from survey in GetAll().AsEnumerable().OfType<HospitalSurvey>()
+            where !survey.WasAnsweredBy(person)
             select survey).ToList();
     }
 
-    public IList<(Survey, IEnumerable<ObjectId>)> GetDoctorUnansweredBy(Patient pat, HashSet<ObjectId> myDoctors)
+    public IList<(DoctorSurvey, IEnumerable<ObjectId>)> GetDoctorUnansweredBy(Patient pat, HashSet<ObjectId> myDoctors)
     {
         return
-            (from survey in GetAll().AsEnumerable()
-            where survey.Type == SurveyType.DOCTOR
-            && myDoctors.Except(survey.AnsweredFor(pat)).Any()
+            (from survey in GetAll().AsEnumerable().OfType<DoctorSurvey>()
+            where myDoctors.Except(survey.AnsweredFor(pat)).Any()
             select (survey, myDoctors.Except(survey.AnsweredFor(pat)))).ToList();
     }
 }

@@ -110,14 +110,12 @@ public static class TestGenerator
                     // doing this to allow writing to the past
                     var range = new DateRange(dateTime, dateTime.Add(Checkup.DefaultDuration), allowPast: true);
                     Random rand = new Random();
-                    var doctorSurvey = new DoctorSurvey("service opinion lorem ipsum",rand.Next(1, 5),"comment lorem ipsum");
                     Checkup check = new Checkup(range, new MongoDBRef("patients",patient.Id),
-                        new MongoDBRef("doctors", doctor.Id), "anamneza", doctorSurvey);
+                        new MongoDBRef("doctors", doctor.Id), "anamneza");
                     hospital.AppointmentService.UpsertCheckup(check);
                 } else if (i % 2 == 1) 
                 {
                     Random rand = new Random();
-                    var doctorSurvey = new DoctorSurvey("service opinion lorem ipsum",rand.Next(1, 5),"comment lorem ipsum");
                     var range = new DateRange(dateTime, dateTime.Add(new TimeSpan(1, 15, 0)), allowPast: true);
                     Operation op = new Operation(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "report");
@@ -190,23 +188,25 @@ public static class TestGenerator
 
     private static void GenerateSurveys(Hospital hospital)
     {
-        var hospitalSurvey = new Survey(new List<string> {"Opininion?"},
+        var hospitalSurvey = new HospitalSurvey(new List<string> {"Opininion?"},
             new List<string>{"Overall"}, "Hospital1");
         hospital.SurveyService.Insert(hospitalSurvey);
         hospital.SurveyService.AddAnswer(hospitalSurvey,
-            new SurveyAnswer(new List<string?>{null}, new List<int?>{3}));
+            new SurveyAnswer(new List<string?>{null}, new List<int?>{3},
+            hospital.PatientService.GetPatientByFullName("name2", "surname2").Id));
 
-        var doctorSurvey = new Survey(new List<string> {"Opininion?"},
-            new List<string>{"Overall"}, "Doctor1", SurveyType.DOCTOR);
+        var doctorSurvey = new DoctorSurvey(new List<string> {"Opininion?"},
+            new List<string>{"Overall"}, "Doctor1");
         hospital.SurveyService.Insert(doctorSurvey);
         hospital.SurveyService.AddAnswer(doctorSurvey,
-            new SurveyAnswer(new List<string?>{"ANSDR1"}, new List<int?>{4}, 
+            new DoctorSurveyAnswer(new List<string?>{"ANSDR1"}, new List<int?>{4},
+                hospital.PatientService.GetPatientByFullName("name2", "surname2").Id,
                 hospital.DoctorService.GetOneBySpecialty(Specialty.STOMATOLOGY).Id));
 
-        hospital.SurveyService.Insert(new Survey(new List<string> {"Opininion2?"},
+        hospital.SurveyService.Insert(new HospitalSurvey(new List<string> {"Opininion2?"},
             new List<string>{"Overall2"}, "Hospital2"));
-        hospital.SurveyService.Insert(new Survey(new List<string> {"Opininion2?"},
-            new List<string>{"Overall2"}, "Doctor2", SurveyType.DOCTOR));
+        hospital.SurveyService.Insert(new DoctorSurvey(new List<string> {"Opininion2?"},
+            new List<string>{"Overall2"}, "Doctor2"));
     }
 
     private static void WriteDatabaseToFile(MongoClient dbClient)

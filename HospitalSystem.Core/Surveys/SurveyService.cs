@@ -24,12 +24,12 @@ public class SurveyService
         _repo.Replace(survey);
     }
 
-    public IList<Survey> GetHospitalUnansweredBy(Person person)
+    public IList<HospitalSurvey> GetHospitalUnansweredBy(Person person)
     {
         return _repo.GetHospitalUnansweredBy(person);
     }
 
-    public IEnumerable<(Survey, IEnumerable<Doctor>)> GetDoctorUnansweredBy(Patient pat)
+    public IEnumerable<(DoctorSurvey, IEnumerable<Doctor>)> GetDoctorUnansweredBy(Patient pat)
     {
         return 
             from notAnsweredSurveyDoctors in _repo.GetDoctorUnansweredBy(pat, 
@@ -38,14 +38,14 @@ public class SurveyService
                 notAnsweredSurveyDoctors.Item2.Select(id => _doctorService.GetById(id)));
     }
 
-    public IList<(Doctor, double?, int)> GetBestDoctors(Survey survey, int count = 3)
+    public IList<(Doctor, double?, int)> GetBestDoctors(DoctorSurvey survey, int count = 3)
     {
         return 
             (from res in survey.GetBestDoctors(survey, count)
             select (_doctorService.GetById(res.Item1), res.Item2, res.Item3)).ToList();
     }
 
-    public IList<(Doctor, double?, int)> GetWorstDoctors(Survey survey, int count = 3)
+    public IList<(Doctor, double?, int)> GetWorstDoctors(DoctorSurvey survey, int count = 3)
     {
         return 
             (from res in survey.GetWorstDoctors(survey, count)
