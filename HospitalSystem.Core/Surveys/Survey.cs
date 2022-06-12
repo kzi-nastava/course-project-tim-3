@@ -42,4 +42,20 @@ public abstract class Survey
                 select response.Ratings[i]).Count(rating => rating != null)
             ));
     }
+
+    protected void Validate(SurveyResponse response)
+    {
+        if (response.Ratings.Count != RatingQuestions.Count)
+        {
+            throw new InvalidSurveyException("Wrong rating count for response to that survey.");
+        }
+        if (response.Answers.Count != Questions.Count)
+        {
+            throw new InvalidSurveyException("Wrong amount of answered questions for that response.");
+        }
+        if (response.Ratings.Any(rating => rating is not null && (rating > 5 || rating < 0)))
+        {
+            throw new InvalidSurveyException("Rating must be between 1 and 5, inclusive");
+        }
+    }
 }

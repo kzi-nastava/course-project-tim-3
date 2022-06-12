@@ -22,7 +22,7 @@ public class DoctorSurvey : Survey
 
     public void AddResponse(SurveyResponse response, ObjectId forDoctor)
     {
-        response.Validate(this);
+        Validate(response);
         if (!Responses.ContainsKey(forDoctor))
         {
             Responses[forDoctor] = new();

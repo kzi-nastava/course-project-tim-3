@@ -12,7 +12,7 @@ public class HospitalSurvey : Survey
 
     public void AddResponse(SurveyResponse response)
     {
-        response.Validate(this);  // TODO: might want to move validation to survey, so you don't pass this
+        Validate(response);
         Responses.Add(response);
     }
 

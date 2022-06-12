@@ -14,20 +14,4 @@ public class SurveyResponse
         Ratings = ratings;
         AnsweredBy = answeredBy;
     }
-
-    public void Validate(Survey parent)
-    {
-        if (Ratings.Count != parent.RatingQuestions.Count)
-        {
-            throw new InvalidSurveyException("Wrong rating count for response to that survey.");
-        }
-        if (Answers.Count != parent.Questions.Count)
-        {
-            throw new InvalidSurveyException("Wrong amount of answered questions for that response.");
-        }
-        if (Ratings.Any(rating => rating is not null && (rating > 5 || rating < 0)))
-        {
-            throw new InvalidSurveyException("Rating must be between 1 and 5, inclusive");
-        }
-    }
 }
