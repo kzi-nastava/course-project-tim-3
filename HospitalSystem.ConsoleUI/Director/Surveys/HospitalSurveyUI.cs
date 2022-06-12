@@ -86,11 +86,11 @@ public class HospitalSurveyUI : HospitalClientUI
     private void DisplayResponses(HospitalSurvey survey)
     {
         int ansCount = 0;
-        for (int i = 0; i < survey.Responses.Count; i++)
+        foreach (var response in survey.Responses)
         {
-            if (survey.Responses[i].Answers.Any(ans => ans != null))
+            if (response.Answers.Any(ans => ans != null))
             {
-                DisplayResponse(ansCount, survey.Questions, survey.Responses[i].Answers);
+                DisplayResponse(ansCount, survey.Questions, response.Answers);
                 ansCount++;
             }
         }
