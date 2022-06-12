@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using HospitalSystem.Core.Surveys;
+using HospitalSystem.Core.Renovations;
 
 namespace HospitalSystem.Core;
 

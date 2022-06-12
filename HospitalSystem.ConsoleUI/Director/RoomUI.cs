@@ -1,6 +1,7 @@
 using HospitalSystem.Core;
+using HospitalSystem.Core.Renovations;
 
-namespace HospitalSystem.ConsoleUI;
+namespace HospitalSystem.ConsoleUI.Director;
 
 public class RoomUI : HospitalClientUI
 {

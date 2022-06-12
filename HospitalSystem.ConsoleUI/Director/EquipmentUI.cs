@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using HospitalSystem.Core;
 
-namespace HospitalSystem.ConsoleUI;
+namespace HospitalSystem.ConsoleUI.Director;
 
 public class EquipmentUI : HospitalClientUI
 {
