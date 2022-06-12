@@ -35,7 +35,7 @@ public class MedicationRequestRepository : IMedicationRequestRepository
     {
         return
             from req in GetAll()
-            where req.Status == MedicationRequestStatus.SENT
+            where req.Status == RequestStatus.SENT
             select req;
     }
 
@@ -43,7 +43,7 @@ public class MedicationRequestRepository : IMedicationRequestRepository
     {
         return
             from req in GetAll()
-            where req.Status == MedicationRequestStatus.DENIED
+            where req.Status == RequestStatus.DENIED
             select req;
     }
 }

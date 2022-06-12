@@ -93,7 +93,7 @@ public static class TestGenerator
 
     private static void GenerateCheckupsAndOperations(Hospital hospital)
     {
-        DateTime dateTime = new DateTime(2022, 6, 3, 4, 15, 0);
+        DateTime dateTime = new DateTime(2022, 6, 11, 4, 15, 0);
         int i = 0;
         try
         {

@@ -41,7 +41,7 @@ public class HospitalUI : ConsoleUI
                     myUI = new DirectorUI(_hospital);
                     break;
                 case Role.DOCTOR:
-                    myUI = new DoctorUI(_hospital, user);
+                    myUI = new DoctorMainUI(_hospital, user);
                     break;
                 case Role.PATIENT:
                     myUI = new PatientUI(_hospital, user);

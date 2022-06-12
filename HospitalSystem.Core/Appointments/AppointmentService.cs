@@ -125,7 +125,7 @@ public class AppointmentService
         return patientCheckups;
     }
     
-    public List<Checkup>  SearchPastCheckups(ObjectId patientId, string anamnesisKeyword)
+    public List<Checkup> SearchPastCheckups(ObjectId patientId, string anamnesisKeyword)
     {
         var checkups = _appointmentRepo.GetCheckups();
         //might not be the best way to indent
@@ -180,6 +180,16 @@ public class AppointmentService
             where checkup.DateRange.Starts.Date == date.Date
             select checkup).ToList();
         return checkupsByDay;
+    }
+
+    public List<Operation> GetOperationsByDay(DateTime date)
+    {
+        var operations = _appointmentRepo.GetOperations();
+        List<Operation> operationsByDay = 
+            (from operation in operations.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where operation.DateRange.Starts.Date == date.Date
+            select operation).ToList();
+        return operationsByDay;
     }
 
     public List<Checkup> GetPastCheckupsByPatient(ObjectId id)

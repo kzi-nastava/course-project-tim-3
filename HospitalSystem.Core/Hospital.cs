@@ -18,6 +18,7 @@ public class Hospital
     public AppointmentService AppointmentService { get; }
     public PatientService PatientService { get; }
     public CheckupChangeRequestService CheckupChangeRequestService  { get; }
+    public DaysOffRequestService DaysOffRequestService  { get; }
 
     public Hospital()
     {
@@ -37,6 +38,7 @@ public class Hospital
             RelocationService, AppointmentService);
         MedicationRepo = new (_dbClient);
         MedicationRequestService = new (new MedicationRequestRepository(_dbClient), MedicationRepo);
+        DaysOffRequestService = new (new DaysOffRequestRepository(_dbClient), AppointmentService);
         
         // TODO: this maybe shouldn't be here
         RelocationService.ScheduleAll();
