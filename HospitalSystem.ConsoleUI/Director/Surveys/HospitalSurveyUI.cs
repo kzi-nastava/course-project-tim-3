@@ -68,33 +68,48 @@ public class HospitalSurveyUI : HospitalClientUI
         System.Console.Clear();
         System.Console.WriteLine("Showing survey: " + survey.Title);
         System.Console.WriteLine("Ratings:");
+        DisplayAggregatedRatings(survey);
+        DisplayAnswers(survey);
+    }
+
+    private void DisplayAggregatedRatings(HospitalSurvey survey)
+    {
         var aggregatedRatings = survey.AggregateRatings();
         foreach (var aggregate in aggregatedRatings)
         {
             System.Console.WriteLine(aggregate.Item1);
-            System.Console.WriteLine("Average: " + (aggregate.Item2?.ToString() ?? "/") + " Count: " + aggregate.Item3);
+            System.Console.WriteLine("Average: " + (aggregate.Item2?.ToString() ?? "/") + ", Count: " + aggregate.Item3);
             System.Console.WriteLine();
         }
+    }
+
+    private void DisplayAnswers(HospitalSurvey survey)
+    {
         int ansCount = 0;
         for (int i = 0; i < survey.Answers.Count; i++)
         {
             if (survey.Answers[i].Answers.Any(ans => ans != null))
             {
-                System.Console.WriteLine("Answer #" + ansCount);
-                for (int j = 0; j < survey.Questions.Count; j++)
-                {
-                    if (survey.Answers[i].Answers[j] != null)
-                    {
-                        System.Console.WriteLine(survey.Questions[j]);
-                        System.Console.Write("Answer: ");
-                        System.Console.WriteLine(survey.Answers[i].Answers[j]);  // TODO: rename answer to response
-                        System.Console.WriteLine();
-                    }
-                }
-                System.Console.WriteLine();
+                DisplayAnswer(ansCount, survey.Questions, survey.Answers[i].Answers);
                 ansCount++;
             }
         }
+    }
+
+    private void DisplayAnswer(int num, List<string> questions, List<string?> answers)
+    {
+        System.Console.WriteLine("Answer #" + num);
+        for (int j = 0; j < questions.Count; j++)
+        {
+            if (answers[j] != null)
+            {
+                System.Console.WriteLine(questions[j]);
+                System.Console.Write("Answer: ");
+                System.Console.WriteLine(answers[j]);  // TODO: rename answer to response
+                System.Console.WriteLine();
+            }
+        }
+        System.Console.WriteLine();
     }
 
     private void DisplaySurveys()
