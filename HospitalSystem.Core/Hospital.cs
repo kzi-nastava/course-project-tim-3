@@ -1,7 +1,8 @@
 using MongoDB.Driver;
 using HospitalSystem.Core.Surveys;
-using HospitalSystem.Core.Renovations;
 using HospitalSystem.Core.Rooms;
+using HospitalSystem.Core.Equipment;
+using HospitalSystem.Core.Renovations;
 
 namespace HospitalSystem.Core;
 

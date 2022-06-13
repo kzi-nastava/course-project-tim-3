@@ -2,6 +2,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using HospitalSystem.Core.Utils;
 using HospitalSystem.Core;
+using HospitalSystem.Core.Equipment;
 
 namespace HospitalSystem.ConsoleUI;
 
