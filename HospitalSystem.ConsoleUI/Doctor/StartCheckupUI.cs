@@ -7,16 +7,19 @@ namespace HospitalSystem.ConsoleUI;
 
 public class StartCheckupUI : DoctorCheckupsUI
 {
-    Checkup checkup;
-    public StartCheckupUI(Hospital hospital, User user, Checkup checkup) : base(hospital, user) { }
+    Checkup Checkup;
+    public StartCheckupUI(Hospital hospital, User user, Checkup checkup) : base(hospital, user) { 
+        Checkup = checkup;
+    }
     public override void Start()
     {
+        Console.Clear();
         bool quit = false;
-        Patient patient =  ShowPatientInfo(checkup);
+        Patient patient =  ShowPatientInfo(Checkup);
         Console.WriteLine("\n\nCheckup started.\n");
         while (!quit)
         {
-            Console.Write("\nCheckup options:\n\n1. Add Anamnesis\n2. Edit Medical Record\n3. Write referral\n4. Back\n\n>>");
+            Console.Write("\nCheckup options:\n\n1. Add Anamnesis\n2. Edit Medical Record\n3. Write referral\n4. End Checkup\n\n>>");
             var input = Console.ReadLine();
             switch (input)
             {
@@ -37,7 +40,8 @@ public class StartCheckupUI : DoctorCheckupsUI
                 }
                 case "4":
                 {
-                    EquipmentStateUpdate(checkup);
+                    EquipmentStateUpdate(Checkup);
+                    _hospital.AppointmentService.FinishCheckup(Checkup);
                     quit = true;
                     break;
                 }
@@ -58,8 +62,8 @@ public class StartCheckupUI : DoctorCheckupsUI
         patient.MedicalRecord.AnamnesisHistory.Add(anamnesis);
         _hospital.PatientService.AddOrUpdatePatient(patient);
 
-        checkup.Anamnesis = anamnesis;
-        _hospital.AppointmentService.UpsertCheckup(checkup);
+        Checkup.Anamnesis = anamnesis;
+        _hospital.AppointmentService.UpsertCheckup(Checkup);
 
         Console.Write("\nDo you want to add a prescription? [y/n] >> ");
         string choice = ReadSanitizedLine();

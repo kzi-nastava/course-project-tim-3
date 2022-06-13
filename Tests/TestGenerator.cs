@@ -101,7 +101,7 @@ public static class TestGenerator
             {
                 Doctor doctor = hospital.DoctorService.GetByFullName("name1","surname1");
                 Patient patient = hospital.PatientService.GetPatientByFullName("name2","surname2");
-                dateTime = dateTime.AddHours(1);
+                dateTime = dateTime.AddHours(6);
 
                 if (i % 2 == 0)
                 {   

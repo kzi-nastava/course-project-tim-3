@@ -51,6 +51,26 @@ public class AppointmentService
         _appointmentRepo.UpsertOperation(newOperation);
     }
 
+    public bool UpsertOperation(User _user, DateTime dateTime, string name, string surname, TimeSpan duration)
+    {
+        Patient patient = _patientService.GetPatientByFullName(name,surname);
+        if (patient == null)
+        {
+            return false;
+        }
+        Doctor doctor = _doctorService.GetById((ObjectId)_user.Person.Id);
+        Operation operation = new Operation(new DateRange(dateTime, dateTime.Add(duration)), new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
+        if (IsDoctorAvailable(operation.DateRange, doctor))
+        {
+            _appointmentRepo.UpsertOperation(operation);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public void DeleteCheckup(Checkup checkup)
     {
         _appointmentRepo.DeleteCheckup(checkup);
@@ -60,7 +80,13 @@ public class AppointmentService
     {
         _appointmentRepo.DeleteOperation(operation);
     }
-    
+
+    public void FinishCheckup(Checkup checkup)
+    {
+        checkup.Done = true;
+        _appointmentRepo.UpsertCheckup(checkup);
+    }
+
     private Room GetAvailableRoom(Appointment newAppointment, RoomType type)
     {
         var unavailable = GetUnavailableRoomLocations(newAppointment, type);
@@ -187,12 +213,32 @@ public class AppointmentService
         return checkupsByDay;
     }
 
+    public List<Checkup> GetNotDoneCheckups(DateTime date)
+    {
+        var checkups = _appointmentRepo.GetCheckups();
+        List<Checkup> checkupsByDay = 
+            (from checkup in checkups.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where checkup.DateRange.Starts.Date == date.Date && checkup.Done == false
+            select checkup).ToList();
+        return checkupsByDay;
+    }
+
     public List<Operation> GetOperationsByDay(DateTime date)
     {
         var operations = _appointmentRepo.GetOperations();
         List<Operation> operationsByDay = 
             (from operation in operations.AsQueryable().ToList()  // TODO: inefficient, but bug fix
             where operation.DateRange.Starts.Date == date.Date
+            select operation).ToList();
+        return operationsByDay;
+    }
+
+    public List<Operation> GetNotDoneOperations(DateTime date)
+    {
+        var operations = _appointmentRepo.GetOperations();
+        List<Operation> operationsByDay = 
+            (from operation in operations.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where operation.DateRange.Starts.Date == date.Date && operation.Done == false
             select operation).ToList();
         return operationsByDay;
     }

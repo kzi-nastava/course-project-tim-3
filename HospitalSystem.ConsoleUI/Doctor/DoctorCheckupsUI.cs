@@ -10,10 +10,10 @@ public class DoctorCheckupsUI : DoctorMainUI
      public DoctorCheckupsUI(Hospital hospital, User user) : base(hospital, user) { }
      public override void Start()
     {
-        List<Checkup> checkups = ShowNextThreeDays();
         bool quit = false;
         while (!quit)
         {
+            List<Checkup> checkups = ShowNextThreeDays();
             Console.Write("\nOptions:\n\n1. See patient info for checkup\n2. Start checkup\n3. Update checkup\n4. Delete checkup\n5. Back\n");
             Console.Write(">>");
             var input = ReadSanitizedLine().Trim();
@@ -65,10 +65,14 @@ public class DoctorCheckupsUI : DoctorMainUI
     public List<Checkup> ShowNextThreeDays()
     {
         Console.WriteLine("\nThese are your checkups for the next 3 days:\n");
-        List<Checkup> checkups = _hospital.AppointmentService.GetCheckupsByDay(DateTime.Now);
-        checkups.AddRange(_hospital.AppointmentService.GetCheckupsByDay(DateTime.Today.AddDays(1)));
-        checkups.AddRange(_hospital.AppointmentService.GetCheckupsByDay(DateTime.Today.AddDays(2)));
+        List<Checkup> checkups = _hospital.AppointmentService.GetNotDoneCheckups(DateTime.Now);
+        List<Operation> operations = _hospital.AppointmentService.GetNotDoneOperations(DateTime.Now);
+        checkups.AddRange(_hospital.AppointmentService.GetNotDoneCheckups(DateTime.Today.AddDays(1)));
+        operations.AddRange(_hospital.AppointmentService.GetNotDoneOperations(DateTime.Today.AddDays(1)));
+        checkups.AddRange(_hospital.AppointmentService.GetNotDoneCheckups(DateTime.Today.AddDays(2)));
+        operations.AddRange(_hospital.AppointmentService.GetNotDoneOperations(DateTime.Today.AddDays(2)));
         PrintCheckups(checkups);
+        PrintOperations(operations);
         return checkups;
     }
 

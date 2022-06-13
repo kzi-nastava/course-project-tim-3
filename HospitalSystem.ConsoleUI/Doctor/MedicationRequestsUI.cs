@@ -10,6 +10,7 @@ public class MedicationRequestsUI : UserUI
     public MedicationRequestsUI(Hospital hospital, User user) : base(hospital, user) { }
     public override void Start()
     {
+        Console.Clear();
         List<MedicationRequest> requested = _hospital.MedicationRequestService.GetSent().ToList();
         PrintMedicationRequests(requested);
         Console.Write("\nOptions:\n1. Review request\n2. Back\n");
