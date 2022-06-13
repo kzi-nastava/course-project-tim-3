@@ -51,11 +51,16 @@ public class AppointmentService
         _appointmentRepo.UpsertOperation(newOperation);
     }
 
-     public void DeleteCheckup(Checkup checkup)
+    public void DeleteCheckup(Checkup checkup)
     {
         _appointmentRepo.DeleteCheckup(checkup);
     }
 
+    public void DeleteOperation(Operation operation)
+    {
+        _appointmentRepo.DeleteOperation(operation);
+    }
+    
     private Room GetAvailableRoom(Appointment newAppointment, RoomType type)
     {
         var unavailable = GetUnavailableRoomLocations(newAppointment, type);

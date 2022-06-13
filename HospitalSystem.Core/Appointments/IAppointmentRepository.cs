@@ -12,4 +12,5 @@ public interface IAppointmentRepository
 
     public void UpsertOperation(Operation newOperation);
     public void DeleteCheckup(Checkup checkup);
+    public void DeleteOperation(Operation operation);
 }

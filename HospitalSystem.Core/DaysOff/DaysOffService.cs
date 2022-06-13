@@ -37,6 +37,22 @@ public class DaysOffRequestService
         _repo.Upsert(request);
     }
 
+    public void ApproveUrgent(DaysOffRequest request)
+    {
+        foreach (DateTime day in request.DaysOff.EachDay())
+        {
+            List<Checkup> checkups = _appointmentService.GetCheckupsByDay(day);
+            List<Operation> operations = _appointmentService.GetOperationsByDay(day);
+            foreach (Checkup checkup in checkups)
+                _appointmentService.DeleteCheckup(checkup);
+            foreach (Operation operation in operations)
+                _appointmentService.DeleteOperation(operation);
+        }
+        request.Status = RequestStatus.APPROVED;
+        _repo.Upsert(request);
+    }
+
+
     public bool DaysOffAllowed(DateRange daysOff)
     {
         if (daysOff.Starts < DateTime.Today.AddDays(2)) 
