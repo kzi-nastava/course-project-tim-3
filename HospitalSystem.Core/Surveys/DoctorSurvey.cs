@@ -39,7 +39,7 @@ public class DoctorSurvey : Survey
     }
 
     // TODO: write best and worst in a better way, too similar functions
-    public IEnumerable<(ObjectId, double?, int)> GetBestDoctors(int count)
+    public IEnumerable<(ObjectId, double?, int)> GetBestDoctorIds(int count)
     {
         return
             (from drResponse in Responses
@@ -50,7 +50,7 @@ public class DoctorSurvey : Survey
                 drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null)))).Take(count);
     }
 
-    public IEnumerable<(ObjectId, double?, int)> GetWorstDoctors(int count)
+    public IEnumerable<(ObjectId, double?, int)> GetWorstDoctorIds(int count)
     {
         return
             (from drResponse in Responses
