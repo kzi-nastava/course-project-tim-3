@@ -47,7 +47,7 @@ public class DoctorSurvey : Survey
             select (
                 drResponse.Key,
                 drResponse.Value.Average(response => response.Ratings.Average()),
-                drResponse.Value.Count())).Take(count);
+                drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null)))).Take(count);
     }
 
     public IEnumerable<(ObjectId, double?, int)> GetWorstDoctors(int count)
@@ -58,6 +58,6 @@ public class DoctorSurvey : Survey
             select (
                 drResponse.Key,
                 drResponse.Value.Average(response => response.Ratings.Average()),
-                drResponse.Value.Count())).Take(count);
+                drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null)))).Take(count);
     }
 }
