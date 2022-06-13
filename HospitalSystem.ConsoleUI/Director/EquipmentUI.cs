@@ -1,7 +1,10 @@
 using System.Text.RegularExpressions;
 using HospitalSystem.Core;
+using HospitalSystem.Core.Rooms;
+using HospitalSystem.Core.Equipment;
+using HospitalSystem.Core.Equipment.Relocations;
 
-namespace HospitalSystem.ConsoleUI;
+namespace HospitalSystem.ConsoleUI.Director;
 
 public class EquipmentUI : HospitalClientUI
 {

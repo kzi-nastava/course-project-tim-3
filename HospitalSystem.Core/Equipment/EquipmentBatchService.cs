@@ -1,4 +1,6 @@
-namespace HospitalSystem.Core;
+using HospitalSystem.Core.Rooms;
+
+namespace HospitalSystem.Core.Equipment;
 
 [System.Serializable]
 public class EquipmentBatchDoesNotExistException : System.Exception

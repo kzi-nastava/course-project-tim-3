@@ -1,7 +1,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Medications.Requests;
 
 public enum MedicationRequestStatus
 {

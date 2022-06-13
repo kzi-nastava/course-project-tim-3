@@ -1,6 +1,8 @@
 using HospitalSystem.Core;
+using HospitalSystem.Core.Medications;
+using HospitalSystem.Core.Medications.Requests;
 
-namespace HospitalSystem.ConsoleUI;
+namespace HospitalSystem.ConsoleUI.Director;
 
 public class MedicationRequestUI : HospitalClientUI
 {

@@ -1,6 +1,7 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
 using HospitalSystem.Core.Utils;
+using HospitalSystem.Core.Rooms;
 
 namespace HospitalSystem.Core;
 
@@ -395,21 +396,12 @@ public class AppointmentService
 
     public float GetAverageRating(Doctor doctor)
     {
-        var checkups = GetCheckupsByDoctor(doctor);
-        float sum = 0;
-        int count = 0;
-        foreach (Checkup checkup in checkups)
-        {
-            if (checkup.DoctorSurvey is not null)
-            {
-                sum += checkup.DoctorSurvey.Rating;
-                count+=1;
-            }
-        }
-        if (count == 0)
-        {
-            return 10;
-        }
-        return sum/count;
+        // TODO: instead of doing this, move to SurveyService, and there get Drs together with ratings
+        throw new NotImplementedException("Don't like this, read todo in line above me");
+    }
+
+    public HashSet<ObjectId> GetAllAppointmentDoctors(Patient pat)
+    {
+        return _appointmentRepo.GetAllAppointmentDoctors(pat);
     }
 }

@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Equipment;
 
 public interface IEquipmentBatchRepository
 {

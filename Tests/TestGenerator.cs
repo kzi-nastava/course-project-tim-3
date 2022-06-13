@@ -2,6 +2,11 @@ using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using HospitalSystem.Core;
+using HospitalSystem.Core.Rooms;
+using HospitalSystem.Core.Equipment;
+using HospitalSystem.Core.Surveys;
+using HospitalSystem.Core.Medications;
+using HospitalSystem.Core.Medications.Requests;
 using HospitalSystem.Core.Utils;
 
 public static class TestGenerator
@@ -20,6 +25,7 @@ public static class TestGenerator
         GenerateCheckupChangeRequests(hospital);
         GenerateMedication(hospital);
         GenerateMedicationRequests(hospital);
+        GenerateSurveys(hospital);
 
         System.Console.WriteLine("GENERATED TESTS IN DB");
 
@@ -108,14 +114,12 @@ public static class TestGenerator
                     // doing this to allow writing to the past
                     var range = new DateRange(dateTime, dateTime.Add(Checkup.DefaultDuration), allowPast: true);
                     Random rand = new Random();
-                    var doctorSurvey = new DoctorSurvey("service opinion lorem ipsum",rand.Next(1, 5),"comment lorem ipsum");
                     Checkup check = new Checkup(range, new MongoDBRef("patients",patient.Id),
-                        new MongoDBRef("doctors", doctor.Id), "anamneza", doctorSurvey);
+                        new MongoDBRef("doctors", doctor.Id), "anamneza");
                     hospital.AppointmentService.UpsertCheckup(check);
                 } else if (i % 2 == 1) 
                 {
                     Random rand = new Random();
-                    var doctorSurvey = new DoctorSurvey("service opinion lorem ipsum",rand.Next(1, 5),"comment lorem ipsum");
                     var range = new DateRange(dateTime, dateTime.Add(new TimeSpan(1, 15, 0)), allowPast: true);
                     Operation op = new Operation(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "report");
@@ -184,6 +188,44 @@ public static class TestGenerator
             new Medication("ultra amoxicillin", new List<string> {"ultra penicillin","mega magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}), "ULTRA2"));
         hospital.MedicationRequestService.Send(new MedicationRequest(
             new Medication("ultra oxacillin", new List<string> {"ultra penicillin"}), "ULTRA3"));
+    }
+
+    private static void GenerateSurveys(Hospital hospital)
+    {
+        var hospitalSurvey = new HospitalSurvey(new List<string> {"Opininion?"},
+            new List<string>{"Overall"}, "Hospital1");
+        hospital.SurveyService.Insert(hospitalSurvey);
+        hospital.SurveyService.AddResponse(hospitalSurvey,
+            new SurveyResponse(new List<string?>{null}, new List<int?>{4},
+            hospital.PatientService.GetPatientByFullName("name2", "surname2").Id));
+        hospital.SurveyService.AddResponse(hospitalSurvey,
+            new SurveyResponse(new List<string?>{"Bad hospital! Hate it!"}, new List<int?>{5},
+            hospital.PatientService.GetPatientByFullName("name6", "surname6").Id));
+
+        var doctorSurvey = new DoctorSurvey(new List<string> {"Opininion?"},
+            new List<string>{"Overall"}, "Doctor1");
+        hospital.SurveyService.Insert(doctorSurvey);
+        hospital.SurveyService.AddResponse(doctorSurvey,
+            new SurveyResponse(new List<string?>{"Good good"}, new List<int?>{null},
+                hospital.PatientService.GetPatientByFullName("name2", "surname2").Id),
+                hospital.DoctorService.GetOneBySpecialty(Specialty.STOMATOLOGY));
+        hospital.SurveyService.AddResponse(doctorSurvey,
+            new SurveyResponse(new List<string?>{"Very Good good"}, new List<int?>{4},
+                hospital.PatientService.GetPatientByFullName("name6", "surname6").Id),
+                hospital.DoctorService.GetOneBySpecialty(Specialty.DERMATOLOGY));
+        hospital.SurveyService.AddResponse(doctorSurvey,
+            new SurveyResponse(new List<string?>{"Very much Good good"}, new List<int?>{3},
+                hospital.PatientService.GetPatientByFullName("name10", "surname10").Id),
+                hospital.DoctorService.GetOneBySpecialty(Specialty.DERMATOLOGY));
+        hospital.SurveyService.AddResponse(doctorSurvey,
+            new SurveyResponse(new List<string?>{"BAD Doctor"}, new List<int?>{1},
+                hospital.PatientService.GetPatientByFullName("name2", "surname2").Id),
+                hospital.DoctorService.GetOneBySpecialty(Specialty.RADIOLOGY));
+
+        hospital.SurveyService.Insert(new HospitalSurvey(new List<string> {"Opininion2?"},
+            new List<string>{"Overall2"}, "Hospital2"));
+        hospital.SurveyService.Insert(new DoctorSurvey(new List<string> {"Opininion2?"},
+            new List<string>{"Overall2"}, "Doctor2"));
     }
 
     private static void WriteDatabaseToFile(MongoClient dbClient)

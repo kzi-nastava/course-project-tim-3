@@ -1,4 +1,4 @@
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Rooms;
 
 public class RoomService
 {

@@ -1,7 +1,4 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Equipment;
 
 public class EquipmentAmount
 {
