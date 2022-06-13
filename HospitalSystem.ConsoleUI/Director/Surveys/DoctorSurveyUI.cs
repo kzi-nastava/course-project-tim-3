@@ -75,20 +75,25 @@ public class DoctorSurveyUI : SurveyUI
             System.Console.WriteLine("Returning to menu...");
             return;
         }
-        DisplayDoctorResults(survey);
+        var drResponses = ChooseDoctorResponses(survey);
+        DisplayDoctorResponses(survey, drResponses.Item1, drResponses.Item2);
     }
 
-    private void DisplayDoctorResults(DoctorSurvey survey)
+    private void DisplayDoctorResponses(DoctorSurvey survey, Doctor dr, IList<SurveyResponse> responses)
+    {
+        System.Console.Clear();
+        System.Console.WriteLine("Showing survey: " + survey.Title);
+        System.Console.WriteLine("For doctor: " + dr.ToString());
+        DisplayAggregatedRatings(survey.AggregateRatingsFor(dr));
+        DisplayResponses(survey.Questions, responses);
+    }
+
+    private (Doctor, List<SurveyResponse>) ChooseDoctorResponses(DoctorSurvey survey)
     {
         var allDrResponses = _hospital.SurveyService.GetDoctorsWithResponsesFor(survey);
         DisplayDoctors(allDrResponses);
         System.Console.Write("Input doctor number >> ");
-        var drResponses = allDrResponses[ReadInt(0, allDrResponses.Count - 1)];
-        System.Console.Clear();
-        System.Console.WriteLine("Showing survey: " + survey.Title);
-        System.Console.WriteLine("For doctor: " + drResponses.Item1.ToString());
-        DisplayAggregatedRatings(survey.AggregateRatingsFor(drResponses.Item1));
-        DisplayResponses(survey.Questions, drResponses.Item2);
+        return allDrResponses[ReadInt(0, allDrResponses.Count - 1)];
     }
 
     private void DisplayBest(DoctorSurvey survey)
