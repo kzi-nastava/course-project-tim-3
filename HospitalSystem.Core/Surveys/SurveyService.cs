@@ -65,6 +65,7 @@ public class SurveyService
     {
         return 
             (from res in survey.GetBestDoctors(count)  // TODO: think up a better name than res
+            where res.Item2 != null
             select (_doctorService.GetById(res.Item1), res.Item2, res.Item3)).ToList();
     }
 
@@ -72,6 +73,7 @@ public class SurveyService
     {
         return 
             (from res in survey.GetWorstDoctors(count)
+            where res.Item2 != null
             select (_doctorService.GetById(res.Item1), res.Item2, res.Item3)).ToList();
     }
 }

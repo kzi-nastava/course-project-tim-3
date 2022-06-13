@@ -206,6 +206,14 @@ public static class TestGenerator
                 hospital.PatientService.GetPatientByFullName("name2", "surname2").Id),
                 hospital.DoctorService.GetOneBySpecialty(Specialty.STOMATOLOGY));
         hospital.SurveyService.AddResponse(doctorSurvey,
+            new SurveyResponse(new List<string?>{"Very Good good"}, new List<int?>{4},
+                hospital.PatientService.GetPatientByFullName("name6", "surname6").Id),
+                hospital.DoctorService.GetOneBySpecialty(Specialty.DERMATOLOGY));
+        hospital.SurveyService.AddResponse(doctorSurvey,
+            new SurveyResponse(new List<string?>{"Very much Good good"}, new List<int?>{3},
+                hospital.PatientService.GetPatientByFullName("name10", "surname10").Id),
+                hospital.DoctorService.GetOneBySpecialty(Specialty.DERMATOLOGY));
+        hospital.SurveyService.AddResponse(doctorSurvey,
             new SurveyResponse(new List<string?>{"BAD Doctor"}, new List<int?>{1},
                 hospital.PatientService.GetPatientByFullName("name2", "surname2").Id),
                 hospital.DoctorService.GetOneBySpecialty(Specialty.RADIOLOGY));

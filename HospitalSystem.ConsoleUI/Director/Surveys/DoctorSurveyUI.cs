@@ -66,6 +66,20 @@ public class DoctorSurveyUI : SurveyUI
         System.Console.Write("Input survey number >> ");
         var survey = _loadedSurveys[ReadInt(0, _loadedSurveys.Count-1)];
         System.Console.Clear();
+        DisplayBest(survey);
+        System.Console.WriteLine();
+        DisplayWorst(survey);
+        System.Console.Write("\nWould you like to pick any doctor to see his results? [y/N] >> ");
+        if (!ReadYes())
+        {
+            System.Console.WriteLine("Returning to menu...");
+            return;
+        }
+        DisplayDoctorResults(survey);
+    }
+
+    private void DisplayDoctorResults(DoctorSurvey survey)
+    {
         var allDrResponses = _hospital.SurveyService.GetDoctorsWithResponsesFor(survey);
         DisplayDoctors(allDrResponses);
         System.Console.Write("Input doctor number >> ");
@@ -77,6 +91,29 @@ public class DoctorSurveyUI : SurveyUI
         DisplayResponses(survey.Questions, drResponses.Item2);
     }
 
+    private void DisplayBest(DoctorSurvey survey)
+    {
+        System.Console.WriteLine("--- Best Doctors ---");
+        DisplayRatedDoctors(_hospital.SurveyService.GetBestDoctors(survey));
+    }
+
+    private void DisplayWorst(DoctorSurvey survey)
+    {
+        System.Console.WriteLine("--- Worst Doctors ---");
+        DisplayRatedDoctors(_hospital.SurveyService.GetWorstDoctors(survey));
+    }
+
+    private void DisplayRatedDoctors(IList<(Doctor, double?, int)> drRatings)
+    {
+        System.Console.WriteLine("No. | Doctor | Avg rating | Rating count");
+        for (int i = 0; i < drRatings.Count; i++)
+        {
+            System.Console.WriteLine(i+1 + " | " + drRatings[i].Item1.ToString() +
+                " | " + (drRatings[i].Item2?.ToString() ?? " / ") + " | " + drRatings[i].Item3);
+        }
+    }
+
+    // TODO: there might be something that does this in PatUI
     private void DisplayDoctors(IList<(Doctor, List<SurveyResponse>)> drResponses)
     {
         System.Console.WriteLine("No. | Doctor");

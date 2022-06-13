@@ -73,7 +73,7 @@ public class SurveyUI : HospitalClientUI
 
     protected void DisplayResponse(int num, IList<string> questions, IList<string?> answers)
     {
-        System.Console.WriteLine("Response #" + num);
+        System.Console.WriteLine("Response #" + (num + 1));
         for (int j = 0; j < questions.Count; j++)
         {
             if (answers[j] != null)
