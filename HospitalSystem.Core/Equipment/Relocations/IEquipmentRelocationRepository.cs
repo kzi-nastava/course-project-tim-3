@@ -1,4 +1,4 @@
-namespace HospitalSystem.Core.Equipment;
+namespace HospitalSystem.Core.Equipment.Relocations;
 
 public interface IEquipmentRelocationRepository
 {

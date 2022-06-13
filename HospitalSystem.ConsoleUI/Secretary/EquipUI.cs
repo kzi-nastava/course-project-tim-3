@@ -1,6 +1,7 @@
 using HospitalSystem.Core;
 using HospitalSystem.Core.Rooms;
 using HospitalSystem.Core.Equipment;
+using HospitalSystem.Core.Equipment.Relocations;
 using HospitalSystem.ConsoleUI.Director;
 
 namespace HospitalSystem.ConsoleUI;

@@ -1,6 +1,6 @@
 using HospitalSystem.Core.Utils;
 using HospitalSystem.Core.Rooms;
-using HospitalSystem.Core.Equipment;
+using HospitalSystem.Core.Equipment.Relocations;
 
 namespace HospitalSystem.Core.Renovations;
 

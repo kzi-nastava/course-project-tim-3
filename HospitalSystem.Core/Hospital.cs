@@ -2,6 +2,7 @@ using MongoDB.Driver;
 using HospitalSystem.Core.Surveys;
 using HospitalSystem.Core.Rooms;
 using HospitalSystem.Core.Equipment;
+using HospitalSystem.Core.Equipment.Relocations;
 using HospitalSystem.Core.Renovations;
 using HospitalSystem.Core.Medications;
 using HospitalSystem.Core.Medications.Requests;

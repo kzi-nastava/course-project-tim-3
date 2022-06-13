@@ -1,6 +1,6 @@
 using MongoDB.Driver;
 
-namespace HospitalSystem.Core.Equipment;
+namespace HospitalSystem.Core.Equipment.Relocations;
 
 public class EquipmentRelocationRepository : IEquipmentRelocationRepository
 {

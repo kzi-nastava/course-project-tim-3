@@ -1,7 +1,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
-namespace HospitalSystem.Core.Equipment;
+namespace HospitalSystem.Core.Equipment.Relocations;
 
 public class EquipmentRelocation
 {
