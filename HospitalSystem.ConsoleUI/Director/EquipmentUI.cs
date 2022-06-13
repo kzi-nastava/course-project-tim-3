@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using HospitalSystem.Core;
+using HospitalSystem.Core.Rooms;
 
 namespace HospitalSystem.ConsoleUI.Director;
 

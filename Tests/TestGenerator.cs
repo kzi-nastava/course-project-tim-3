@@ -2,6 +2,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using HospitalSystem.Core;
+using HospitalSystem.Core.Rooms;
 using HospitalSystem.Core.Surveys;
 using HospitalSystem.Core.Utils;
 

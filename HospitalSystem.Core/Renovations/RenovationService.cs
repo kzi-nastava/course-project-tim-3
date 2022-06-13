@@ -1,4 +1,5 @@
 using HospitalSystem.Core.Utils;
+using HospitalSystem.Core.Rooms;
 
 namespace HospitalSystem.Core.Renovations;
 

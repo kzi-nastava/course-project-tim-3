@@ -1,6 +1,7 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
 using HospitalSystem.Core.Utils;
+using HospitalSystem.Core.Rooms;
 
 namespace HospitalSystem.Core;
 

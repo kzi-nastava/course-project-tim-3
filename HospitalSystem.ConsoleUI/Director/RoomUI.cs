@@ -1,4 +1,5 @@
 using HospitalSystem.Core;
+using HospitalSystem.Core.Rooms;
 using HospitalSystem.Core.Renovations;
 
 namespace HospitalSystem.ConsoleUI.Director;

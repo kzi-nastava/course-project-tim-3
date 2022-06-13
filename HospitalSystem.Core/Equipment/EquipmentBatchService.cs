@@ -1,3 +1,5 @@
+using HospitalSystem.Core.Rooms;
+
 namespace HospitalSystem.Core;
 
 [System.Serializable]
