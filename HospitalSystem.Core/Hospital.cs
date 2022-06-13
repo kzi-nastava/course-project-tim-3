@@ -3,6 +3,8 @@ using HospitalSystem.Core.Surveys;
 using HospitalSystem.Core.Rooms;
 using HospitalSystem.Core.Equipment;
 using HospitalSystem.Core.Renovations;
+using HospitalSystem.Core.Medications;
+using HospitalSystem.Core.Medications.Requests;
 
 namespace HospitalSystem.Core;
 
