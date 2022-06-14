@@ -1,6 +1,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using HospitalSystem.Core.Utils;
+using HospitalSystem.Core.Medications.Requests;
 
 namespace HospitalSystem.Core;
 

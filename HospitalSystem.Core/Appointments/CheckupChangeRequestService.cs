@@ -1,6 +1,4 @@
 using MongoDB.Driver;
-using MongoDB.Bson;
-using HospitalSystem.Core.Utils;
 using MongoDB.Driver.Linq;
 
 namespace HospitalSystem.Core;
@@ -14,17 +12,17 @@ public class CheckupChangeRequestService
     _requestRepo = requestRepo;
     }
 
-    public IMongoCollection<CheckupChangeRequest> GetAll()
+    public IQueryable<CheckupChangeRequest> GetAll()
     {
         return _requestRepo.GetAll();
     }
 
-    public IMongoQueryable<CheckupChangeRequest> GetByState(RequestState state)
+    public IQueryable<CheckupChangeRequest> GetByState(RequestState state)
     {
         return _requestRepo.GetByState(state);
     }
 
-    public IMongoQueryable<CheckupChangeRequest> GetAllAsQueryable()
+    public IQueryable<CheckupChangeRequest> GetAllAsQueryable()
     {
         return  _requestRepo.GetAll().AsQueryable();
     }
@@ -48,5 +46,4 @@ public class CheckupChangeRequestService
     {   
         _requestRepo.UpdateRequest(indexId, state);
     }
-    
 }

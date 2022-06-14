@@ -1,4 +1,4 @@
-
+using HospitalSystem.Core.Medications.Requests;
 using HospitalSystem.Core.Utils;
 
 namespace HospitalSystem.Core;

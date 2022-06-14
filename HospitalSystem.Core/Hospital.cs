@@ -1,4 +1,11 @@
 using MongoDB.Driver;
+using HospitalSystem.Core.Surveys;
+using HospitalSystem.Core.Rooms;
+using HospitalSystem.Core.Equipment;
+using HospitalSystem.Core.Equipment.Relocations;
+using HospitalSystem.Core.Renovations;
+using HospitalSystem.Core.Medications;
+using HospitalSystem.Core.Medications.Requests;
 
 namespace HospitalSystem.Core;
 
@@ -10,6 +17,7 @@ public class Hospital
     public SecretaryRepository SecretaryRepo { get; }
     public RoomService RoomService { get; }
     public EquipmentBatchService EquipmentService { get; }
+    public EquipmentOrderService EquipmentOrderService { get; }
     public EquipmentRelocationService RelocationService { get; }
     public DoctorService DoctorService { get; }
     public RenovationService RenovationService { get; }
@@ -19,6 +27,7 @@ public class Hospital
     public PatientService PatientService { get; }
     public CheckupChangeRequestService CheckupChangeRequestService  { get; }
     public DaysOffRequestService DaysOffRequestService  { get; }
+    public SurveyService SurveyService { get; set; }
 
     public Hospital()
     {
@@ -32,16 +41,20 @@ public class Hospital
         DoctorService = new (new DoctorRepository(_dbClient));
         AppointmentService = new (new AppointmentRepository(_dbClient), RoomService, DoctorService, PatientService);
         EquipmentService = new (new EquipmentBatchRepository(_dbClient));
+        EquipmentOrderService = new (new EquipmentOrderRepository(_dbClient), EquipmentService); 
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
         CheckupChangeRequestService = new (new CheckupChangeRequestRepository(_dbClient));
         RenovationService = new (new RenovationRepository(_dbClient), RoomService,
-            RelocationService, AppointmentService);
+        RelocationService, AppointmentService);
         MedicationRepo = new (_dbClient);
         MedicationRequestService = new (new MedicationRequestRepository(_dbClient), MedicationRepo);
         DaysOffRequestService = new (new DaysOffRequestRepository(_dbClient), AppointmentService);
+        SurveyService = new SurveyService(new SurveyRepository(_dbClient),
+            AppointmentService, DoctorService);
         
         // TODO: this maybe shouldn't be here
         RelocationService.ScheduleAll();
         RenovationService.ScheduleAll();
+        EquipmentOrderService.ScheduleAll();
     }
 }

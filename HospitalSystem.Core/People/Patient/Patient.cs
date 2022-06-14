@@ -1,4 +1,6 @@
 using MongoDB.Bson.Serialization.Attributes;
+using HospitalSystem.Core.Medications;
+
 namespace HospitalSystem.Core
 {
     public class Patient : Person
@@ -6,12 +8,21 @@ namespace HospitalSystem.Core
         [BsonElement]
         public MedicalRecord MedicalRecord {get; set;}
         public List<CheckupChangeLog> CheckupChangeLogs {get; set;}
-        public Patient(string firstName, string lastName, MedicalRecord medicalRecord) : base(firstName, lastName)
+        public TimeSpan WhenToRemind {get; set;}
+        public Patient(string firstName, string lastName, MedicalRecord medicalRecord, TimeSpan? whenToRemind = null) : base(firstName, lastName)
         {
             FirstName = firstName;
             LastName = lastName;
             MedicalRecord = medicalRecord;
             CheckupChangeLogs = new List<CheckupChangeLog>();
+
+            if (whenToRemind is null){
+                WhenToRemind = TimeSpan.FromHours(1);
+            }
+            else{
+                WhenToRemind = (TimeSpan)whenToRemind;
+            }
+            
         }
 
         public override string ToString()

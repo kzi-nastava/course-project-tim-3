@@ -12,14 +12,19 @@ namespace HospitalSystem.Core
             this._dbClient = _dbClient;
         }
 
-        public IMongoCollection<CheckupChangeRequest> GetAll()
+        public IMongoCollection<CheckupChangeRequest> GetMongoCollection()
         {
             return _dbClient.GetDatabase("hospital").GetCollection<CheckupChangeRequest>("checkup_change_requests");
         }
 
-        public IMongoQueryable<CheckupChangeRequest> GetByState(RequestState state)
+        public IQueryable<CheckupChangeRequest> GetAll()
         {
-            var requests = GetAll().AsQueryable();
+            return GetMongoCollection().AsQueryable();
+        }
+
+        public IQueryable<CheckupChangeRequest> GetByState(RequestState state)
+        {
+            var requests = GetAll();
             var matches = 
                 from request in requests
                 where request.RequestState == state
@@ -41,22 +46,24 @@ namespace HospitalSystem.Core
 
         public void AddOrUpdate(CheckupChangeRequest newRequest)
         {
-            var requests = GetAll();
+            var requests = GetMongoCollection();
             requests.ReplaceOne(request => request.Id == newRequest.Id, newRequest, new ReplaceOptions {IsUpsert = true});
-        }
+        }            
+
 
         public void Delete(CheckupChangeRequest request)
         {
-         var requests = GetAll();
+         var requests = GetMongoCollection();
          var filter = Builders<CheckupChangeRequest>.Filter.Eq(deletedRequest => deletedRequest.Id, request.Id);
          requests.DeleteOne(filter);
         }
 
         public void UpdateRequest(int indexId, RequestState state)
         {   
-            List<CheckupChangeRequest> requests = GetCheckUpChangeRequests();
-            var request = requests.ElementAt(indexId);
-            var requestsGet = GetAll();
+            List<CheckupChangeRequest> requests = GetAll().ToList();
+            requests.RemoveAll(u => u.RequestState != RequestState.PENDING);
+            var request = requests[indexId];
+            var requestsGet = GetMongoCollection();
             request.RequestState = state;
             requestsGet.ReplaceOne(req => req.Id == request.Id , request, new ReplaceOptions {IsUpsert = true} );
         }

@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
+using HospitalSystem.Core.Medications;
 
 namespace HospitalSystem.Core;
 
@@ -86,5 +87,34 @@ public class PatientService
     public Patient GetPatientById(ObjectId id)
     {
         return _repo.GetPatientById(id);
+    }
+
+    public List<DateTime> GetAllTimesForMedicine (Prescription prescription)
+    {
+        DateTime now = DateTime.Now;
+        //TODO: unhardcode this
+        DateTime beginsToTake = new DateTime(now.Year, now.Month, now.Day, 8, 0, 0);
+        List<DateTime> times = new List<DateTime>();
+        for (int i=0; i<prescription.TimesADay; i++)
+        {
+            DateTime timeToTake = beginsToTake.AddHours(i*prescription.HoursBetweenIntakes);
+            times.Add(timeToTake);
+        }
+
+        return times;
+    }
+
+    //method that may return datetime for medicine that is in notification time window
+    public DateTime ?WhenToTakeMedicine(Prescription prescription, Patient patient)
+    {
+        List<DateTime> timesForMedicine = GetAllTimesForMedicine(prescription);
+        foreach (DateTime time in timesForMedicine)
+        {
+            if (DateTime.Now < time && DateTime.Now.Add(patient.WhenToRemind)>= time)
+            {
+                return time;
+            }
+        }
+        return null;
     }
 }

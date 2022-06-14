@@ -1,4 +1,4 @@
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Rooms;
 
 public class RoomService
 {
@@ -9,12 +9,9 @@ public class RoomService
         _roomRepo = roomRepo;
     }
 
-    public IQueryable<Room> GetAll()
+    public IQueryable<Room> GetActive()
     {
-        return 
-            from room in _roomRepo.GetAll()
-            where room.Active
-            select room;
+        return _roomRepo.GetActive();
     }
 
     public void Delete(string location)
@@ -60,5 +57,10 @@ public class RoomService
         var room = _roomRepo.Get(location);
         room.Active = false;
         Replace(room);
+    }
+
+    public IQueryable<Room> GetStocks()
+    {
+        return _roomRepo.GetStocks();
     }
 }

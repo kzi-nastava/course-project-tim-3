@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Equipment;
 
 public interface IEquipmentBatchRepository
 {
@@ -19,4 +19,7 @@ public interface IEquipmentBatchRepository
     public IQueryable<EquipmentBatch> Search(EquipmentQuery query);
 
     public IQueryable<EquipmentBatch> GetAllIn(string roomLocation);
+
+    public List<EquipmentAmount> GetMissing();
+
 }

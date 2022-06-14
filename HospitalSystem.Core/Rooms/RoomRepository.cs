@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using MongoDB.Driver;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Rooms;
 
 public class RoomRepository : IRoomRepository
 {
@@ -17,11 +17,19 @@ public class RoomRepository : IRoomRepository
         return _dbClient.GetDatabase("hospital").GetCollection<Room>("rooms");
     }
 
-    public IQueryable<Room> GetAll()
+    private IQueryable<Room> GetAll()
     {
         return
             from room in GetMongoCollection().AsQueryable()
             where !room.Deleted
+            select room;
+    }
+
+    public IQueryable<Room> GetActive()
+    {
+        return
+            from room in GetMongoCollection().AsQueryable()
+            where !room.Deleted && room.Active
             select room;
     }
 
@@ -60,5 +68,13 @@ public class RoomRepository : IRoomRepository
             (from room in GetAll()
             where room.Location == location
             select room).Any();
+    }
+
+    public IQueryable<Room> GetStocks()
+    {
+        return 
+            from stock in GetAll()
+            where stock.Type == RoomType.STOCK
+            select stock;
     }
 }

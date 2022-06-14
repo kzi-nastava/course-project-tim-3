@@ -1,6 +1,6 @@
-using MongoDB.Bson;
+using HospitalSystem.Core.Medications;
 using MongoDB.Driver;
-using HospitalSystem.Core.Utils;
+using HospitalSystem.Core.Equipment;
 using HospitalSystem.Core;
 
 namespace HospitalSystem.ConsoleUI;

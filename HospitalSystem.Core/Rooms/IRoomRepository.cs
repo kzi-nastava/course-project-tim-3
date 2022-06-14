@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Rooms;
 
 public interface IRoomRepository
 {
-    public IQueryable<Room> GetAll();
+    public IQueryable<Room> GetActive();
 
     public void Insert(Room room);
 
@@ -17,4 +17,6 @@ public interface IRoomRepository
     public void Upsert(Room room, Expression<Func<Room, bool>> filter);
 
     public bool DoesExist(string location);
+
+    public IQueryable<Room> GetStocks();
 }

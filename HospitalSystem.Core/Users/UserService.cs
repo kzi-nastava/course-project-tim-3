@@ -71,6 +71,11 @@ public class UserService
         return matchingUsers.FirstOrDefault();
     }
 
+    public IQueryable<User> GetPatients()
+    {
+        return _repo.GetPatients();
+    }
+
     public void Upsert(User user)  // DOES NOT CHECK IF EMAIL IS TAKEN!!
     {
         _repo.Upsert(user);
