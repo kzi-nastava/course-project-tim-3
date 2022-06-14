@@ -25,6 +25,11 @@ public class AppointmentService
         newCheckup.RoomLocation = GetAvailableRoom(newCheckup, RoomType.CHECKUP).Location;
         _appointmentRepo.UpsertCheckup(newCheckup);
     }
+    public void UpsertOperation(Operation newOperation)
+    {
+        newOperation.RoomLocation = GetAvailableRoom(newOperation, RoomType.OPERATION).Location;
+        _appointmentRepo.UpsertOperation(newOperation);
+    }
 
     public bool UpsertCheckup(User _user, DateTime dateTime, string name, string surname)
     {
@@ -37,7 +42,7 @@ public class AppointmentService
         Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
         if (IsDoctorAvailable(checkup.DateRange, doctor))
         {
-            _appointmentRepo.UpsertCheckup(checkup);
+            UpsertCheckup(checkup);
             return true;
         }
         else
@@ -45,13 +50,6 @@ public class AppointmentService
             return false;
         }
     }
-
-    public void UpsertOperation(Operation newOperation)
-    {
-        newOperation.RoomLocation = GetAvailableRoom(newOperation, RoomType.OPERATION).Location;
-        _appointmentRepo.UpsertOperation(newOperation);
-    }
-
     public bool UpsertOperation(User _user, DateTime dateTime, string name, string surname, TimeSpan duration)
     {
         Patient patient = _patientService.GetPatientByFullName(name,surname);
@@ -63,7 +61,7 @@ public class AppointmentService
         Operation operation = new Operation(new DateRange(dateTime, dateTime.Add(duration)), new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
         if (IsDoctorAvailable(operation.DateRange, doctor))
         {
-            _appointmentRepo.UpsertOperation(operation);
+            UpsertOperation(operation);
             return true;
         }
         else
