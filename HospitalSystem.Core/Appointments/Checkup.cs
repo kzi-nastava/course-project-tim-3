@@ -3,31 +3,29 @@ using MongoDB.Bson.Serialization.Attributes;
 
 using HospitalSystem.Core.Utils;
 
-namespace HospitalSystem.Core
+namespace HospitalSystem.Core;
+public class Checkup : Appointment
 {
-    public class Checkup : Appointment
+    [BsonIgnore]
+    public static TimeSpan DefaultDuration { get; } = new TimeSpan(0,0,15,0);
+
+    public string Anamnesis { get; set; }
+
+    public Checkup(DateTime startTime, MongoDBRef patient, MongoDBRef doctor, string anamnesis)
+        : base(new DateRange(startTime, startTime.Add(DefaultDuration), false), patient, doctor)
     {
-        [BsonIgnore]
-        public static TimeSpan DefaultDuration { get; } = new TimeSpan(0,0,15,0);
+        Anamnesis = anamnesis;
+    }
 
-        public string Anamnesis { get; set; }
+    [BsonConstructor]
+    public Checkup(DateRange dateRange, MongoDBRef patient, MongoDBRef doctor, string anamnesis)
+        : base(dateRange, patient, doctor)
+    {
+        Anamnesis = anamnesis;
+    }
 
-        public Checkup(DateTime startTime, MongoDBRef patient, MongoDBRef doctor, string anamnesis)
-            : base(new DateRange(startTime, startTime.Add(DefaultDuration), false), patient, doctor)
-        {
-            Anamnesis = anamnesis;
-        }
-
-        [BsonConstructor]
-        public Checkup(DateRange dateRange, MongoDBRef patient, MongoDBRef doctor, string anamnesis)
-            : base(dateRange, patient, doctor)
-        {
-            Anamnesis = anamnesis;
-        }
-
-        public override string ToString()
-        {   
-            return DateRange + " " + Patient.Id + " " + Doctor.Id + " " + DateRange.GetDuration() + " " + Anamnesis;
-        }
+    public override string ToString()
+    {   
+        return DateRange + " " + Patient.Id + " " + Doctor.Id + " " + DateRange.GetDuration() + " " + Anamnesis;
     }
 }

@@ -1,90 +1,88 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
 
-namespace HospitalSystem.Core
+namespace HospitalSystem.Core;
+public class DoctorRepository
 {
-    public class DoctorRepository
+    private MongoClient _dbClient;
+
+    public DoctorRepository(MongoClient _dbClient)
     {
-        private MongoClient _dbClient;
+        this._dbClient = _dbClient;
+    }
 
-        public DoctorRepository(MongoClient _dbClient)
-        {
-            this._dbClient = _dbClient;
-        }
+    public IMongoCollection<Doctor> GetAll()
+    {
+        return _dbClient.GetDatabase("hospital").GetCollection<Doctor>("doctors");
+    }
 
-        public IMongoCollection<Doctor> GetAll()
-        {
-            return _dbClient.GetDatabase("hospital").GetCollection<Doctor>("doctors");
-        }
+    public void Upsert(Doctor newDoctor)
+    {
+        var doctors = GetAll();
+        doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
+    }
 
-        public void Upsert(Doctor newDoctor)
-        {
-            var doctors = GetAll();
-            doctors.ReplaceOne(doctor => doctor.Id == newDoctor.Id, newDoctor, new ReplaceOptions {IsUpsert = true});
-        }
-
-        public List<Doctor> GetManyBySpecialty(Specialty specialty)
-        {
-            var doctors = GetAll();
-                var specizedDoctors =
-                    from doctor in doctors.AsQueryable<Doctor>()
-                    where doctor.Specialty == specialty
-                    select doctor;
-
-                return specizedDoctors.ToList();
-        }
-
-        public List<Doctor> GetManyBySpecialty(string keyword)
-        {
-            var doctors = GetAll();
-            var allDoctors =
+    public List<Doctor> GetManyBySpecialty(Specialty specialty)
+    {
+        var doctors = GetAll();
+            var specizedDoctors =
                 from doctor in doctors.AsQueryable<Doctor>()
+                where doctor.Specialty == specialty
                 select doctor;
 
-            List<Doctor> filteredDoctors = allDoctors.ToList().FindAll(doctor => doctor.Specialty.ToString().Contains(keyword.ToUpper()));
-            return filteredDoctors;
-        }
+            return specizedDoctors.ToList();
+    }
 
-        public List<Doctor> GetManyByName(string keyword)
-        {
-            var doctors = GetAll();
-            var allDoctors =
-                from doctor in doctors.AsQueryable<Doctor>()
-                select doctor;
+    public List<Doctor> GetManyBySpecialty(string keyword)
+    {
+        var doctors = GetAll();
+        var allDoctors =
+            from doctor in doctors.AsQueryable<Doctor>()
+            select doctor;
 
-            return allDoctors.ToList().FindAll(doctor => doctor.FirstName.Contains(keyword));
-        }
+        List<Doctor> filteredDoctors = allDoctors.ToList().FindAll(doctor => doctor.Specialty.ToString().Contains(keyword.ToUpper()));
+        return filteredDoctors;
+    }
 
-        public List<Doctor> GetManyByLastName(string keyword)
-        {
-            var doctors = GetAll();
-            var allDoctors =
-                from doctor in doctors.AsQueryable<Doctor>()
-                select doctor;
+    public List<Doctor> GetManyByName(string keyword)
+    {
+        var doctors = GetAll();
+        var allDoctors =
+            from doctor in doctors.AsQueryable<Doctor>()
+            select doctor;
 
-            List<Doctor> filteredDoctors = allDoctors.ToList().FindAll(doctor => doctor.LastName.Contains(keyword));
-            return filteredDoctors;
-        }
+        return allDoctors.ToList().FindAll(doctor => doctor.FirstName.Contains(keyword));
+    }
 
-        public Doctor GetOneBySpecialty(Specialty specialty)
-        {
-            var doctors = GetAll();
-            var foundDoctor = doctors.Find(doctor => doctor.Specialty == specialty).FirstOrDefault();
-            return foundDoctor;
-        }
+    public List<Doctor> GetManyByLastName(string keyword)
+    {
+        var doctors = GetAll();
+        var allDoctors =
+            from doctor in doctors.AsQueryable<Doctor>()
+            select doctor;
 
-        public Doctor GetByFullName(string firstName, string lastName)
-        {
-            var doctors = GetAll();
-            var foundDoctor = doctors.Find(doctor => doctor.FirstName == firstName && doctor.LastName == lastName).FirstOrDefault();
-            return foundDoctor;
-        }
+        List<Doctor> filteredDoctors = allDoctors.ToList().FindAll(doctor => doctor.LastName.Contains(keyword));
+        return filteredDoctors;
+    }
 
-        public Doctor GetById(ObjectId id)
-        {
-            var doctors = GetAll();
-            var foundDoctor = doctors.Find(doctor => doctor.Id == id).FirstOrDefault();
-            return foundDoctor;
-        }
+    public Doctor GetOneBySpecialty(Specialty specialty)
+    {
+        var doctors = GetAll();
+        var foundDoctor = doctors.Find(doctor => doctor.Specialty == specialty).FirstOrDefault();
+        return foundDoctor;
+    }
+
+    public Doctor GetByFullName(string firstName, string lastName)
+    {
+        var doctors = GetAll();
+        var foundDoctor = doctors.Find(doctor => doctor.FirstName == firstName && doctor.LastName == lastName).FirstOrDefault();
+        return foundDoctor;
+    }
+
+    public Doctor GetById(ObjectId id)
+    {
+        var doctors = GetAll();
+        var foundDoctor = doctors.Find(doctor => doctor.Id == id).FirstOrDefault();
+        return foundDoctor;
     }
 }
