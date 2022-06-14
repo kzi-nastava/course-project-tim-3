@@ -17,6 +17,11 @@ public class DoctorService
         return _doctorRepo.GetAll();
     }
 
+    public void Upsert(Doctor newDoctor)
+    {
+        _doctorRepo.Upsert(newDoctor);
+    }
+
     public List<Doctor> GetManyBySpecialty(Specialty specialty)
     {
         return _doctorRepo.GetManyBySpecialty(specialty);
