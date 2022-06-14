@@ -146,10 +146,9 @@ public class CheckupUI : HospitalClientUI
         ShowFreeAppointments(allAppointments);
 
         var appointment = EnterAppointment(allAppointments);
-        var doctorSurvey = new DoctorSurvey();
         var dateTime = new DateTime(appointment.Year, appointment.Month, appointment.Day, appointment.Hour, appointment.Minute, appointment.Second);
 
-        Checkup check = new Checkup(dateTime, referralPatient, referralDoctor, anamnesis, doctorSurvey);
+        Checkup check = new Checkup(dateTime, referralPatient, referralDoctor, anamnesis);
         _hospital.AppointmentService.UpsertCheckup(check);
 
         System.Console.Write("Successfully created appointment. Press anything to continue.");

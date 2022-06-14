@@ -1,4 +1,6 @@
 using MongoDB.Bson.Serialization.Attributes;
+using HospitalSystem.Core.Medications;
+
 namespace HospitalSystem.Core
 {
     public class Patient : Person

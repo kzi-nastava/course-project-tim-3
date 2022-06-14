@@ -2,7 +2,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using HospitalSystem.Core.Utils;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Renovations;
 
 public class Renovation
 {

@@ -1,6 +1,8 @@
 using HospitalSystem.Core.Utils;
+using HospitalSystem.Core.Rooms;
+using HospitalSystem.Core.Equipment.Relocations;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Renovations;
 
 [System.Serializable]
 public class RenovationException : System.Exception

@@ -1,4 +1,5 @@
 using HospitalSystem.Core;
+using HospitalSystem.ConsoleUI.Director;
 
 namespace HospitalSystem.ConsoleUI;
 
@@ -41,7 +42,7 @@ public class HospitalUI : HospitalClientUI
                     myUI = new DirectorUI(_hospital);
                     break;
                 case Role.DOCTOR:
-                    myUI = new DoctorUI(_hospital, user);
+                    myUI = new DoctorMainUI(_hospital, user);
                     break;
                 case Role.PATIENT:
                     myUI = new PatientUI(_hospital, user);

@@ -1,6 +1,7 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
 using HospitalSystem.Core.Utils;
+using HospitalSystem.Core.Rooms;
 
 namespace HospitalSystem.Core;
 
@@ -24,6 +25,11 @@ public class AppointmentService
         newCheckup.RoomLocation = GetAvailableRoom(newCheckup, RoomType.CHECKUP).Location;
         _appointmentRepo.UpsertCheckup(newCheckup);
     }
+    public void UpsertOperation(Operation newOperation)
+    {
+        newOperation.RoomLocation = GetAvailableRoom(newOperation, RoomType.OPERATION).Location;
+        _appointmentRepo.UpsertOperation(newOperation);
+    }
 
     public bool UpsertCheckup(User _user, DateTime dateTime, string name, string surname)
     {
@@ -36,7 +42,26 @@ public class AppointmentService
         Checkup checkup = new Checkup(dateTime, new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
         if (IsDoctorAvailable(checkup.DateRange, doctor))
         {
-            _appointmentRepo.UpsertCheckup(checkup);
+            UpsertCheckup(checkup);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public bool UpsertOperation(User _user, DateTime dateTime, string name, string surname, TimeSpan duration)
+    {
+        Patient patient = _patientService.GetPatientByFullName(name,surname);
+        if (patient == null)
+        {
+            return false;
+        }
+        Doctor doctor = _doctorService.GetById((ObjectId)_user.Person.Id);
+        Operation operation = new Operation(new DateRange(dateTime, dateTime.Add(duration)), new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", _user.Person.Id), "anamnesis:");
+        if (IsDoctorAvailable(operation.DateRange, doctor))
+        {
+            UpsertOperation(operation);
             return true;
         }
         else
@@ -45,15 +70,20 @@ public class AppointmentService
         }
     }
 
-    public void UpsertOperation(Operation newOperation)
-    {
-        newOperation.RoomLocation = GetAvailableRoom(newOperation, RoomType.OPERATION).Location;
-        _appointmentRepo.UpsertOperation(newOperation);
-    }
-
-     public void DeleteCheckup(Checkup checkup)
+    public void DeleteCheckup(Checkup checkup)
     {
         _appointmentRepo.DeleteCheckup(checkup);
+    }
+
+    public void DeleteOperation(Operation operation)
+    {
+        _appointmentRepo.DeleteOperation(operation);
+    }
+
+    public void FinishCheckup(Checkup checkup)
+    {
+        checkup.Done = true;
+        _appointmentRepo.UpsertCheckup(checkup);
     }
 
     private Room GetAvailableRoom(Appointment newAppointment, RoomType type)
@@ -125,7 +155,7 @@ public class AppointmentService
         return patientCheckups;
     }
     
-    public List<Checkup>  SearchPastCheckups(ObjectId patientId, string anamnesisKeyword)
+    public List<Checkup> SearchPastCheckups(ObjectId patientId, string anamnesisKeyword)
     {
         var checkups = _appointmentRepo.GetCheckups();
         //might not be the best way to indent
@@ -180,6 +210,36 @@ public class AppointmentService
             where checkup.DateRange.Starts.Date == date.Date
             select checkup).ToList();
         return checkupsByDay;
+    }
+
+    public List<Checkup> GetNotDoneCheckups(DateTime date)
+    {
+        var checkups = _appointmentRepo.GetCheckups();
+        List<Checkup> checkupsByDay = 
+            (from checkup in checkups.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where checkup.DateRange.Starts.Date == date.Date && checkup.Done == false
+            select checkup).ToList();
+        return checkupsByDay;
+    }
+
+    public List<Operation> GetOperationsByDay(DateTime date)
+    {
+        var operations = _appointmentRepo.GetOperations();
+        List<Operation> operationsByDay = 
+            (from operation in operations.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where operation.DateRange.Starts.Date == date.Date
+            select operation).ToList();
+        return operationsByDay;
+    }
+
+    public List<Operation> GetNotDoneOperations(DateTime date)
+    {
+        var operations = _appointmentRepo.GetOperations();
+        List<Operation> operationsByDay = 
+            (from operation in operations.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where operation.DateRange.Starts.Date == date.Date && operation.Done == false
+            select operation).ToList();
+        return operationsByDay;
     }
 
     public List<Checkup> GetPastCheckupsByPatient(ObjectId id)
@@ -395,21 +455,12 @@ public class AppointmentService
 
     public float GetAverageRating(Doctor doctor)
     {
-        var checkups = GetCheckupsByDoctor(doctor);
-        float sum = 0;
-        int count = 0;
-        foreach (Checkup checkup in checkups)
-        {
-            if (checkup.DoctorSurvey is not null)
-            {
-                sum += checkup.DoctorSurvey.Rating;
-                count+=1;
-            }
-        }
-        if (count == 0)
-        {
-            return 10;
-        }
-        return sum/count;
+        // TODO: instead of doing this, move to SurveyService, and there get Drs together with ratings
+        throw new NotImplementedException("Don't like this, read todo in line above me");
+    }
+
+    public HashSet<ObjectId> GetAllAppointmentDoctors(Patient pat)
+    {
+        return _appointmentRepo.GetAllAppointmentDoctors(pat);
     }
 }

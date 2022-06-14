@@ -1,6 +1,6 @@
 using MongoDB.Driver;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Medications;
 
 public class MedicationRepository
 {
