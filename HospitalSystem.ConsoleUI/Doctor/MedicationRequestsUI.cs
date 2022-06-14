@@ -53,46 +53,51 @@ public class MedicationRequestsUI : UserUI
             var isNumber = int.TryParse(Console.ReadLine(), out int requestNumber);
             if (isNumber == true && requestNumber > 0 && requestNumber <= requested.Count())
             {
-                MedicationRequest request = requested[requestNumber-1];
-                Console.Write("\n" + request);
-                Console.WriteLine("\n1. Approve\n2. Deny\n3. Back");
-                Console.WriteLine(">>");
-                string? option = Console.ReadLine();
-                switch (option)
-                {
-                    case "1":
-                    {
-                        _hospital.MedicationRequestService.Approve(request);
-                        Console.WriteLine("Request approved.");
-                        back = true;
-                        break;
-                    }
-                    case "2":
-                    {
-                        Console.Write("\nWrite comment >>");
-                        string? comment = Console.ReadLine();
-                        if (comment != null)
-                            request.DoctorComment = comment;
-                        _hospital.MedicationRequestService.Deny(request);
-                        Console.WriteLine("\nRequest denied.");
-                        back = true;
-                        break;
-                    }
-                    case "3":
-                    {
-                        back = true;
-                        break;
-                    }
-                    default:
-                    {
-                        Console.WriteLine("Wrong input. Please enter a valid option.");
-                        break;
-                    }
-                }
+                back = ReviewMedicationMenu(requested, requestNumber);
             }
             else
             {
                 Console.WriteLine("Wrong input. Please enter a valid option.");
+            }
+        }
+    }
+
+    public bool ReviewMedicationMenu(List<MedicationRequest> requested, int requestNumber)
+    {
+        while (true)
+        {
+            MedicationRequest request = requested[requestNumber-1];
+            Console.Write("\n" + request);
+            Console.WriteLine("\n1. Approve\n2. Deny\n3. Back");
+            Console.Write(">> ");
+            string? option = Console.ReadLine();
+            switch (option)
+            {
+                case "1":
+                {
+                    _hospital.MedicationRequestService.Approve(request);
+                    Console.WriteLine("Request approved.");
+                    return true;
+                }
+                case "2":
+                {
+                    Console.Write("\nWrite comment >>");
+                    string? comment = Console.ReadLine();
+                    if (comment != null)
+                        request.DoctorComment = comment;
+                    _hospital.MedicationRequestService.Deny(request);
+                    Console.WriteLine("\nRequest denied.");
+                    return true;
+                }
+                case "3":
+                {
+                    return true;
+                }
+                default:
+                {
+                    Console.WriteLine("Wrong input. Please enter a valid option.");
+                    break;
+                }
             }
         }
     }

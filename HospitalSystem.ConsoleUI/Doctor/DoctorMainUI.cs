@@ -157,7 +157,15 @@ public class DoctorMainUI : UserUI
         var endDate = DateTime.TryParse(end, out DateTime newEndDate);
         if (startDate == true && endDate== true && newStartDate > DateTime.Now)
         {
-            try
+           CreateRequest(newStartDate,newEndDate);
+        }
+        else
+            Console.WriteLine("Invalid date, cannot be before today.");
+    }
+
+    public void CreateRequest(DateTime newStartDate, DateTime newEndDate)
+    {
+        try
             {
             DateRange daysOff = new DateRange(newStartDate, newEndDate);
             Console.Write("\nEnter reason for request >> ");
@@ -187,9 +195,6 @@ public class DoctorMainUI : UserUI
             {
                 Console.WriteLine("End date cannot be before starting date.");
             };
-        }
-        else
-            Console.WriteLine("Invalid date, cannot be before today.");
     }
 
     public bool RequestIsUrgent()
