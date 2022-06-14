@@ -12,6 +12,7 @@ public class Appointment
     public ObjectId Id { get; set; }
     [BsonElement]
     public DateRange DateRange { get; set; }
+    public bool Done { get; set; }
     public MongoDBRef Patient { get; set; }
     public MongoDBRef Doctor { get; set; }
     public string? RoomLocation { get; set; }
@@ -19,6 +20,7 @@ public class Appointment
     public Appointment(DateRange range, MongoDBRef patient, MongoDBRef doctor) 
     {
         Id = ObjectId.GenerateNewId();
+        Done = false;
         Patient = patient;
         Doctor = doctor;
         DateRange = range;

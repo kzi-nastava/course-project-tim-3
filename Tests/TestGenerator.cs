@@ -99,7 +99,7 @@ public static class TestGenerator
 
     private static void GenerateCheckupsAndOperations(Hospital hospital)
     {
-        DateTime dateTime = new DateTime(2022, 6, 3, 4, 15, 0);
+        DateTime dateTime = new DateTime(2022, 6, 11, 4, 15, 0);
         int i = 0;
         try
         {
@@ -107,7 +107,7 @@ public static class TestGenerator
             {
                 Doctor doctor = hospital.DoctorService.GetByFullName("name1","surname1");
                 Patient patient = hospital.PatientService.GetPatientByFullName("name2","surname2");
-                dateTime = dateTime.AddHours(1);
+                dateTime = dateTime.AddHours(6);
 
                 if (i % 2 == 0)
                 {   

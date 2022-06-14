@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace HospitalSystem.Core.Medications.Requests;
 
-public enum MedicationRequestStatus
+public enum RequestStatus
 {
     APPROVED,
     DENIED,
@@ -21,7 +21,7 @@ public class MedicationRequest
     [BsonElement]
     public DateTime Created { get; }
     [BsonRepresentation(BsonType.String)]
-    public MedicationRequestStatus Status { get; set; }
+    public RequestStatus Status { get; set; }
 
     public MedicationRequest(Medication requested, string directorComment)
     {
@@ -30,12 +30,12 @@ public class MedicationRequest
         DirectorComment = directorComment;
         DoctorComment = "/";
         Created = DateTime.Now;
-        Status = MedicationRequestStatus.SENT;
+        Status = RequestStatus.SENT;
     }
 
     [BsonConstructor]
     internal MedicationRequest(ObjectId id, Medication requested, string doctorComment, string directorComment,  
-        DateTime created, MedicationRequestStatus status)
+        DateTime created, RequestStatus status)
     {
         Id = id;
         Requested = requested;

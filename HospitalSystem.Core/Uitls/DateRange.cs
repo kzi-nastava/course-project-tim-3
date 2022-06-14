@@ -71,4 +71,11 @@ public class DateRange
         return Starts > DateTime.Now;
     }
     
+    public List<DateTime> EachDay()
+    {
+        List<DateTime> eachDay = new();
+        for (var day = Starts.Date; day.Date <= Ends.Date; day = day.AddDays(1))
+            eachDay.Add(day);
+        return eachDay;
+    }
 }

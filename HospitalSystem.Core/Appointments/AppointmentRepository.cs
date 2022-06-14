@@ -58,6 +58,13 @@ public class AppointmentRepository : IAppointmentRepository
         checkups.DeleteOne(filter);
     }
 
+    public void DeleteOperation(Operation operation)
+    {
+        var operations = GetOperations();
+        var filter = Builders<Operation>.Filter.Eq(deletedOperation => deletedOperation.Id, operation.Id);
+        operations.DeleteOne(filter);
+    }
+
     public HashSet<ObjectId> GetAllAppointmentDoctors(Patient pat)
     {
         return

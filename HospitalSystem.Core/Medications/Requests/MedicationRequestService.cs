@@ -13,25 +13,25 @@ public class MedicationRequestService
 
     public void Send(MedicationRequest request)
     {
-        request.Status = MedicationRequestStatus.SENT;
+        request.Status = RequestStatus.SENT;
         _repo.Insert(request);
     }
 
     public void Resend(MedicationRequest request)
     {
-        request.Status = MedicationRequestStatus.SENT;
+        request.Status = RequestStatus.SENT;
         _repo.Replace(request);
     }
 
     public void Deny(MedicationRequest request)
     {
-        request.Status = MedicationRequestStatus.DENIED;
+        request.Status = RequestStatus.DENIED;
         _repo.Replace(request);
     }
 
     public void Approve(MedicationRequest request)
     {
-        request.Status = MedicationRequestStatus.APPROVED;
+        request.Status = RequestStatus.APPROVED;
         _medicationRepo.AddOrUpdate(request.Requested);
         _repo.Replace(request);
     }
