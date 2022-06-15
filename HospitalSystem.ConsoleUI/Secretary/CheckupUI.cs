@@ -137,15 +137,15 @@ public class CheckupUI : HospitalClientUI
         var date = EnterDate();
         var busyAppointments = _hospital.AppointmentService.GetCheckupsByDay(date);
         busyAppointments.RemoveAll(c => c.Doctor.Id.ToString() != referralDoctor.Id.ToString());
-        var allAppointments = GetAllApointments(date);
+        var allTimeSlots = GetAllTimeSlots(date);
 
         Console.Clear();
 
-        RemoveBusyAppointments(busyAppointments, allAppointments);
-        RemovePastAppointments(allAppointments);
-        ShowFreeAppointments(allAppointments);
+        RemoveBusyAppointments(busyAppointments, allTimeSlots);
+        RemovePastAppointments(allTimeSlots);
+        ShowFreeAppointments(allTimeSlots);
 
-        var appointment = EnterAppointment(allAppointments);
+        var appointment = EnterAppointment(allTimeSlots);
         var dateTime = new DateTime(appointment.Year, appointment.Month, appointment.Day, appointment.Hour, appointment.Minute, appointment.Second);
 
         Checkup check = new Checkup(dateTime, referralPatient, referralDoctor, anamnesis);
@@ -206,9 +206,8 @@ public class CheckupUI : HospitalClientUI
         return result;
     }
 
-    public List<DateTime> GetAllApointments(DateTime date)
+    public List<DateTime> GetAllTimeSlots(DateTime date)
     {
-        int highestCheckupIndex = 0;
         DateTime iterationTime = HospitalSystem.Core.Utils.Globals.OpeningTime;
         List<DateTime> allApointments = new List<DateTime>();
         
@@ -217,7 +216,6 @@ public class CheckupUI : HospitalClientUI
             DateTime dateTime = new DateTime(date.Year, date.Month, date.Day, iterationTime.Hour, iterationTime.Minute, iterationTime.Second);
             allApointments.Add(dateTime);
             iterationTime = iterationTime.Add(HospitalSystem.Core.Utils.Globals._checkupDuration);
-            highestCheckupIndex += 1;
         }
         return allApointments;
     }
@@ -230,7 +228,8 @@ public class CheckupUI : HospitalClientUI
         }
     }
 
-    public void RemovePastAppointments(List<DateTime> allAppointments){
+    public void RemovePastAppointments(List<DateTime> allAppointments)
+    {
             allAppointments.RemoveAll(appointment => appointment < DateTime.Now);
     }
 
@@ -242,7 +241,8 @@ public class CheckupUI : HospitalClientUI
         }
     }
 
-    public DateTime EnterAppointment(List<DateTime> allAppointments){
+    public DateTime EnterAppointment(List<DateTime> allAppointments)
+    {
         System.Console.Write("Enter appointment number: ");
         var number = ReadInt();
         if(number >= allAppointments.Count() || number < 0)
