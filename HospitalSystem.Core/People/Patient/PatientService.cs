@@ -57,7 +57,7 @@ public class PatientService
         _repo.AddOrUpdatePatient(patient);
     }
 
-    public IMongoCollection<Patient> GetPatients()
+    public IQueryable<Patient> GetPatients()
     {
         return _repo.GetPatients();
     }
