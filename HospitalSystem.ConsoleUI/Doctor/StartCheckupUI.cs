@@ -57,7 +57,7 @@ public class StartCheckupUI : DoctorCheckupsUI
     public void addAnamnesis(Patient patient)
     {
         Console.Write("\nEnter Anamnesis >> ");
-        String? anamnesis = Console.ReadLine();
+        String anamnesis = ReadSanitizedLine();
 
         patient.MedicalRecord.AnamnesisHistory.Add(anamnesis);
         _hospital.PatientService.UpsertPatient(patient);
@@ -137,7 +137,7 @@ public class StartCheckupUI : DoctorCheckupsUI
     public void EditAllergies(Patient patient)
     {
         Console.Write("\nEnter new allergy >>");
-        string? allergy = Console.ReadLine();
+        string allergy = ReadSanitizedLine();
         patient.MedicalRecord.Allergies.Add(allergy);
         _hospital.PatientService.UpsertPatient(patient);
         Console.WriteLine("Edit successfull");

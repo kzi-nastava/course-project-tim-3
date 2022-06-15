@@ -71,9 +71,9 @@ public class DoctorMainUI : UserUI
         string? time = Console.ReadLine();
         DateTime dateTime = DateTime.Parse(date + " " + time);
         Console.Write("\nEnter patient name >>");
-        string? name = Console.ReadLine();
+        string name = ReadSanitizedLine();
         Console.Write("\nEnter patient surname >>");
-        string? surname = Console.ReadLine();
+        string surname = ReadSanitizedLine();
         if (_hospital.ScheduleService.ScheduleCheckup(_user, dateTime, name, surname) == true)
         {
             Console.WriteLine("\nCheckup successfully added");
@@ -149,25 +149,19 @@ public class DoctorMainUI : UserUI
 
     public void RequestDaysOff()
     {
-        Console.Write("\nEnter desired range for off days\nStarting date >>");
-        string? start = Console.ReadLine();
-        Console.Write("\nEnding date >>");
-        string? end = Console.ReadLine();
-        var startDate = DateTime.TryParse(start, out DateTime newStartDate);
-        var endDate = DateTime.TryParse(end, out DateTime newEndDate);
-        if (startDate == true && endDate== true && newStartDate > DateTime.Now)
+        DateRange daysOff = InputDateRange();
+        if (daysOff.Starts > DateTime.Now)
         {
-           CreateRequest(newStartDate,newEndDate);
+           CreateRequest(daysOff);
         }
         else
             Console.WriteLine("Invalid date, cannot be before today.");
     }
 
-    public void CreateRequest(DateTime newStartDate, DateTime newEndDate)
+    public void CreateRequest(DateRange daysOff)
     {
         try
             {
-            DateRange daysOff = new DateRange(newStartDate, newEndDate);
             Console.Write("\nEnter reason for request >> ");
             string reason = ReadSanitizedLine();
             if (RequestIsUrgent())

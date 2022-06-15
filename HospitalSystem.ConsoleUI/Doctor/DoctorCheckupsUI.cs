@@ -134,9 +134,9 @@ public class DoctorCheckupsUI : DoctorMainUI
     public void EditCheckupPatient(Checkup checkup)
     {
         Console.Write("Enter new patient name>> ");
-        string? newName = Console.ReadLine();
+        string newName = ReadSanitizedLine();
         Console.Write("Enter new patient surname>> ");
-        string? newSurname = Console.ReadLine();
+        string newSurname = ReadSanitizedLine();
         Patient newPatient = _hospital.PatientService.GetPatientByFullName(newName,newSurname);
         if (newPatient != null)
         {
