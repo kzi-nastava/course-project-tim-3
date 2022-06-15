@@ -122,7 +122,7 @@ public class DoctorCheckupsUI : DoctorMainUI
         if (newDateTime == true)
         {
             checkup.DateRange = new DateRange(newStartDate, newStartDate.Add(Checkup.DefaultDuration), allowPast: false);
-            _hospital.AppointmentService.UpsertCheckup(checkup);
+            _hospital.ScheduleService.ScheduleCheckup(checkup);
             Console.WriteLine("\nEdit successfull");
         }
         else

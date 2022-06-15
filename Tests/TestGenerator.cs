@@ -39,7 +39,7 @@ public static class TestGenerator
         for (int i = 0; i < 20; i++)
         {
             Doctor doctor = hospital.DoctorService.GetByFullName("name1","surname1");
-            List<Checkup> checkups = hospital.AppointmentService.GetCheckupsByDoctor(doctor.Id);
+            List<Checkup> checkups = hospital.AppointmentService.GetCheckupsByDoctor(doctor);
 
             if (i % 2 == 0)
             {   RequestState state = RequestState.PENDING;
@@ -116,14 +116,14 @@ public static class TestGenerator
                     Random rand = new Random();
                     Checkup check = new Checkup(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "anamneza");
-                    hospital.AppointmentService.UpsertCheckup(check);
+                    hospital.ScheduleService.ScheduleCheckup(check);
                 } else if (i % 2 == 1) 
                 {
                     Random rand = new Random();
                     var range = new DateRange(dateTime, dateTime.Add(new TimeSpan(1, 15, 0)), allowPast: true);
                     Operation op = new Operation(range, new MongoDBRef("patients",patient.Id),
                         new MongoDBRef("doctors", doctor.Id), "report");
-                    hospital.AppointmentService.UpsertOperation(op);
+                    hospital.ScheduleService.ScheduleOperation(op);
                 }
             }
         }

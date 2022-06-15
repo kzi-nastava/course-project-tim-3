@@ -74,7 +74,7 @@ public class DoctorMainUI : UserUI
         string? name = Console.ReadLine();
         Console.Write("\nEnter patient surname >>");
         string? surname = Console.ReadLine();
-        if (_hospital.AppointmentService.UpsertCheckup(_user, dateTime, name, surname) == true)
+        if (_hospital.ScheduleService.ScheduleCheckup(_user, dateTime, name, surname) == true)
         {
             Console.WriteLine("\nCheckup successfully added");
         }
@@ -98,7 +98,7 @@ public class DoctorMainUI : UserUI
         string surname = ReadSanitizedLine();
         Console.Write("\nEnter operation duration in minutes >>");
         TimeSpan duration = new TimeSpan(0, Int32.Parse(ReadSanitizedLine()), 0);
-        if (_hospital.AppointmentService.UpsertOperation(_user, dateTime, name, surname, duration) == true)
+        if (_hospital.ScheduleService.ScheduleOperation(_user, dateTime, name, surname, duration) == true)
         {
             Console.WriteLine("\nOperation successfully added.");
         }

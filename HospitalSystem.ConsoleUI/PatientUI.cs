@@ -127,11 +127,11 @@ public class PatientUI : UserUI
         }
         else if (sortOption == "n")
         {
-            filteredDoctors.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsName);
+            filteredDoctors.Sort(_hospital.DoctorService.CompareCheckupsByDoctorsName);
         }
         else if (sortOption == "s")
         {
-            filteredDoctors.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsSpecialty);
+            filteredDoctors.Sort(_hospital.DoctorService.CompareCheckupsByDoctorsSpecialty);
         }
 
         foreach (Checkup checkup in filteredDoctors)
@@ -485,7 +485,7 @@ public class PatientUI : UserUI
         DateTime oldDate = selectedCheckup.DateRange.Starts;
         selectedCheckup.DateRange = new DateRange(newDate, newDate.Add(Checkup.DefaultDuration), allowPast: false);
         
-        if (!_hospital.AppointmentService.IsDoctorAvailable(selectedCheckup.DateRange, newDoctor))
+        if (!_hospital.ScheduleService.IsDoctorAvailable(selectedCheckup.DateRange, newDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
@@ -501,7 +501,7 @@ public class PatientUI : UserUI
         }
         else
         {
-            _hospital.AppointmentService.UpsertCheckup(selectedCheckup);
+            _hospital.ScheduleService.ScheduleCheckup(selectedCheckup);
             Console.WriteLine("Checkup updated.");
         }
         
@@ -759,7 +759,14 @@ public class PatientUI : UserUI
         }
 
         DateRange interval = new DateRange(intervalStart,intervalEnd, true);
-        recommendedCheckups = _hospital.AppointmentService.FindSuitableCheckups(selectedSuitableDoctor,interval,deadline,isIntervalPriority,_user);
+        if (isIntervalPriority)
+        {
+            recommendedCheckups = _hospital.ScheduleService.GetEarliestFreeCheckups(interval,selectedSuitableDoctor.Specialty,3, _user);
+        }
+        else
+        {
+        recommendedCheckups = _hospital.ScheduleService.FindSuitableCheckups(selectedSuitableDoctor,interval,deadline,isIntervalPriority,_user);
+        }
         
         if (recommendedCheckups.Count == 1)
         {
@@ -771,7 +778,7 @@ public class PatientUI : UserUI
             Console.Write("Create checkup? Enter y for yes: ");
             if (ReadSanitizedLine().Trim() == "y")
             {
-                _hospital.AppointmentService.UpsertCheckup(result);
+                _hospital.ScheduleService.ScheduleCheckup(result);
                 Console.WriteLine("Checkup created.");
                 
                 _hospital.PatientService.LogChange(CRUDOperation.CREATE,_loggedInPatient);
@@ -807,7 +814,7 @@ public class PatientUI : UserUI
                 System.Console.Write(e.Message + " Aborting...");
                 return;
             }
-            _hospital.AppointmentService.UpsertCheckup(recommendedCheckups[selectedIndex]);
+            _hospital.ScheduleService.ScheduleCheckup(recommendedCheckups[selectedIndex]);
             Console.WriteLine("Checkup created.");
                 
             _hospital.PatientService.LogChange(CRUDOperation.CREATE,_loggedInPatient);
@@ -873,14 +880,14 @@ public class PatientUI : UserUI
             new MongoDB.Driver.MongoDBRef("doctors", selectedDoctor.Id),
             "no anamnesis");
         
-        if (!_hospital.AppointmentService.IsDoctorAvailable(newCheckup.DateRange, selectedDoctor))
+        if (!_hospital.ScheduleService.IsDoctorAvailable(newCheckup.DateRange, selectedDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
         }
         Console.WriteLine("Checkup is free to schedule");
         
-        _hospital.AppointmentService.UpsertCheckup(newCheckup);
+        _hospital.ScheduleService.ScheduleCheckup(newCheckup);
         Console.WriteLine("Checkup created");
         
         _hospital.PatientService.LogChange(CRUDOperation.CREATE,_loggedInPatient);

@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using HospitalSystem.Core.Scheduler;
 using HospitalSystem.Core.Surveys;
 using HospitalSystem.Core.Rooms;
 using HospitalSystem.Core.Equipment;
@@ -28,6 +29,7 @@ public class Hospital
     public CheckupChangeRequestService CheckupChangeRequestService  { get; }
     public DaysOffRequestService DaysOffRequestService  { get; }
     public SurveyService SurveyService { get; set; }
+    public ScheduleService ScheduleService { get; set;}
 
     public Hospital()
     {
@@ -45,7 +47,7 @@ public class Hospital
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
         CheckupChangeRequestService = new (new CheckupChangeRequestRepository(_dbClient));
         RenovationService = new (new RenovationRepository(_dbClient), RoomService,
-        RelocationService, AppointmentService);
+        RelocationService, ScheduleService);
         MedicationRepo = new (_dbClient);
         MedicationRequestService = new (new MedicationRequestRepository(_dbClient), MedicationRepo);
         DaysOffRequestService = new (new DaysOffRequestRepository(_dbClient), AppointmentService);
