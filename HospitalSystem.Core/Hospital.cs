@@ -6,6 +6,8 @@ using HospitalSystem.Core.Equipment.Relocations;
 using HospitalSystem.Core.Renovations;
 using HospitalSystem.Core.Medications;
 using HospitalSystem.Core.Medications.Requests;
+using HospitalSystem.Core.DaysOff;
+
 
 namespace HospitalSystem.Core;
 
@@ -48,7 +50,7 @@ public class Hospital
         RelocationService, AppointmentService);
         MedicationRepo = new (_dbClient);
         MedicationRequestService = new (new MedicationRequestRepository(_dbClient), MedicationRepo);
-        DaysOffRequestService = new (new DaysOffRequestRepository(_dbClient), AppointmentService);
+        DaysOffRequestService = new (new DaysOffRepository(_dbClient), AppointmentService);
         SurveyService = new SurveyService(new SurveyRepository(_dbClient),
             AppointmentService, DoctorService);
         
