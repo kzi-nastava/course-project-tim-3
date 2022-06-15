@@ -17,6 +17,7 @@ public class SecretaryUI : HospitalClientUI
                 System.Console.WriteLine("   1. Patients options-(po)");
                 System.Console.WriteLine("   2. Checkup options-(co)");
                 System.Console.WriteLine("   3. Equipment options-(eq)");
+                System.Console.WriteLine("   4. Check days off-(ch)");
                 System.Console.WriteLine("   4. Log out-(lo)");
                 System.Console.WriteLine("   5. Exit-(x)");
                 System.Console.Write(">> ");
@@ -35,6 +36,11 @@ public class SecretaryUI : HospitalClientUI
                 {
                     var equipUI = new EquipUI(_hospital);
                     equipUI.Start();
+                }
+                else if(choice == "Check days off" || choice == "ch")
+                {
+                    var daysOffUI = new DaysOffUI(_hospital);
+                    daysOffUI.Start();
                 }
                 else if (choice == "log out" || choice == "lo")
                 {
