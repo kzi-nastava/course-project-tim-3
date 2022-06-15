@@ -29,15 +29,23 @@ public class DaysOffRepository: IDaysOffRepository
 
     public void UpdateStatus(DaysOffRequest request, RequestStatus status)
     {
-            var requestsGet = GetMongoCollection();
-            request.Status = status;
-            requestsGet.ReplaceOne(req => req.Id == request.Id , request, new ReplaceOptions {IsUpsert = true} );
-        }
+        var requestsGet = GetMongoCollection();
+        request.Status = status;
+        requestsGet.ReplaceOne(req => req.Id == request.Id , request, new ReplaceOptions {IsUpsert = true} );
+    }
     
     public void UpdateExplanation(DaysOffRequest request, string explanation)
     {
-            var requestsGet = GetMongoCollection();
-            request.Explanation = explanation;
-            requestsGet.ReplaceOne(req => req.Id == request.Id , request, new ReplaceOptions {IsUpsert = true} );
-        }
+        var requestsGet = GetMongoCollection();
+        request.Explanation = explanation;
+        requestsGet.ReplaceOne(req => req.Id == request.Id , request, new ReplaceOptions {IsUpsert = true} );
+    }
+    
+    public IQueryable<DaysOffRequest> GetAllOnPending()
+    {
+        return 
+            from request in GetAll()
+            where request.Status == RequestStatus.SENT
+            select request;
+    }
 }

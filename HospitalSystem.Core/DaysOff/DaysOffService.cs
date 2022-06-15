@@ -77,12 +77,9 @@ public class DaysOffRequestService
         return _repo.GetAll();
     }
 
-     public IQueryable<DaysOffRequest> GetAllOnPending()
+    public IQueryable<DaysOffRequest> GetAllOnPending()
     {
-        return 
-            from request in _repo.GetAll()
-            where request.Status == RequestStatus.SENT
-            select request;
+        return _repo.GetAllOnPending();
     }
 
     public void UpdateStatus(DaysOffRequest request, RequestStatus status)

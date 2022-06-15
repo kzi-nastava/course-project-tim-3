@@ -18,9 +18,9 @@ public class DaysOffUI : HospitalClientUI
         {
             System.Console.Clear();
             System.Console.WriteLine("INPUT OPTIONS:");
-             System.Console.WriteLine("   1. View requests-(vr)" );
-             System.Console.WriteLine("   2. Quit-(q)");
-             System.Console.WriteLine("   3. Exit-(x)");
+            System.Console.WriteLine("   1. View requests-(vr)" );
+            System.Console.WriteLine("   2. Quit-(q)");
+            System.Console.WriteLine("   3. Exit-(x)");
             System.Console.Write(">> ");
             var choice = ReadSanitizedLine();
             try
@@ -41,19 +41,17 @@ public class DaysOffUI : HospitalClientUI
                 {
                     System.Console.WriteLine("Invalid input - read the available commands!");
                     System.Console.Write("Intput anything to continue >> ");
-                    ReadSanitizedLine();
                 }
             }
             catch (InvalidInputException e)
             {
                 System.Console.Write(e.Message + " Intput anything to continue >> ");
-                ReadSanitizedLine();
             }
             catch (FormatException e)
             {
                 System.Console.Write(e.Message + " Intput anything to continue >> ");
-                ReadSanitizedLine();
             }
+            ReadSanitizedLine();
         }
     }
 
@@ -72,12 +70,12 @@ public class DaysOffUI : HospitalClientUI
         
 
         System.Console.Write("Press anything to continue.");
-        ReadSanitizedLine();
     }
 
     public void ShowDaysOffRequests(List<DaysOffRequest> daysOffRequests)
     {
-        for(var i = 0; i < daysOffRequests.Count(); i++){
+        for(var i = 0; i < daysOffRequests.Count(); i++)
+        {
             System.Console.WriteLine(i + ".)");
             System.Console.WriteLine("Doctor: " + daysOffRequests[i].Doctor.FirstName + " " + daysOffRequests[i].Doctor.LastName + "(" + daysOffRequests[i].Doctor.Specialty + ")");
             System.Console.WriteLine("Date: " + daysOffRequests[i].DaysOff.Starts.ToString("dd/MM/yyyy") + " - " + daysOffRequests[i].DaysOff.Ends.Date.ToString("dd/MM/yyyy"));
@@ -89,11 +87,11 @@ public class DaysOffUI : HospitalClientUI
     public DaysOffRequest EnterRequestNumber(List<DaysOffRequest> daysOffRequests)
     {
         System.Console.Write("Enter request number: ");
-        var number = ReadInt();
-        if(number < 0 || number >= daysOffRequests.Count())
-        {
-            throw new InvalidInputException("Number is out of range");
-        }
+        var number = ReadInt(0, daysOffRequests.Count()-1);
+        // if(number < 0 || number >= daysOffRequests.Count())
+        // {
+        //     throw new InvalidInputException("Number is out of range");
+        // }
         return daysOffRequests[number];
     }
 
