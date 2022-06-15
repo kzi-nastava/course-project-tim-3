@@ -146,6 +146,7 @@ public class ScheduleService
         }
     }
 
+    //TO-DO: refactor this method
     public List<Checkup> GetEarliestFreeCheckups(DateRange interval, Specialty speciality, int numberOfCheckups, User user)
     {
         List<Checkup> checkups = new List<Checkup>();
@@ -198,6 +199,7 @@ public class ScheduleService
         return checkups;
     }
 
+    //TO-DO: refactor this method
     public List<Checkup> GetFirstFewFreeCheckups(Doctor doctor, int numberOfCheckups, User user)
     {
         List<Checkup> checkups = new List<Checkup>();
@@ -244,6 +246,7 @@ public class ScheduleService
         return new DateTime((dt.Ticks + d.Ticks - 1) / d.Ticks * d.Ticks, dt.Kind);
     }
 
+    //TO-DO: refactor this method
     public List<Checkup> FindSuitableCheckups(Doctor doctor, DateRange interval, DateTime deadline, bool isIntervalPriority, User user)
     {
         List<Checkup> checkups = new List<Checkup>();
