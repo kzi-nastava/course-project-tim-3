@@ -133,7 +133,7 @@ public class CrudUI : HospitalClientUI
         string lastName = ReadSanitizedLine();
 
         Patient patient = new Patient(email, lastName, new MedicalRecord());
-        _hospital.PatientService.AddOrUpdatePatient(patient);
+        _hospital.PatientService.UpsertPatient(patient);
         us.Upsert(new User(email, password,patient,Role.PATIENT));
 
         System.Console.Write("Successfuly created a user. Type anything to get back to menu: ");

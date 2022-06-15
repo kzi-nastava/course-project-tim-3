@@ -377,7 +377,7 @@ public class PatientUI : UserUI
                 selectedCheckup,
                 CRUDOperation.DELETE);
                 Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
-                _hospital.CheckupChangeRequestService.AddOrUpdate(newRequest);
+                _hospital.CheckupChangeRequestService.Upsert(newRequest);
         }
         else
         {
@@ -497,7 +497,7 @@ public class PatientUI : UserUI
                 selectedCheckup,
                 CRUDOperation.UPDATE);
             Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
-            _hospital.CheckupChangeRequestService.AddOrUpdate(newRequest);
+            _hospital.CheckupChangeRequestService.Upsert(newRequest);
         }
         else
         {
@@ -1062,7 +1062,7 @@ public class PatientUI : UserUI
             throw new QuitToMainMenuException("Wrong input");
         }
         _loggedInPatient.WhenToRemind = TimeSpan.FromMinutes(numberOfMinutes);
-        _hospital.PatientService.AddOrUpdatePatient(_loggedInPatient);
+        _hospital.PatientService.UpsertPatient(_loggedInPatient);
         Console.WriteLine("Preference saved.");
     }
 }

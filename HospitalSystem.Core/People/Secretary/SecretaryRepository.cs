@@ -16,7 +16,7 @@ namespace HospitalSystem.Core
             return _dbClient.GetDatabase("hospital").GetCollection<Secretary>("secretaries");
         }
 
-         public void AddOrUpdateSecretary(Secretary secretary)
+         public void UpsertSecretary(Secretary secretary)
         {
             var newSecretary = secretary;
             var secretaries = GetSecretaries();

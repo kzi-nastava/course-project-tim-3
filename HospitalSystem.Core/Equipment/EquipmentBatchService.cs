@@ -32,7 +32,7 @@ public class EquipmentBatchService
         return _repo.GetAllIn(roomLocation);
     }
 
-    public void Add(EquipmentBatch newBatch)
+    public void Insert(EquipmentBatch newBatch)
     {
         var batch = _repo.Get(newBatch.RoomLocation, newBatch.Name);
         if (batch is null)

@@ -60,7 +60,7 @@ public class StartCheckupUI : DoctorCheckupsUI
         String? anamnesis = Console.ReadLine();
 
         patient.MedicalRecord.AnamnesisHistory.Add(anamnesis);
-        _hospital.PatientService.AddOrUpdatePatient(patient);
+        _hospital.PatientService.UpsertPatient(patient);
 
         Checkup.Anamnesis = anamnesis;
         _hospital.AppointmentService.UpsertCheckup(Checkup);
@@ -109,7 +109,7 @@ public class StartCheckupUI : DoctorCheckupsUI
         if (input == true && weight > 10 && weight < 400)
         {
             patient.MedicalRecord.WeightInKg = weight;
-            _hospital.PatientService.AddOrUpdatePatient(patient);
+            _hospital.PatientService.UpsertPatient(patient);
             Console.WriteLine("Edit successfull");
         }
         else
@@ -125,7 +125,7 @@ public class StartCheckupUI : DoctorCheckupsUI
         if (input == true && height > 30 && height < 250)
         {
             patient.MedicalRecord.HeightInCm = height;
-            _hospital.PatientService.AddOrUpdatePatient(patient);
+            _hospital.PatientService.UpsertPatient(patient);
             Console.WriteLine("Edit successfull");
         }
         else
@@ -139,7 +139,7 @@ public class StartCheckupUI : DoctorCheckupsUI
         Console.Write("\nEnter new allergy >>");
         string? allergy = Console.ReadLine();
         patient.MedicalRecord.Allergies.Add(allergy);
-        _hospital.PatientService.AddOrUpdatePatient(patient);
+        _hospital.PatientService.UpsertPatient(patient);
         Console.WriteLine("Edit successfull");
     }
 

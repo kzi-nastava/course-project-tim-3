@@ -8,7 +8,7 @@ public interface IPatientRepository
 {
     public IMongoCollection<Patient> GetPatients();
 
-    public void AddOrUpdatePatient(Patient patient);
+    public void UpsertPatient(Patient patient);
 
     public Patient GetPatientByFullName(string firstName, string lastName);
        

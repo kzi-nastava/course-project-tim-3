@@ -21,7 +21,7 @@ public class EquipmentRelocationService
         var adding = new EquipmentBatch(relocation.ToRoomLocation, relocation.Name,
             relocation.Count, relocation.Type);
         _equipmentService.Remove(removing);
-        _equipmentService.Add(adding);
+        _equipmentService.Insert(adding);
         relocation.IsDone = true;
         _relocationRepo.Replace(relocation);
     }
@@ -32,7 +32,7 @@ public class EquipmentRelocationService
         {
             _equipmentService.Remove(batch);
             batch.RoomLocation = toLocation;
-            _equipmentService.Add(batch);
+            _equipmentService.Insert(batch);
         }
     }
 

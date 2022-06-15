@@ -31,9 +31,9 @@ public class CheckupChangeRequestService
         return _requestRepo.GetCheckUpChangeRequests();
     }
 
-    public void AddOrUpdate(CheckupChangeRequest newRequest)
+    public void Upsert(CheckupChangeRequest newRequest)
     {
-        _requestRepo.AddOrUpdate(newRequest);
+        _requestRepo.Upsert(newRequest);
     }
 
     public void Delete(CheckupChangeRequest request)

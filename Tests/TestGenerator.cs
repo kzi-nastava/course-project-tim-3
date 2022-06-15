@@ -51,7 +51,7 @@ public static class TestGenerator
                 DateTime newDateAndTime =  new DateTime(2077,10,10);
                 alteredCheckup.DateRange = new DateRange(newDateAndTime, newDateAndTime.Add(Checkup.DefaultDuration), true);
                 CheckupChangeRequest request = new CheckupChangeRequest(alteredCheckup,CRUDOperation.UPDATE,state);
-                hospital.CheckupChangeRequestService.AddOrUpdate(request);
+                hospital.CheckupChangeRequestService.Upsert(request);
             }
             else if (i % 2 == 1) 
             {
@@ -61,7 +61,7 @@ public static class TestGenerator
                     state = RequestState.DENIED;
                 }
                 CheckupChangeRequest request = new CheckupChangeRequest(checkups[i],CRUDOperation.DELETE,state);
-                hospital.CheckupChangeRequestService.AddOrUpdate(request);
+                hospital.CheckupChangeRequestService.Upsert(request);
             }    
         }
     }
@@ -77,7 +77,7 @@ public static class TestGenerator
                 for (int j = 0; j < 4; j++)
                 {
                     var newEquipmentBatch = new EquipmentBatch(newRoom.Location, "scalpel", 3, EquipmentType.OPERATION);
-                    hospital.EquipmentService.Add(newEquipmentBatch);
+                    hospital.EquipmentService.Insert(newEquipmentBatch);
                 }
             } 
             else if (i % 3 == 1)
@@ -90,9 +90,9 @@ public static class TestGenerator
                 var newRoom = new Room("55" + i, "NA" + i, RoomType.CHECKUP);
                 hospital.RoomService.Insert(newRoom);
                 var newEquipmentBatch = new EquipmentBatch(newRoom.Location, "syringe", 10, EquipmentType.CHECKUP);
-                hospital.EquipmentService.Add(newEquipmentBatch);
+                hospital.EquipmentService.Insert(newEquipmentBatch);
                 var newEquipmentBatch2 = new EquipmentBatch(newRoom.Location, "bandage", 10, EquipmentType.CHECKUP);
-                hospital.EquipmentService.Add(newEquipmentBatch2);
+                hospital.EquipmentService.Insert(newEquipmentBatch2);
             }
         }
     }
@@ -144,7 +144,7 @@ public static class TestGenerator
             {
                 var director = new Director("name" + i, "surname" + i);
                 user = new User("a" + i, "a" + i, director, Role.DIRECTOR);
-                hospital.DirectorRepo.AddOrUpdateDirector(director);
+                hospital.DirectorRepo.UpsertDirector(director);
             }
             else if (i % 4 == 1)
             {
@@ -159,14 +159,14 @@ public static class TestGenerator
             else if (i % 4 == 2) 
             {
                 var patient = new Patient("name" + i, "surname" + i, new MedicalRecord());
-                hospital.PatientService.AddOrUpdatePatient(patient);
+                hospital.PatientService.UpsertPatient(patient);
                 user = new User("a" + i, "a" + i, patient, Role.PATIENT);
             }  
             else
             {
                 var secretary = new Secretary("name" + i, "surname" + i);
                 user = new User("a" + i, "a" + i, secretary, Role.SECRETARY);
-                hospital.SecretaryRepo.AddOrUpdateSecretary(secretary);
+                hospital.SecretaryRepo.UpsertSecretary(secretary);
             }
             hospital.UserService.Upsert(user);                
         }
@@ -174,10 +174,10 @@ public static class TestGenerator
 
     private static void GenerateMedication(Hospital hospital)
     {
-        hospital.MedicationRepo.AddOrUpdate(new Medication("ibuprofen", new List<string> {"lactose", "Maize Starch", "Hypromellose", "sodium starch glycollate", "colloidal Anhydrous Silica", "magnesium Stearate", "sucrose", "talc", "titanium Dioxide (E171)", "carnauba Wax"}));
-        hospital.MedicationRepo.AddOrUpdate(new Medication("probiotic", new List<string> {"lactobacillus"}));
-        hospital.MedicationRepo.AddOrUpdate(new Medication("amoxicillin", new List<string> {"penicillin","magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}));
-        hospital.MedicationRepo.AddOrUpdate(new Medication("oxacillin", new List<string> {"penicillin"}));
+        hospital.MedicationRepo.Upsert(new Medication("ibuprofen", new List<string> {"lactose", "Maize Starch", "Hypromellose", "sodium starch glycollate", "colloidal Anhydrous Silica", "magnesium Stearate", "sucrose", "talc", "titanium Dioxide (E171)", "carnauba Wax"}));
+        hospital.MedicationRepo.Upsert(new Medication("probiotic", new List<string> {"lactobacillus"}));
+        hospital.MedicationRepo.Upsert(new Medication("amoxicillin", new List<string> {"penicillin","magnesium Stearate (E572)", "Colloidal Anhydrous Silica"}));
+        hospital.MedicationRepo.Upsert(new Medication("oxacillin", new List<string> {"penicillin"}));
     }
 
     private static void GenerateMedicationRequests(Hospital hospital)

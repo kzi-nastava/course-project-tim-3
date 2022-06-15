@@ -54,29 +54,29 @@ public class PatientService
     {
         CheckupChangeLog log = new CheckupChangeLog(DateTime.Now,crudOperation);
         patient.CheckupChangeLogs.Add(log);
-        _repo.AddOrUpdatePatient(patient);
+        _repo.UpsertPatient(patient);
     }
 
     public IMongoCollection<Patient> GetPatients()
     {
         return _repo.GetPatients();
     }
-    public void AddOrUpdatePatient(Patient patient)
+    public void UpsertPatient(Patient patient)
     {
-        _repo.AddOrUpdatePatient(patient);
+        _repo.UpsertPatient(patient);
     }
     public void AddPrescription(Medication medication, int amount, MedicationBestTaken bestTaken, int hours, Patient patient)
     {
         Prescription prescription = new Prescription(medication, amount, bestTaken, hours);
         patient.MedicalRecord.Prescriptions.Add(prescription);
-        _repo.AddOrUpdatePatient(patient);
+        _repo.UpsertPatient(patient);
     }
 
     public void AddReferral(Patient patient, Doctor doctor)
     {
         Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
         patient.MedicalRecord.Referrals.Add(referral);
-        _repo.AddOrUpdatePatient(patient);
+        _repo.UpsertPatient(patient);
         Console.WriteLine("\nReferral succesfully added");
     }
 

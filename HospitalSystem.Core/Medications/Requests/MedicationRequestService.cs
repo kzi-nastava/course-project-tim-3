@@ -32,7 +32,7 @@ public class MedicationRequestService
     public void Approve(MedicationRequest request)
     {
         request.Status = RequestStatus.APPROVED;
-        _medicationRepo.AddOrUpdate(request.Requested);
+        _medicationRepo.Upsert(request.Requested);
         _repo.Replace(request);
     }
 

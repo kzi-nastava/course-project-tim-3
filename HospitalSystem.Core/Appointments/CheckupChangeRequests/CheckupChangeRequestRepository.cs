@@ -44,7 +44,7 @@ namespace HospitalSystem.Core
             return requests;
         }
 
-        public void AddOrUpdate(CheckupChangeRequest newRequest)
+        public void Upsert(CheckupChangeRequest newRequest)
         {
             var requests = GetMongoCollection();
             requests.ReplaceOne(request => request.Id == newRequest.Id, newRequest, new ReplaceOptions {IsUpsert = true});
