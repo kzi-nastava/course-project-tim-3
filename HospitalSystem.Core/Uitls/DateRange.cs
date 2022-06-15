@@ -6,7 +6,7 @@ public class DateRange
 {
     // the minimum allowed range (makes scheduling easy)
     [BsonIgnore]
-    private static TimeSpan s_minDuration = TimeSpan.FromSeconds(60);  
+    private static TimeSpan s_minDuration = TimeSpan.FromSeconds(0);  
     [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
     [BsonElement]
     public DateTime Starts { get; }

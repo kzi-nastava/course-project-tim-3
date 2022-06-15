@@ -112,8 +112,8 @@ public class DoctorMainUI : UserUI
     {
         Console.Write("\nEnter date (dd.mm.yyyy) >> ");
         var date = Console.ReadLine();
-        List<Checkup> checkups = _hospital.AppointmentService.GetCheckupsByDay(Convert.ToDateTime(date));
-        List<Operation> operations = _hospital.AppointmentService.GetOperationsByDay(Convert.ToDateTime(date));
+        List<Checkup> checkups = _hospital.AppointmentService.GetCheckupSchedule(Doctor, Convert.ToDateTime(date));
+        List<Operation> operations = _hospital.AppointmentService.GetOperationSchedule(Doctor, Convert.ToDateTime(date));
         PrintCheckups(checkups);
         PrintOperations(operations);
     }
@@ -168,7 +168,7 @@ public class DoctorMainUI : UserUI
             {            
                 if (daysOff.EachDay().Count() <= 5)
                 {
-                    _hospital.DaysOffRequestService.Approve(new DaysOffRequest(Doctor, reason, daysOff));
+                    _hospital.DaysOffRequestService.ApproveUrgent(new DaysOffRequest(Doctor, reason, daysOff));
                     Console.WriteLine("Request succesfully sent and approved.");
                 }
                 else

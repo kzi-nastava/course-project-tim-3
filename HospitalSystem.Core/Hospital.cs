@@ -53,10 +53,13 @@ public class Hospital
         DaysOffRequestService = new (new DaysOffRequestRepository(_dbClient), AppointmentService);
         SurveyService = new SurveyService(new SurveyRepository(_dbClient),
             AppointmentService, DoctorService);
+            
+        ScheduleService = new ScheduleService(AppointmentService, RoomService, DoctorService, PatientService);
         
         // TODO: this maybe shouldn't be here
         RelocationService.ScheduleAll();
         RenovationService.ScheduleAll();
         EquipmentOrderService.ScheduleAll();
+        
     }
 }

@@ -118,12 +118,23 @@ public class AppointmentService
         return checkupsByDay;
     }
 
-    public List<Checkup> GetNotDoneCheckups(DateTime date)
+    public List<Checkup> GetCheckupSchedule(Doctor doctor, DateTime day)
     {
-        var checkups = _appointmentRepo.GetCheckups();
+        List<Checkup> checkupsByDay = new();
+        foreach (Checkup checkup in GetCheckupsByDay(day))
+        {
+            if (checkup.Doctor.Id == doctor.Id)
+                checkupsByDay.Add(checkup);
+        }
+        return checkupsByDay;
+    }
+
+    public List<Checkup> GetNotDoneCheckups(Doctor doctor, DateTime day)
+    {
+        var checkups = GetCheckupSchedule(doctor, day);
         List<Checkup> checkupsByDay = 
             (from checkup in checkups.AsQueryable().ToList()  // TODO: inefficient, but bug fix
-            where checkup.DateRange.Starts.Date == date.Date && checkup.Done == false
+            where checkup.DateRange.Starts.Date == day.Date && checkup.Done == false
             select checkup).ToList();
         return checkupsByDay;
     }
@@ -138,12 +149,23 @@ public class AppointmentService
         return operationsByDay;
     }
 
-    public List<Operation> GetNotDoneOperations(DateTime date)
+    public List<Operation> GetOperationSchedule(Doctor doctor, DateTime day)
     {
-        var operations = _appointmentRepo.GetOperations();
+        List<Operation> operationsByDay = new();
+        foreach (Operation operation in GetOperationsByDay(day))
+        {
+            if (operation.Doctor.Id == doctor.Id)
+                operationsByDay.Add(operation);
+        }
+        return operationsByDay;
+    }
+
+    public List<Operation> GetNotDoneOperations(Doctor doctor, DateTime day)
+    {
+        var operations = GetOperationSchedule(doctor, day);
         List<Operation> operationsByDay = 
             (from operation in operations.AsQueryable().ToList()  // TODO: inefficient, but bug fix
-            where operation.DateRange.Starts.Date == date.Date && operation.Done == false
+            where operation.DateRange.Starts.Date == day.Date && operation.Done == false
             select operation).ToList();
         return operationsByDay;
     }
@@ -168,15 +190,14 @@ public class AppointmentService
         return patientOperations;
     }
     
- 
-     public List<Checkup> GetCheckupsByDoctor(Doctor doctor)
-        {
-            var checkups = _appointmentRepo.GetCheckups();
-            return
-                (from checkup in checkups.AsQueryable()
-                where doctor.Id == checkup.Doctor.Id
-                select checkup).ToList();
-        }
+    public List<Checkup> GetCheckupsByDoctor(Doctor doctor)
+    {
+        var checkups = _appointmentRepo.GetCheckups();
+        return
+            (from checkup in checkups.AsQueryable()
+            where doctor.Id == checkup.Doctor.Id
+            select checkup).ToList();
+    }
 
     public float GetAverageRating(Doctor doctor)
     {
