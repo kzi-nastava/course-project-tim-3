@@ -56,7 +56,7 @@ public class DoctorCheckupsUI : DoctorMainUI
     {
         Console.Write("\nEnter checkup number >> ");
         var isNumber = int.TryParse(Console.ReadLine(), out int checkupNumber);
-        if (isNumber == true && checkupNumber >= 0 && checkupNumber <= checkups.Count())
+        if (isNumber == true && checkupNumber > 0 && checkupNumber <= checkups.Count())
         {
             new StartCheckupUI(_hospital, _user, checkups[checkupNumber-1]).Start();
         }
