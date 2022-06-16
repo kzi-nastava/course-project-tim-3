@@ -3,6 +3,7 @@ using HospitalSystem.Core.Medications;
 using HospitalSystem.Core.Medications.Requests;
 
 namespace HospitalSystem.Tests;
+
 public static class MedicationGenerator
 {
     public static void GenerateMedication(Hospital hospital)

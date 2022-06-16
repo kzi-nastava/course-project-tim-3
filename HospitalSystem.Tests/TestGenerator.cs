@@ -2,14 +2,9 @@ using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Driver;
 using HospitalSystem.Core;
-using HospitalSystem.Core.Rooms;
-using HospitalSystem.Core.Equipment;
-using HospitalSystem.Core.Surveys;
-using HospitalSystem.Core.Medications;
-using HospitalSystem.Core.Medications.Requests;
-using HospitalSystem.Core.Utils;
 
 namespace HospitalSystem.Tests;
+
 public static class TestGenerator
 {
     // THIS WILL DELETE YOUR EXISTING DATABASE!!

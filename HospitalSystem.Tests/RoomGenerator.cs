@@ -3,6 +3,7 @@ using HospitalSystem.Core.Rooms;
 using HospitalSystem.Core.Equipment;
 
 namespace HospitalSystem.Tests;
+
 public static class RoomGenerator
 {
     public static void GenerateRoomsAndEquipment(Hospital hospital)
