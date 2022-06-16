@@ -131,6 +131,8 @@ public class CheckupUI : HospitalClientUI
         CheckIfPatientExist(patients, firstName, lastName);
         Patient patient = _hospital.PatientService.GetPatientByFullName(firstName, lastName);
         
+        CheckIfReferralIsEmpty(patient);
+
         var referralPatient = patient.MedicalRecord.Referrals[0].Patient;
         var referralDoctor = patient.MedicalRecord.Referrals[0].Doctor;
         var referralAnamnesis =  patient.MedicalRecord.AnamnesisHistory;
@@ -156,6 +158,13 @@ public class CheckupUI : HospitalClientUI
         ReadSanitizedLine();
     }
 
+    public void CheckIfReferralIsEmpty(Patient patient)
+    {
+        if(patient.MedicalRecord.Referrals.Count() == 0){
+            throw new InvalidInputException("Patient does not have referrals");
+        }
+    }
+    
     public string EnterPatientFirstName(){
         System.Console.Write("Enter patient first name: ");
         string firstName = ReadSanitizedLine();
