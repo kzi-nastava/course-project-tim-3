@@ -42,10 +42,15 @@ public class DoctorSurvey : Survey
 
     public IEnumerable<RatedDoctorId> GetBestDoctorIds(int count)
     {
-        return GetWorstDoctorIds(count).Reverse();
+        return GetBestDoctorIds().Take(count);
     }
 
-    public IEnumerable<RatedDoctorId> GetWorstDoctorIds(int count)
+    private IEnumerable<RatedDoctorId> GetBestDoctorIds()
+    {
+        return GetWorstDoctorIds().Reverse();
+    }
+
+    private IEnumerable<RatedDoctorId> GetWorstDoctorIds()
     {
         return
             (from drResponse in Responses
@@ -53,6 +58,12 @@ public class DoctorSurvey : Survey
             select new RatedDoctorId(
                 drResponse.Key,
                 drResponse.Value.Average(response => response.Ratings.Average()),
-                drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null)))).Take(count);
+                drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null))));
     }
+
+    public IEnumerable<RatedDoctorId> GetWorstDoctorIds(int count)
+    {
+        return GetWorstDoctorIds().Take(count);
+    }
+
 }
