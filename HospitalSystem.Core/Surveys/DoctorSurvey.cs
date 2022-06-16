@@ -17,7 +17,7 @@ public class DoctorSurvey : Survey
         Responses = new();
     }
 
-    public IEnumerable<(string, double?, int)> AggregateRatingsFor(Doctor dr)
+    public IEnumerable<AggregatedRating> AggregateRatingsFor(Doctor dr)
     {
         return AggregateRatings(Responses[dr.Id]);
     }

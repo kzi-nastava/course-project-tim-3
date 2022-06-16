@@ -24,7 +24,7 @@ public class HospitalSurvey : Survey
             select response).Any();
     }
 
-    public IEnumerable<(string, double?, int)> AggregateRatings()
+    public IEnumerable<AggregatedRating> AggregateRatings()
     {
         return AggregateRatings(Responses);
     }

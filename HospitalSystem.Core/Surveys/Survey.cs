@@ -3,6 +3,8 @@ using MongoDB.Bson;
 
 namespace HospitalSystem.Core.Surveys;
 
+public record AggregatedRating(string Question, double? Average, int Count);
+
 [System.Serializable]
 public class InvalidSurveyException : System.Exception
 {
@@ -31,10 +33,10 @@ public abstract class Survey
         Title = title;
     }
 
-    protected IEnumerable<(string, double?, int)> AggregateRatings(IEnumerable<SurveyResponse> responses)
+    protected IEnumerable<AggregatedRating> AggregateRatings(IEnumerable<SurveyResponse> responses)
     {
         return RatingQuestions.Select((question, i) => 
-            (
+            new AggregatedRating(
                 question, 
                 (from response in responses
                 select response.Ratings[i]).Average(),
