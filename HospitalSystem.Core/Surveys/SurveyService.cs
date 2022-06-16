@@ -1,5 +1,7 @@
 namespace HospitalSystem.Core.Surveys;
 
+public record RatedDoctor(Doctor Doctor, double? Average, int Count);
+
 public class SurveyService
 {
     private ISurveyRepository _repo;
@@ -61,19 +63,21 @@ public class SurveyService
                 notAnsweredSurveyDoctors.Item2.Select(id => _doctorService.GetById(id)));
     }
 
-    public IList<(Doctor, double?, int)> GetBestDoctors(DoctorSurvey survey, int count = 3)
+    public IList<RatedDoctor> GetBestDoctors(DoctorSurvey survey, int count = 3)
     {
         return 
             (from drIdRatings in survey.GetBestDoctorIds(count)  // TODO: think up a better name than res
-            where drIdRatings.Item2 != null
-            select (_doctorService.GetById(drIdRatings.Item1), drIdRatings.Item2, drIdRatings.Item3)).ToList();
+            where drIdRatings.Average != null
+            select new RatedDoctor(_doctorService.GetById(drIdRatings.Id), drIdRatings.Average,
+                drIdRatings.Count)).ToList();
     }
 
-    public IList<(Doctor, double?, int)> GetWorstDoctors(DoctorSurvey survey, int count = 3)
+    public IList<RatedDoctor> GetWorstDoctors(DoctorSurvey survey, int count = 3)
     {
         return 
             (from drIdRatings in survey.GetWorstDoctorIds(count)
-            where drIdRatings.Item2 != null
-            select (_doctorService.GetById(drIdRatings.Item1), drIdRatings.Item2, drIdRatings.Item3)).ToList();
+            where drIdRatings.Average != null
+            select new RatedDoctor(_doctorService.GetById(drIdRatings.Id), drIdRatings.Average,
+                drIdRatings.Count)).ToList();
     }
 }

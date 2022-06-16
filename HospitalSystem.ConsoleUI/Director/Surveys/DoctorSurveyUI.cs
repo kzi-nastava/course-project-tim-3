@@ -108,13 +108,13 @@ public class DoctorSurveyUI : SurveyUI
         DisplayRatedDoctors(_hospital.SurveyService.GetWorstDoctors(survey));
     }
 
-    private void DisplayRatedDoctors(IList<(Doctor, double?, int)> drRatings)
+    private void DisplayRatedDoctors(IList<RatedDoctor> drRatings)
     {
         System.Console.WriteLine("No. | Doctor | Avg rating | Rating count");
         for (int i = 0; i < drRatings.Count; i++)
         {
-            System.Console.WriteLine(i+1 + " | " + drRatings[i].Item1.ToString() +
-                " | " + (drRatings[i].Item2?.ToString() ?? " / ") + " | " + drRatings[i].Item3);
+            System.Console.WriteLine(i+1 + " | " + drRatings[i].Doctor.ToString() +
+                " | " + (drRatings[i].Average?.ToString() ?? " / ") + " | " + drRatings[i].Count);
         }
     }
 
