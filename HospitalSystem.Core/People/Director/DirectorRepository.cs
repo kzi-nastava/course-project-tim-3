@@ -15,7 +15,7 @@ public class DirectorRepository
         return _dbClient.GetDatabase("hospital").GetCollection<Director>("directors");
     }
 
-    public void UpsertDirector(Director newDirector)
+    public void Upsert(Director newDirector)
     {
         var directors = GetMongoCollection();
         directors.ReplaceOne(director => director.Id == newDirector.Id, newDirector, new ReplaceOptions {IsUpsert = true});

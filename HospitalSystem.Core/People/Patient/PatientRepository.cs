@@ -12,27 +12,27 @@ namespace HospitalSystem.Core
             this._dbClient = _dbClient;
         }
 
-        public IMongoCollection<Patient> GetPatients()
+        public IMongoCollection<Patient> GetAll()
         {
             return _dbClient.GetDatabase("hospital").GetCollection<Patient>("patients");
         }
-        public void UpsertPatient(Patient patient)
+        public void Upsert(Patient patient)
         {
             var newPatient = patient;
-            var patients = GetPatients();
+            var patients = GetAll();
             patients.ReplaceOne(patient => patient.Id == newPatient.Id, newPatient, new ReplaceOptions {IsUpsert = true});
         }
-        public Patient GetPatientByFullName(string firstName, string lastName)
+        public Patient GetByFullName(string firstName, string lastName)
         {
-            var patients = GetPatients();
+            var patients = GetAll();
             var foundPatient = patients.Find(patient => patient.FirstName == firstName && patient.LastName == lastName)
                 .FirstOrDefault();
             return foundPatient;
         }
 
-        public Patient GetPatientById(ObjectId id)
+        public Patient GetById(ObjectId id)
         {
-            var patients = GetPatients();
+            var patients = GetAll();
             var foundPatient = patients.Find(patient => patient.Id == id).FirstOrDefault();
             return foundPatient;
         }

@@ -30,7 +30,7 @@ public class PatientUI : UserUI
 
     public PatientUI(Hospital hospital, User user) : base(hospital, user) 
     {
-        _loggedInPatient = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
+        _loggedInPatient = _hospital.PatientService.GetById((ObjectId) user.Person.Id);
     }
 
     public override void Start()
@@ -1062,7 +1062,7 @@ public class PatientUI : UserUI
             throw new QuitToMainMenuException("Wrong input");
         }
         _loggedInPatient.WhenToRemind = TimeSpan.FromMinutes(numberOfMinutes);
-        _hospital.PatientService.UpsertPatient(_loggedInPatient);
+        _hospital.PatientService.Upsert(_loggedInPatient);
         Console.WriteLine("Preference saved.");
     }
 }

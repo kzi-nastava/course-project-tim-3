@@ -74,4 +74,27 @@ public class AppointmentRepository : IAppointmentRepository
             from operation in GetOperations().AsQueryable()
             select (ObjectId) operation.Doctor.Id).ToHashSet();
     }
+    
+    public List<Operation> GetOperationsByDoctor(ObjectId id)
+    {
+        var operations = GetOperations();
+        List<Operation> doctorsOperations = operations.Find(appointment => appointment.Doctor.Id == id).ToList();
+        return doctorsOperations;
+    }
+
+    public List<Operation> GetOperationsByPatient(ObjectId id)
+    {
+        var operations = GetOperations();
+        List<Operation> patientOperations = operations.Find(appointment => appointment.Patient.Id == id).ToList();
+        return patientOperations;
+    }
+
+    public List<Checkup> GetCheckupsByDoctor(Doctor doctor)
+    {
+        var checkups = GetCheckups();
+        return
+            (from checkup in checkups.AsQueryable()
+            where doctor.Id == checkup.Doctor.Id
+            select checkup).ToList();
+    }
 }

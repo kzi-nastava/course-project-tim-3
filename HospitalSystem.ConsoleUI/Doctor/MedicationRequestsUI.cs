@@ -2,7 +2,7 @@ using HospitalSystem.Core.Medications.Requests;
 using MongoDB.Driver;
 using HospitalSystem.Core;
 
-namespace HospitalSystem.ConsoleUI;
+namespace HospitalSystem.ConsoleUI.DoctorUi;
 
 public class MedicationRequestsUI : UserUI
 {

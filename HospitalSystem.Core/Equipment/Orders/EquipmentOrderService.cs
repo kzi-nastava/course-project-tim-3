@@ -16,7 +16,7 @@ public class EquipmentOrderService
     private void AddEquipment(EquipmentOrder order)
     {
         var adding = new EquipmentBatch(order.ToStockLocation, order.Name, order.Count, order.Type);
-        _equipmentService.Insert(adding);
+        _equipmentService.Add(adding);
         order.IsDone = true;
         _orderRepo.Replace(order);
     }

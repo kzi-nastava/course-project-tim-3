@@ -2,17 +2,17 @@ using MongoDB.Bson;
 using HospitalSystem.Core.Utils;
 using HospitalSystem.Core;
 
-namespace HospitalSystem.ConsoleUI;
+namespace HospitalSystem.ConsoleUI.DoctorUi;
 
-public class DoctorMainUI : UserUI
+public class DoctorUI : UserUI
 {
     Doctor Doctor;
-    public DoctorMainUI(Hospital hospital, User user) : base(hospital, user) 
+    public DoctorUI(Hospital hospital, User user) : base(hospital, user) 
     {
         Doctor = _hospital.DoctorService.GetById((ObjectId)_user.Person.Id);
     }
 
-     public override void Start()
+    public override void Start()
     {
         Console.Clear();
         bool quit = false;
@@ -30,7 +30,7 @@ public class DoctorMainUI : UserUI
                 }
                 case "2":
                 {
-                    new DoctorCheckupsUI(_hospital, _user).Start();
+                    new CheckupsUI(_hospital, _user).Start();
                     break;
                 }
                 case "3":
@@ -125,7 +125,7 @@ public class DoctorMainUI : UserUI
         int i = 1;
         foreach (Checkup checkup in checkups)
         {
-            Patient patient = _hospital.PatientService.GetPatientById((ObjectId)checkup.Patient.Id);
+            Patient patient = _hospital.PatientService.GetById((ObjectId)checkup.Patient.Id);
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 80)));
             Console.WriteLine(String.Format("{0,5} {1,34} {2,25}", i, checkup.DateRange, patient));
             i++;
@@ -139,7 +139,7 @@ public class DoctorMainUI : UserUI
         int i = 1;
         foreach (Operation operation in operations)
         {
-            Patient patient = _hospital.PatientService.GetPatientById((ObjectId)operation.Patient.Id);
+            Patient patient = _hospital.PatientService.GetById((ObjectId)operation.Patient.Id);
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 80)));
             Console.WriteLine(String.Format("{0,5} {1,34} {2,25}", i, operation.DateRange, patient));
             i++;

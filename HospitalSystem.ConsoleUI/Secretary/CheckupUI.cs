@@ -71,7 +71,7 @@ public class CheckupUI : HospitalClientUI
         requests.RemoveAll(u => u.RequestState != RequestState.PENDING);
         
         for(var i = 0; i < requests.Count; i++){
-            Patient pat = _hospital.PatientService.GetPatientById((ObjectId) requests[i].Checkup.Patient.Id);
+            Patient pat = _hospital.PatientService.GetById((ObjectId) requests[i].Checkup.Patient.Id);
             Doctor doc = _hospital.DoctorService.GetById((ObjectId) requests[i].Checkup.Doctor.Id);
 
             System.Console.WriteLine("Index ID: " + i);

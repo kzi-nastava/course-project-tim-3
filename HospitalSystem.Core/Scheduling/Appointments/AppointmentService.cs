@@ -96,16 +96,12 @@ public class AppointmentService
 
     public List<Operation> GetOperationsByPatient(ObjectId id)
     {
-        var operations = _appointmentRepo.GetOperations();
-        List<Operation> patientOperations = operations.Find(appointment => appointment.Patient.Id == id).ToList();
-        return patientOperations;
+        return _appointmentRepo.GetOperationsByPatient(id);
     }
 
     public List<Operation> GetOperationsByDoctor(ObjectId id)
     {
-        var operations = _appointmentRepo.GetOperations();
-        List<Operation> doctorsOperations = operations.Find(appointment => appointment.Doctor.Id == id).ToList();
-        return doctorsOperations;
+       return _appointmentRepo.GetOperationsByDoctor(id);
     }
 
     public List<Checkup> GetCheckupsByDay(DateTime date)
@@ -192,11 +188,7 @@ public class AppointmentService
     
     public List<Checkup> GetCheckupsByDoctor(Doctor doctor)
     {
-        var checkups = _appointmentRepo.GetCheckups();
-        return
-            (from checkup in checkups.AsQueryable()
-            where doctor.Id == checkup.Doctor.Id
-            select checkup).ToList();
+        return _appointmentRepo.GetCheckupsByDoctor(doctor);
     }
 
     public float GetAverageRating(Doctor doctor)

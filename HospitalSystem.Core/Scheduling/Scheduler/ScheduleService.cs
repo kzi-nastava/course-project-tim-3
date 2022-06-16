@@ -109,7 +109,7 @@ public class ScheduleService
 
     public bool ScheduleCheckup(User _user, DateTime dateTime, string name, string surname)
     {
-        Patient patient = _patientService.GetPatientByFullName(name,surname);
+        Patient patient = _patientService.GetByFullName(name,surname);
         if (patient == null)
         {
             return false;
@@ -128,7 +128,7 @@ public class ScheduleService
     }
     public bool ScheduleOperation(User _user, DateTime dateTime, string name, string surname, TimeSpan duration)
     {
-        Patient patient = _patientService.GetPatientByFullName(name,surname);
+        Patient patient = _patientService.GetByFullName(name,surname);
         if (patient == null)
         {
             return false;
@@ -246,7 +246,7 @@ public class ScheduleService
         return new DateTime((dt.Ticks + d.Ticks - 1) / d.Ticks * d.Ticks, dt.Kind);
     }
 
-    //TO-DO: refactor this method
+    //TODO: refactor this method
     public List<Checkup> FindSuitableCheckups(Doctor doctor, DateRange interval, DateTime deadline, bool isIntervalPriority, User user)
     {
         List<Checkup> checkups = new List<Checkup>();

@@ -3,12 +3,12 @@ using MongoDB.Driver;
 using HospitalSystem.Core.Utils;
 using HospitalSystem.Core;
 
-namespace HospitalSystem.ConsoleUI;
+namespace HospitalSystem.ConsoleUI.DoctorUi;
 
-public class DoctorCheckupsUI : DoctorMainUI
+public class CheckupsUI : DoctorUI
 {
     Doctor Doctor;
-    public DoctorCheckupsUI(Hospital hospital, User user) : base(hospital, user) 
+    public CheckupsUI(Hospital hospital, User user) : base(hospital, user) 
     { 
         Doctor = _hospital.DoctorService.GetById((ObjectId)_user.Person.Id);
     }
@@ -141,7 +141,7 @@ public class DoctorCheckupsUI : DoctorMainUI
         string newName = ReadSanitizedLine();
         Console.Write("Enter new patient surname>> ");
         string newSurname = ReadSanitizedLine();
-        Patient newPatient = _hospital.PatientService.GetPatientByFullName(newName,newSurname);
+        Patient newPatient = _hospital.PatientService.GetByFullName(newName,newSurname);
         if (newPatient != null)
         {
            checkup.Patient = new MongoDB.Driver.MongoDBRef("patients", newPatient.Id);
@@ -170,7 +170,7 @@ public class DoctorCheckupsUI : DoctorMainUI
 
     public Patient ShowPatientInfo(Checkup checkup)
     {
-        Patient patient = _hospital.PatientService.GetPatientById((ObjectId)checkup.Patient.Id);
+        Patient patient = _hospital.PatientService.GetById((ObjectId)checkup.Patient.Id);
         Console.Write("\n" + patient.ToString() + "\n");
         Console.Write(patient.MedicalRecord.ToString() + "\n");
         return patient;

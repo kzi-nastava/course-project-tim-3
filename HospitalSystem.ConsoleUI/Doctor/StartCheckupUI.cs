@@ -3,9 +3,9 @@ using MongoDB.Driver;
 using HospitalSystem.Core.Equipment;
 using HospitalSystem.Core;
 
-namespace HospitalSystem.ConsoleUI;
+namespace HospitalSystem.ConsoleUI.DoctorUi;
 
-public class StartCheckupUI : DoctorCheckupsUI
+public class StartCheckupUI : CheckupsUI
 {
     Checkup Checkup;
     public StartCheckupUI(Hospital hospital, User user, Checkup checkup) : base(hospital, user) { 
@@ -60,7 +60,7 @@ public class StartCheckupUI : DoctorCheckupsUI
         String anamnesis = ReadSanitizedLine();
 
         patient.MedicalRecord.AnamnesisHistory.Add(anamnesis);
-        _hospital.PatientService.UpsertPatient(patient);
+        _hospital.PatientService.Upsert(patient);
 
         Checkup.Anamnesis = anamnesis;
         _hospital.AppointmentService.UpsertCheckup(Checkup);
@@ -109,7 +109,7 @@ public class StartCheckupUI : DoctorCheckupsUI
         if (input == true && weight > 10 && weight < 400)
         {
             patient.MedicalRecord.WeightInKg = weight;
-            _hospital.PatientService.UpsertPatient(patient);
+            _hospital.PatientService.Upsert(patient);
             Console.WriteLine("Edit successfull");
         }
         else
@@ -125,7 +125,7 @@ public class StartCheckupUI : DoctorCheckupsUI
         if (input == true && height > 30 && height < 250)
         {
             patient.MedicalRecord.HeightInCm = height;
-            _hospital.PatientService.UpsertPatient(patient);
+            _hospital.PatientService.Upsert(patient);
             Console.WriteLine("Edit successfull");
         }
         else
@@ -139,7 +139,7 @@ public class StartCheckupUI : DoctorCheckupsUI
         Console.Write("\nEnter new allergy >>");
         string allergy = ReadSanitizedLine();
         patient.MedicalRecord.Allergies.Add(allergy);
-        _hospital.PatientService.UpsertPatient(patient);
+        _hospital.PatientService.Upsert(patient);
         Console.WriteLine("Edit successfull");
     }
 

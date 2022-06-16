@@ -11,15 +11,15 @@ namespace HospitalSystem.Core
             this._dbClient = _dbClient;
         }
 
-        public IMongoCollection<Secretary> GetSecretaries()
+        public IMongoCollection<Secretary> GetAll()
         {
             return _dbClient.GetDatabase("hospital").GetCollection<Secretary>("secretaries");
         }
 
-         public void UpsertSecretary(Secretary secretary)
+         public void Upsert(Secretary secretary)
         {
             var newSecretary = secretary;
-            var secretaries = GetSecretaries();
+            var secretaries = GetAll();
             secretaries.ReplaceOne(secretary => secretary.Id == newSecretary.Id, newSecretary, new ReplaceOptions {IsUpsert = true});
         }
     }
