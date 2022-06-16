@@ -29,7 +29,7 @@ public class DoctorSurveyRepository : IDoctorSurveyRepository
 
     public void Replace(DoctorSurvey replacement)
     {
-        GetMongoCollection().ReplaceOne(survey => survey.Id == replacement.Id, replacement);
+        GetMongoCollection().ReplaceOne(survey => survey.Title == replacement.Title, replacement);
     }
 
     public IList<(DoctorSurvey, IEnumerable<ObjectId>)> GetUnansweredBy(Patient pat, HashSet<ObjectId> myDoctors)

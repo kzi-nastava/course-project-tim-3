@@ -453,12 +453,6 @@ public class AppointmentService
                 select checkup).ToList();
         }
 
-    public float GetAverageRating(Doctor doctor)
-    {
-        // TODO: instead of doing this, move to SurveyService, and there get Drs together with ratings
-        throw new NotImplementedException("Don't like this, read todo in line above me");
-    }
-
     public HashSet<ObjectId> GetAllAppointmentDoctors(Patient pat)
     {
         return _appointmentRepo.GetAllAppointmentDoctors(pat);

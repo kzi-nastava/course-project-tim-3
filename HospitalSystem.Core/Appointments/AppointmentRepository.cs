@@ -69,7 +69,7 @@ public class AppointmentRepository : IAppointmentRepository
     {
         return
             (from checkup in GetCheckups().AsQueryable()
-            select (ObjectId) checkup.Doctor.Id)
+            select (ObjectId) checkup.Doctor.Id).AsEnumerable()
             .Union(
             from operation in GetOperations().AsQueryable()
             select (ObjectId) operation.Doctor.Id).ToHashSet();

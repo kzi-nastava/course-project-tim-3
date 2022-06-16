@@ -28,7 +28,7 @@ public class HospitalSurveyRepository : IHospitalSurveyRepository
 
     public void Replace(HospitalSurvey replacement)
     {
-        GetMongoCollection().ReplaceOne(survey => survey.Id == replacement.Id, replacement);
+        GetMongoCollection().ReplaceOne(survey => survey.Title == replacement.Title, replacement);
     }
 
     public IList<HospitalSurvey> GetUnansweredBy(Person person)

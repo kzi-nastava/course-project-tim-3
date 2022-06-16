@@ -47,6 +47,23 @@ public class DoctorSurveyService
                 notAnsweredSurveyDoctors.Item2.Select(id => _doctorService.GetById(id)));
     }
 
+    public List<DoctorSurvey> GetSpecificDoctorUnansweredBy(Patient pat, Doctor doc)
+    {
+        var allUnanswered = GetUnansweredBy(pat).ToList();
+        List<DoctorSurvey> filteredUnanswered = new();
+        foreach (var pair in allUnanswered)
+        {
+            foreach( var doctor in pair.Item2.ToList())
+            {
+                if (doctor.Id == doc.Id)
+                {
+                    filteredUnanswered.Add(pair.Item1);
+                }
+            }
+        }
+        return filteredUnanswered;
+    }
+
     public IList<RatedDoctor> GetBestDoctors(DoctorSurvey survey, int count = 3)
     {
         return 
@@ -63,5 +80,48 @@ public class DoctorSurveyService
             where drIdRatings.Average != null
             select new RatedDoctor(_doctorService.GetById(drIdRatings.Id), drIdRatings.Average,
                 drIdRatings.Count)).ToList();
+    }
+
+    public List<DoctorSurvey> GetByDoctor(Doctor doctor)
+    {
+        List<DoctorSurvey> filtered = new();
+        var allDoctor = GetAll().ToList();
+
+        if (allDoctor == null){
+            return filtered;
+        }
+
+        foreach (var doctorSurvey in allDoctor)
+        {
+            if (doctorSurvey.Responses.ContainsKey(doctor.Id))
+            {
+                filtered.Add(doctorSurvey);
+            }
+        }
+        return filtered;
+
+    }
+
+    public double GetAverageRating(Doctor doctor)
+    {   double sum = 0;
+        int count = 0;
+        var selectedSurveys = GetByDoctor(doctor);
+        foreach (var drSurvey in selectedSurveys)
+        {   
+            var agregatedRatings = drSurvey.AggregateRatingsFor(doctor).ToList();
+            foreach (var rating in agregatedRatings)
+            {
+                if (rating.Average != null){
+                    sum += (double)rating.Average;
+                    count++;
+                }
+            }
+        }
+
+        if (count==0)
+        {
+            return 10;
+        }
+        return sum/count;
     }
 }

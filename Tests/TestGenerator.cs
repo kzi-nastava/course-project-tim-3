@@ -194,6 +194,7 @@ public static class TestGenerator
     {
         var hospitalSurvey = new HospitalSurvey(new List<string> {"Opininion?"},
             new List<string>{"Overall"}, "Hospital1");
+
         hospital.HospitalSurveyService.Insert(hospitalSurvey);
         hospital.HospitalSurveyService.AddResponse(hospitalSurvey,
             new SurveyResponse(new List<string?>{null}, new List<int?>{4},

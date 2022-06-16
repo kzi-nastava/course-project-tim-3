@@ -5,12 +5,13 @@ using MongoDB.Bson.Serialization.Options;
 namespace HospitalSystem.Core.Surveys;
 
 public record RatedDoctorId(ObjectId Id, double? Average, int Count);
-
+[BsonIgnoreExtraElements]
 public class DoctorSurvey : Survey
 {
     [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
     public  Dictionary<ObjectId, List<SurveyResponse>> Responses { get; set; }  // TODO: naming?
 
+    [BsonConstructor]
     public DoctorSurvey(List<string> questions, List<string> ratingQuestions, string title)
         : base(questions, ratingQuestions, title)
     {
