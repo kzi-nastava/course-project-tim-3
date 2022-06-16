@@ -134,7 +134,6 @@ public class CrudUI : HospitalClientUI
         us.Upsert(new User(email, password,patient,Role.PATIENT));
 
         System.Console.Write("Successfuly created a user. Type anything to get back to menu: ");
-        ReadSanitizedLine();
     }
 
     
@@ -155,7 +154,6 @@ public class CrudUI : HospitalClientUI
         System.Console.WriteLine("Last Name : " + pat.LastName);
 
         System.Console.Write("\nType anything to get to menu: ");
-        ReadSanitizedLine();
     }
 
     public void UpdatePatientAccount()
