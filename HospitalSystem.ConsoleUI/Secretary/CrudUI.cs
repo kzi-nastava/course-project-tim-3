@@ -209,7 +209,8 @@ public class CrudUI : HospitalClientUI
         List<User> blockedUsers = us.GetAllBlocked().ToList();
 
         System.Console.WriteLine("Blocked users: ");
-        foreach(var blockedUser in blockedUsers){
+        foreach(var blockedUser in blockedUsers)
+        {
             Patient pat = _hospital.PatientService.GetPatientById((ObjectId) blockedUser.Person.Id);
             System.Console.WriteLine(" << User: " + pat.FirstName.ToString() + " " + pat.LastName.ToString() + ", Email: " + blockedUser.Email.ToString() + " >> ");
         }
