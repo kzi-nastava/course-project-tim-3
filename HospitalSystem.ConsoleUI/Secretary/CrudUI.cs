@@ -175,6 +175,7 @@ public class CrudUI : HospitalClientUI
         {
             throw new InvalidInputException("Invalid input");
         }
+        System.Console.Write("\nType anything to get to menu: ");
     }
 
     public void DeletePatientAccount()
