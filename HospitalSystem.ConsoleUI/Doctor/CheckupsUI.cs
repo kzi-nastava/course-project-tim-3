@@ -3,12 +3,16 @@ using MongoDB.Driver;
 using HospitalSystem.Core.Utils;
 using HospitalSystem.Core;
 
-namespace HospitalSystem.ConsoleUI;
+namespace HospitalSystem.ConsoleUI.DoctorUi;
 
-public class DoctorCheckupsUI : DoctorMainUI
+public class CheckupsUI : DoctorUI
 {
-     public DoctorCheckupsUI(Hospital hospital, User user) : base(hospital, user) { }
-     public override void Start()
+    Doctor Doctor;
+    public CheckupsUI(Hospital hospital, User user) : base(hospital, user) 
+    { 
+        Doctor = _hospital.DoctorService.GetById((ObjectId)_user.Person.Id);
+    }
+    public override void Start()
     {
         bool quit = false;
         while (!quit)
@@ -52,7 +56,7 @@ public class DoctorCheckupsUI : DoctorMainUI
     {
         Console.Write("\nEnter checkup number >> ");
         var isNumber = int.TryParse(Console.ReadLine(), out int checkupNumber);
-        if (isNumber == true && checkupNumber >= 0 && checkupNumber <= checkups.Count())
+        if (isNumber == true && checkupNumber > 0 && checkupNumber <= checkups.Count())
         {
             new StartCheckupUI(_hospital, _user, checkups[checkupNumber-1]).Start();
         }
@@ -65,12 +69,12 @@ public class DoctorCheckupsUI : DoctorMainUI
     public List<Checkup> ShowNextThreeDays()
     {
         Console.WriteLine("\nThese are your checkups for the next 3 days:\n");
-        List<Checkup> checkups = _hospital.AppointmentService.GetNotDoneCheckups(DateTime.Now);
-        List<Operation> operations = _hospital.AppointmentService.GetNotDoneOperations(DateTime.Now);
-        checkups.AddRange(_hospital.AppointmentService.GetNotDoneCheckups(DateTime.Today.AddDays(1)));
-        operations.AddRange(_hospital.AppointmentService.GetNotDoneOperations(DateTime.Today.AddDays(1)));
-        checkups.AddRange(_hospital.AppointmentService.GetNotDoneCheckups(DateTime.Today.AddDays(2)));
-        operations.AddRange(_hospital.AppointmentService.GetNotDoneOperations(DateTime.Today.AddDays(2)));
+        List<Checkup> checkups = _hospital.AppointmentService.GetNotDoneCheckups(Doctor ,DateTime.Now);
+        List<Operation> operations = _hospital.AppointmentService.GetNotDoneOperations(Doctor, DateTime.Now);
+        checkups.AddRange(_hospital.AppointmentService.GetNotDoneCheckups(Doctor, DateTime.Today.AddDays(1)));
+        operations.AddRange(_hospital.AppointmentService.GetNotDoneOperations(Doctor, DateTime.Today.AddDays(1)));
+        checkups.AddRange(_hospital.AppointmentService.GetNotDoneCheckups(Doctor, DateTime.Today.AddDays(2)));
+        operations.AddRange(_hospital.AppointmentService.GetNotDoneOperations(Doctor, DateTime.Today.AddDays(2)));
         PrintCheckups(checkups);
         PrintOperations(operations);
         return checkups;
@@ -122,7 +126,7 @@ public class DoctorCheckupsUI : DoctorMainUI
         if (newDateTime == true)
         {
             checkup.DateRange = new DateRange(newStartDate, newStartDate.Add(Checkup.DefaultDuration), allowPast: false);
-            _hospital.AppointmentService.UpsertCheckup(checkup);
+            _hospital.ScheduleService.ScheduleCheckup(checkup);
             Console.WriteLine("\nEdit successfull");
         }
         else
@@ -134,10 +138,10 @@ public class DoctorCheckupsUI : DoctorMainUI
     public void EditCheckupPatient(Checkup checkup)
     {
         Console.Write("Enter new patient name>> ");
-        string? newName = Console.ReadLine();
+        string newName = ReadSanitizedLine();
         Console.Write("Enter new patient surname>> ");
-        string? newSurname = Console.ReadLine();
-        Patient newPatient = _hospital.PatientService.GetPatientByFullName(newName,newSurname);
+        string newSurname = ReadSanitizedLine();
+        Patient newPatient = _hospital.PatientService.GetByFullName(newName,newSurname);
         if (newPatient != null)
         {
            checkup.Patient = new MongoDB.Driver.MongoDBRef("patients", newPatient.Id);
@@ -166,7 +170,7 @@ public class DoctorCheckupsUI : DoctorMainUI
 
     public Patient ShowPatientInfo(Checkup checkup)
     {
-        Patient patient = _hospital.PatientService.GetPatientById((ObjectId)checkup.Patient.Id);
+        Patient patient = _hospital.PatientService.GetById((ObjectId)checkup.Patient.Id);
         Console.Write("\n" + patient.ToString() + "\n");
         Console.Write(patient.MedicalRecord.ToString() + "\n");
         return patient;

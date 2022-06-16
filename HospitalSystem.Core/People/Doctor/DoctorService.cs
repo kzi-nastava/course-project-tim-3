@@ -56,4 +56,20 @@ public class DoctorService
     {
         return _doctorRepo.GetById(id);
     }
+
+    
+    public int CompareCheckupsByDoctorsName(Checkup checkup1, Checkup checkup2)
+    {
+        string name1 = GetById((ObjectId)checkup1.Doctor.Id).FirstName;
+        string name2 = GetById((ObjectId)checkup2.Doctor.Id).FirstName;
+        return String.Compare(name1, name2);
+    }
+
+    public int CompareCheckupsByDoctorsSpecialty(Checkup checkup1, Checkup checkup2)
+    {
+        string specialty1 = GetById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
+        string specialty2 = GetById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
+        return String.Compare(specialty1, specialty2);
+    }
+
 }

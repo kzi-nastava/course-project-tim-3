@@ -1,27 +1,25 @@
 using MongoDB.Bson.Serialization.Attributes;
-namespace HospitalSystem.Core
+namespace HospitalSystem.Core;
+public enum Specialty
 {
-    public enum Specialty
+    DERMATOLOGY = 1,
+    RADIOLOGY,
+    STOMATOLOGY,
+    OPHTHALMOLOGY,
+    FAMILY_MEDICINE
+}
+public class Doctor : Person
+{
+    [BsonRepresentation(MongoDB.Bson.BsonType.String)]
+    public Specialty Specialty {get; set;}
+    
+    public Doctor(string firstName, string lastName, Specialty specialty) : base(firstName, lastName)
     {
-        DERMATOLOGY = 1,
-        RADIOLOGY,
-        STOMATOLOGY,
-        OPHTHALMOLOGY,
-        FAMILY_MEDICINE
+        Specialty = specialty;
     }
-    public class Doctor : Person
+    
+    public override string ToString() 
     {
-        [BsonRepresentation(MongoDB.Bson.BsonType.String)]
-        public Specialty Specialty {get; set;}
-        
-        public Doctor(string firstName, string lastName, Specialty specialty) : base(firstName, lastName)
-        {
-            Specialty = specialty;
-        }
-        
-        public override string ToString() 
-        {
-            return FirstName +" "+ LastName +" "+ Specialty;
-        }
+        return FirstName +" "+ LastName +" "+ Specialty;
     }
 }

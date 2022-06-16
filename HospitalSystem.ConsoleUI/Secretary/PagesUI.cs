@@ -12,7 +12,7 @@ public class PagesUI : HospitalClientUI
 
     public PagesUI(Hospital hospital) : base(hospital)
     {
-        patients = _hospital.UserService.GetPatients().ToList();
+        patients = _hospital.UserService.GetAll().ToList();
         size = patients.Count();
     }
 
@@ -107,7 +107,7 @@ public class PagesUI : HospitalClientUI
     {   
         for(var i = startIndex; i < endIndex; i++ ){
             var patientAccount = patientAccounts[i];
-            Patient pat = _hospital.PatientService.GetPatientById((ObjectId) patientAccount.Person.Id);
+            Patient pat = _hospital.PatientService.GetById((ObjectId) patientAccount.Person.Id);
             System.Console.WriteLine(String.Format("| {0,-21} | {1,-20} | {2, -40} |", pat.FirstName, pat.LastName, patientAccount.Email));
         }
 

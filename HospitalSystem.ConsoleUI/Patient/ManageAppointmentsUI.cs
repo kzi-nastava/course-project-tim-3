@@ -8,7 +8,7 @@ public class ManageAppointmentsUI : PatientUI
 {
     public ManageAppointmentsUI(Hospital hospital, User user) : base(hospital, user) 
     {
-        _loggedInPatient = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
+        _loggedInPatient = _hospital.PatientService.GetById((ObjectId) user.Person.Id);
     }
 
     public override void Start()
@@ -81,7 +81,7 @@ public class ManageAppointmentsUI : PatientUI
                 selectedCheckup,
                 CRUDOperation.DELETE);
                 Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
-                _hospital.CheckupChangeRequestService.AddOrUpdate(newRequest);
+                _hospital.CheckupChangeRequestService.Upsert(newRequest);
         }
         else
         {
@@ -189,7 +189,7 @@ public class ManageAppointmentsUI : PatientUI
         DateTime oldDate = selectedCheckup.DateRange.Starts;
         selectedCheckup.DateRange = new DateRange(newDate, newDate.Add(Checkup.DefaultDuration), allowPast: false);
         
-        if (!_hospital.AppointmentService.IsDoctorAvailable(selectedCheckup.DateRange, newDoctor))
+        if (!_hospital.ScheduleService.IsDoctorAvailable(selectedCheckup.DateRange, newDoctor))
         {
             Console.WriteLine("Checkup already taken.");
             return;
@@ -201,7 +201,7 @@ public class ManageAppointmentsUI : PatientUI
                 selectedCheckup,
                 CRUDOperation.UPDATE);
             Console.WriteLine("Checkup date is in less than 2 days from now. Change request sent.");
-            _hospital.CheckupChangeRequestService.AddOrUpdate(newRequest);
+            _hospital.CheckupChangeRequestService.Upsert(newRequest);
         }
         else
         {
@@ -269,7 +269,7 @@ public class ManageAppointmentsUI : PatientUI
         }
 
         DateRange interval = new DateRange(intervalStart,intervalEnd, true);
-        recommendedCheckups = _hospital.AppointmentService.FindSuitableCheckups(selectedSuitableDoctor,interval,deadline,isIntervalPriority,_user);
+        recommendedCheckups = _hospital.ScheduleService.FindSuitableCheckups(selectedSuitableDoctor,interval,deadline,isIntervalPriority,_user);
         
         if (recommendedCheckups.Count == 1)
         {

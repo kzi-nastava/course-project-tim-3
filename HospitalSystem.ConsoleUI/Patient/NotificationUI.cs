@@ -7,7 +7,7 @@ public class NotificationUI : PatientUI
 {
     public NotificationUI(Hospital hospital, User user) : base(hospital, user) 
     {
-        _loggedInPatient = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
+        _loggedInPatient = _hospital.PatientService.GetById((ObjectId) user.Person.Id);
     }
 
     public override void Start()
@@ -75,7 +75,7 @@ public class NotificationUI : PatientUI
             throw new QuitToMainMenuException("Wrong input");
         }
         _loggedInPatient.WhenToRemind = TimeSpan.FromMinutes(numberOfMinutes);
-        _hospital.PatientService.AddOrUpdatePatient(_loggedInPatient);
+        _hospital.PatientService.Upsert(_loggedInPatient);
         Console.WriteLine("Preference saved.");
     }
 }

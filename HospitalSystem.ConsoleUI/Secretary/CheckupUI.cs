@@ -87,7 +87,7 @@ public class CheckupUI : HospitalClientUI
     {
         for(var i = 0; i < requests.Count; i++)
         {
-            Patient pat = _hospital.PatientService.GetPatientById((ObjectId) requests[i].Checkup.Patient.Id);
+            Patient pat = _hospital.PatientService.GetById((ObjectId) requests[i].Checkup.Patient.Id);
             Doctor doc = _hospital.DoctorService.GetById((ObjectId) requests[i].Checkup.Doctor.Id);
 
             System.Console.WriteLine("Index ID: " + i);
@@ -123,13 +123,13 @@ public class CheckupUI : HospitalClientUI
     public void CreateCheckup(){
 
         Console.Clear();
-        List<Patient> patients = _hospital.PatientService.GetPatients().ToList();
+        List<Patient> patients = _hospital.PatientService.GetAll().ToList();
 
         var firstName = EnterPatientFirstName();
         var lastName = EnterPatientLastName();
 
         CheckIfPatientExist(patients, firstName, lastName);
-        Patient patient = _hospital.PatientService.GetPatientByFullName(firstName, lastName);
+        Patient patient = _hospital.PatientService.GetByFullName(firstName, lastName);
         
         CheckIfReferralIsEmpty(patient);
 

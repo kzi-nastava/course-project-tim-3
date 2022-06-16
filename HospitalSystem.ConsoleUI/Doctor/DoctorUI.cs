@@ -2,17 +2,17 @@ using MongoDB.Bson;
 using HospitalSystem.Core.Utils;
 using HospitalSystem.Core;
 
-namespace HospitalSystem.ConsoleUI;
+namespace HospitalSystem.ConsoleUI.DoctorUi;
 
-public class DoctorMainUI : UserUI
+public class DoctorUI : UserUI
 {
     Doctor Doctor;
-    public DoctorMainUI(Hospital hospital, User user) : base(hospital, user) 
+    public DoctorUI(Hospital hospital, User user) : base(hospital, user) 
     {
         Doctor = _hospital.DoctorService.GetById((ObjectId)_user.Person.Id);
     }
 
-     public override void Start()
+    public override void Start()
     {
         Console.Clear();
         bool quit = false;
@@ -30,7 +30,7 @@ public class DoctorMainUI : UserUI
                 }
                 case "2":
                 {
-                    new DoctorCheckupsUI(_hospital, _user).Start();
+                    new CheckupsUI(_hospital, _user).Start();
                     break;
                 }
                 case "3":
@@ -71,10 +71,10 @@ public class DoctorMainUI : UserUI
         string? time = Console.ReadLine();
         DateTime dateTime = DateTime.Parse(date + " " + time);
         Console.Write("\nEnter patient name >>");
-        string? name = Console.ReadLine();
+        string name = ReadSanitizedLine();
         Console.Write("\nEnter patient surname >>");
-        string? surname = Console.ReadLine();
-        if (_hospital.AppointmentService.UpsertCheckup(_user, dateTime, name, surname) == true)
+        string surname = ReadSanitizedLine();
+        if (_hospital.ScheduleService.ScheduleCheckup(_user, dateTime, name, surname) == true)
         {
             Console.WriteLine("\nCheckup successfully added");
         }
@@ -98,7 +98,7 @@ public class DoctorMainUI : UserUI
         string surname = ReadSanitizedLine();
         Console.Write("\nEnter operation duration in minutes >>");
         TimeSpan duration = new TimeSpan(0, Int32.Parse(ReadSanitizedLine()), 0);
-        if (_hospital.AppointmentService.UpsertOperation(_user, dateTime, name, surname, duration) == true)
+        if (_hospital.ScheduleService.ScheduleOperation(_user, dateTime, name, surname, duration) == true)
         {
             Console.WriteLine("\nOperation successfully added.");
         }
@@ -112,8 +112,8 @@ public class DoctorMainUI : UserUI
     {
         Console.Write("\nEnter date (dd.mm.yyyy) >> ");
         var date = Console.ReadLine();
-        List<Checkup> checkups = _hospital.AppointmentService.GetCheckupsByDay(Convert.ToDateTime(date));
-        List<Operation> operations = _hospital.AppointmentService.GetOperationsByDay(Convert.ToDateTime(date));
+        List<Checkup> checkups = _hospital.AppointmentService.GetCheckupSchedule(Doctor, Convert.ToDateTime(date));
+        List<Operation> operations = _hospital.AppointmentService.GetOperationSchedule(Doctor, Convert.ToDateTime(date));
         PrintCheckups(checkups);
         PrintOperations(operations);
     }
@@ -125,7 +125,7 @@ public class DoctorMainUI : UserUI
         int i = 1;
         foreach (Checkup checkup in checkups)
         {
-            Patient patient = _hospital.PatientService.GetPatientById((ObjectId)checkup.Patient.Id);
+            Patient patient = _hospital.PatientService.GetById((ObjectId)checkup.Patient.Id);
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 80)));
             Console.WriteLine(String.Format("{0,5} {1,34} {2,25}", i, checkup.DateRange, patient));
             i++;
@@ -139,7 +139,7 @@ public class DoctorMainUI : UserUI
         int i = 1;
         foreach (Operation operation in operations)
         {
-            Patient patient = _hospital.PatientService.GetPatientById((ObjectId)operation.Patient.Id);
+            Patient patient = _hospital.PatientService.GetById((ObjectId)operation.Patient.Id);
             Console.WriteLine(string.Concat(Enumerable.Repeat("-", 80)));
             Console.WriteLine(String.Format("{0,5} {1,34} {2,25}", i, operation.DateRange, patient));
             i++;
@@ -149,32 +149,21 @@ public class DoctorMainUI : UserUI
 
     public void RequestDaysOff()
     {
-        Console.Write("\nEnter desired range for off days\nStarting date >>");
-        string? start = Console.ReadLine();
-        Console.Write("\nEnding date >>");
-        string? end = Console.ReadLine();
-        var startDate = DateTime.TryParse(start, out DateTime newStartDate);
-        var endDate = DateTime.TryParse(end, out DateTime newEndDate);
-        if (startDate == true && endDate== true && newStartDate > DateTime.Now)
-        {
-           CreateRequest(newStartDate,newEndDate);
-        }
-        else
-            Console.WriteLine("Invalid date, cannot be before today.");
+        DateRange daysOff = InputDateRange();
+        CreateRequest(daysOff);
     }
 
-    public void CreateRequest(DateTime newStartDate, DateTime newEndDate)
+    public void CreateRequest(DateRange daysOff)
     {
         try
             {
-            DateRange daysOff = new DateRange(newStartDate, newEndDate);
             Console.Write("\nEnter reason for request >> ");
             string reason = ReadSanitizedLine();
             if (RequestIsUrgent())
             {            
                 if (daysOff.EachDay().Count() <= 5)
                 {
-                    _hospital.DaysOffRequestService.Approve(new DaysOffRequest(Doctor, reason, daysOff));
+                    _hospital.DaysOffRequestService.ApproveUrgent(new DaysOffRequest(Doctor, reason, daysOff));
                     Console.WriteLine("Request succesfully sent and approved.");
                 }
                 else

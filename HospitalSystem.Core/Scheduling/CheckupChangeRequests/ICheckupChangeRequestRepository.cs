@@ -12,7 +12,7 @@ public interface ICheckupChangeRequestRepository{
     
     public List<CheckupChangeRequest> GetCheckUpChangeRequests();
 
-    public void AddOrUpdate(CheckupChangeRequest newRequest);
+    public void Upsert(CheckupChangeRequest newRequest);
 
     public void Delete(CheckupChangeRequest request);
 

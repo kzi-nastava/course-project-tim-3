@@ -8,7 +8,7 @@ public class PatientSurveyUI : PatientUI
 {
     public PatientSurveyUI(Hospital hospital, User user) : base(hospital, user) 
     {
-        _loggedInPatient = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
+        _loggedInPatient = _hospital.PatientService.GetById((ObjectId) user.Person.Id);
     }
 
     public override void Start()

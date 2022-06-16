@@ -16,7 +16,7 @@ public class MedicationRepository
         return _dbClient.GetDatabase("hospital").GetCollection<Medication>("medications");
     }
 
-    public void AddOrUpdate(Medication newMedication)
+    public void Upsert(Medication newMedication)
     {
         var medications = GetMongoCollection();
         medications.ReplaceOne(medication => medication.Id == newMedication.Id, newMedication, new ReplaceOptions {IsUpsert = true});

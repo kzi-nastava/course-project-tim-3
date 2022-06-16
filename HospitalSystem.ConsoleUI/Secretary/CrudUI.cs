@@ -130,7 +130,7 @@ public class CrudUI : HospitalClientUI
         string lastName = ReadSanitizedLine();
 
         Patient patient = new Patient(email, lastName, new MedicalRecord());
-        _hospital.PatientService.AddOrUpdatePatient(patient);
+        _hospital.PatientService.Upsert(patient);
         us.Upsert(new User(email, password,patient,Role.PATIENT));
 
         System.Console.Write("Successfuly created a user. Type anything to get back to menu: ");
@@ -145,7 +145,7 @@ public class CrudUI : HospitalClientUI
         string email = EnterEmail(us);
 
         var user = us.Get(email);
-        Patient pat = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
+        Patient pat = _hospital.PatientService.GetById((ObjectId) user.Person.Id);
 
         System.Console.WriteLine("Email : " + user.Email.ToString());
         System.Console.WriteLine("Password : " + user.Password.ToString());
@@ -211,7 +211,7 @@ public class CrudUI : HospitalClientUI
         System.Console.WriteLine("Blocked users: ");
         foreach(var blockedUser in blockedUsers)
         {
-            Patient pat = _hospital.PatientService.GetPatientById((ObjectId) blockedUser.Person.Id);
+            Patient pat = _hospital.PatientService.GetById((ObjectId) blockedUser.Person.Id);
             System.Console.WriteLine(" << User: " + pat.FirstName.ToString() + " " + pat.LastName.ToString() + ", Email: " + blockedUser.Email.ToString() + " >> ");
         }
 

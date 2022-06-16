@@ -12,5 +12,13 @@ public interface IAppointmentRepository
     public void UpsertOperation(Operation newOperation);
     public void DeleteCheckup(Checkup checkup);
     public void DeleteOperation(Operation operation);
+    public List<Operation> GetOperationsByDoctor(ObjectId id);
+    public List<Operation> GetOperationsByPatient(ObjectId id);
+    public List<Checkup> GetCheckupsByDoctor(Doctor doctor);
     public HashSet<ObjectId> GetAllAppointmentDoctors(Patient pat);
+    public List<Operation> GetFutureOperationsByPatient(ObjectId id);
+    public List<Checkup> GetFutureCheckupsByPatient(ObjectId id);
+    public List<Checkup> SearchPastCheckups(ObjectId patientId, string anamnesisKeyword);
+
+
 }

@@ -8,7 +8,7 @@ public class MedicalRecordUI : PatientUI
 {
     public MedicalRecordUI(Hospital hospital, User user) : base(hospital, user) 
     {
-        _loggedInPatient = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
+        _loggedInPatient = _hospital.PatientService.GetById((ObjectId) user.Person.Id);
     }
 
     public override void Start()
@@ -87,11 +87,11 @@ public class MedicalRecordUI : PatientUI
         }
         else if (sortOption == "n")
         {
-            filteredDoctors.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsName);
+            filteredDoctors.Sort(_hospital.DoctorService.CompareCheckupsByDoctorsName);
         }
         else if (sortOption == "s")
         {
-            filteredDoctors.Sort(_hospital.AppointmentService.CompareCheckupsByDoctorsSpecialty);
+            filteredDoctors.Sort(_hospital.DoctorService.CompareCheckupsByDoctorsSpecialty);
         }
 
         foreach (Checkup checkup in filteredDoctors)
