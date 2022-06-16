@@ -1,5 +1,6 @@
-namespace HospitalSystem.Core.Surveys;
 using MongoDB.Bson.Serialization.Attributes;
+namespace HospitalSystem.Core.Surveys;
+
 
 [BsonIgnoreExtraElements]
 public class HospitalSurvey : Survey

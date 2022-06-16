@@ -999,13 +999,13 @@ public class PatientUI : UserUI
         }
          else if (sortOption == "a")
         {
-            filteredDoctors.Sort((doctor1, doctor2)=>  _hospital.DoctorSurveyService.GetAverageRatingDoctor(doctor1).CompareTo(_hospital.DoctorSurveyService.GetAverageRatingDoctor(doctor2)));
+            filteredDoctors.Sort((doctor1, doctor2)=>  _hospital.DoctorSurveyService.GetAverageRating(doctor1).CompareTo(_hospital.DoctorSurveyService.GetAverageRating(doctor2)));
         }
 
         for (int i=0; i<filteredDoctors.Count; i++)
         {
             string rating = "no rating";
-            double averageRating = _hospital.DoctorSurveyService.GetAverageRatingDoctor(filteredDoctors[i]);
+            double averageRating = _hospital.DoctorSurveyService.GetAverageRating(filteredDoctors[i]);
             if (averageRating != 10){
                 rating = averageRating + "/5";
             }
@@ -1140,7 +1140,7 @@ public class PatientUI : UserUI
         return answers;
     }
 
-     List<int?> AnswerRatingQuestions(Survey survey)
+    List<int?> AnswerRatingQuestions(Survey survey)
     {
         List<int?> ratings = new();
         foreach( var ratingQuestion in survey.RatingQuestions)

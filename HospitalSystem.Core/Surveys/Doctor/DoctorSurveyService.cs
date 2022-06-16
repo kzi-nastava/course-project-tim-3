@@ -102,7 +102,7 @@ public class DoctorSurveyService
 
     }
 
-    public double GetAverageRatingDoctor(Doctor doctor)
+    public double GetAverageRating(Doctor doctor)
     {   double sum = 0;
         int count = 0;
         var selectedSurveys = GetByDoctor(doctor);
