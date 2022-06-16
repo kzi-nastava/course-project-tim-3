@@ -5,7 +5,6 @@ namespace HospitalSystem.ConsoleUI;
 
 public class CrudUI : HospitalClientUI
 {
-
     public CrudUI(Hospital hospital) : base(hospital){}
 
     public override void Start()
@@ -68,19 +67,17 @@ public class CrudUI : HospitalClientUI
                 {
                     System.Console.WriteLine("Invalit input - read the available commands!");
                     System.Console.Write("Input anything to continue >> ");
-                    ReadSanitizedLine();
                 }
             }
             catch (InvalidInputException e)
             {
                 System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
             }
             catch (FormatException e)
             {
                 System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
             }
+            ReadSanitizedLine();
         }
     }
 
