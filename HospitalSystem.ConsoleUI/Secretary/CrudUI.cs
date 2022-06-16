@@ -135,7 +135,6 @@ public class CrudUI : HospitalClientUI
 
         System.Console.Write("Successfuly created a user. Type anything to get back to menu: ");
     }
-
     
     public void ViewPatientAccount()
     {

@@ -6,7 +6,6 @@ namespace HospitalSystem.ConsoleUI;
 
 public class DaysOffUI : HospitalClientUI
 {
-
     public DaysOffUI(Hospital hospital) : base(hospital){}
 
     public override void Start()
@@ -111,4 +110,3 @@ public class DaysOffUI : HospitalClientUI
         return explenation;
     }
 }
-

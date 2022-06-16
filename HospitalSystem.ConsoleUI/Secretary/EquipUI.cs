@@ -228,4 +228,3 @@ public class EquipUI : HospitalClientUI
         System.Console.WriteLine("|__________|___________|_______|");
     }
 }
-
