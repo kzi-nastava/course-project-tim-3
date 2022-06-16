@@ -2,28 +2,22 @@ namespace HospitalSystem.Core.Surveys;
 
 public record RatedDoctor(Doctor Doctor, double? Average, int Count);
 
-public class SurveyService
+public class DoctorSurveyService
 {
-    private ISurveyRepository _repo;
+    private IDoctorSurveyRepository _repo;
     private AppointmentService _appointmentService;
     private DoctorService _doctorService;
 
-    public SurveyService(ISurveyRepository repo, AppointmentService appointmentService, DoctorService doctorService)
+    public DoctorSurveyService(IDoctorSurveyRepository repo, AppointmentService appointmentService, DoctorService doctorService)
     {
         _repo = repo;
         _appointmentService = appointmentService;
         _doctorService = doctorService;
     }
 
-    public void Insert(Survey survey)
+    public void Insert(DoctorSurvey survey)
     {
         _repo.Insert(survey);
-    }
-
-    public void AddResponse(HospitalSurvey survey, SurveyResponse response)
-    {
-        survey.AddResponse(response);
-        _repo.Replace(survey);
     }
 
     public void AddResponse(DoctorSurvey survey, SurveyResponse response, Doctor forDoctor)
@@ -32,14 +26,9 @@ public class SurveyService
         _repo.Replace(survey);
     }
 
-    public IQueryable<HospitalSurvey> GetAllHospital()
+    public IQueryable<DoctorSurvey> GetAll()
     {
-        return _repo.GetAllHospital();
-    }
-
-    public IQueryable<DoctorSurvey> GetAllDoctor()
-    {
-        return _repo.GetAllDoctor();
+        return _repo.GetAll();
     }
 
     public IList<(Doctor, List<SurveyResponse>)> GetDoctorsWithResponsesFor(DoctorSurvey survey)
@@ -49,15 +38,10 @@ public class SurveyService
             select (_doctorService.GetById(drResponse.Key), drResponse.Value)).ToList();
     }
 
-    public IList<HospitalSurvey> GetHospitalUnansweredBy(Person person)
-    {
-        return _repo.GetHospitalUnansweredBy(person);
-    }
-
-    public IEnumerable<(DoctorSurvey, IEnumerable<Doctor>)> GetDoctorUnansweredBy(Patient pat)
+    public IEnumerable<(DoctorSurvey, IEnumerable<Doctor>)> GetUnansweredBy(Patient pat)
     {
         return 
-            from notAnsweredSurveyDoctors in _repo.GetDoctorUnansweredBy(pat,   // TODO: think up a better name
+            from notAnsweredSurveyDoctors in _repo.GetUnansweredBy(pat,   // TODO: think up a better name
                 _appointmentService.GetAllAppointmentDoctors(pat))
             select (notAnsweredSurveyDoctors.Item1, 
                 notAnsweredSurveyDoctors.Item2.Select(id => _doctorService.GetById(id)));

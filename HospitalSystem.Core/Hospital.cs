@@ -29,7 +29,8 @@ public class Hospital
     public PatientService PatientService { get; }
     public CheckupChangeRequestService CheckupChangeRequestService  { get; }
     public DaysOffRequestService DaysOffRequestService  { get; }
-    public SurveyService SurveyService { get; set; }
+    public HospitalSurveyService HospitalSurveyService { get; }
+    public DoctorSurveyService DoctorSurveyService { get; }
 
     public Hospital()
     {
@@ -51,7 +52,8 @@ public class Hospital
         MedicationRepo = new (_dbClient);
         MedicationRequestService = new (new MedicationRequestRepository(_dbClient), MedicationRepo);
         DaysOffRequestService = new (new DaysOffRepository(_dbClient), AppointmentService);
-        SurveyService = new SurveyService(new SurveyRepository(_dbClient),
+        HospitalSurveyService = new HospitalSurveyService(new HospitalSurveyRepository(_dbClient));
+        DoctorSurveyService = new DoctorSurveyService(new DoctorSurveyRepository(_dbClient),
             AppointmentService, DoctorService);
         
         // TODO: this maybe shouldn't be here
