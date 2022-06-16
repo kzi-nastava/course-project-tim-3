@@ -22,6 +22,14 @@ public class EquipmentBatchRepository : IEquipmentBatchRepository
         return GetMongoCollection().AsQueryable();
     }
 
+    public IQueryable<EquipmentBatch> GetAllExisting()
+    {
+        return
+            from batch in GetMongoCollection().AsQueryable()
+            where batch.Count > 0
+            select batch;
+    }
+
     public EquipmentBatch? Get(string roomLocation, string name)
     {
         var batches = GetMongoCollection();
@@ -48,10 +56,10 @@ public class EquipmentBatchRepository : IEquipmentBatchRepository
         GetMongoCollection().DeleteMany(filter);
     }
 
-    public IQueryable<EquipmentBatch> Search(EquipmentQuery query)
+    public IQueryable<EquipmentBatch> SearchExisting(EquipmentQuery query)
     {
         return
-            from batch in GetAll()
+            from batch in GetAllExisting()
             where (query.MinCount == null || query.MinCount <= batch.Count)
                 && (query.MaxCount == null || query.MaxCount >= batch.Count)
                 && (query.Type == null || query.Type == batch.Type)
