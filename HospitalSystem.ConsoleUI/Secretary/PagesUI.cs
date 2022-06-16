@@ -34,7 +34,7 @@ public class PagesUI : HospitalClientUI
             {   
                 MoveRight();
             }
-            else if(selectedOption == "back"){
+            else{
                 return;
             }
         }
