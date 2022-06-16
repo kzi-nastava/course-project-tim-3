@@ -1,16 +1,10 @@
-using System.Globalization;
 using MongoDB.Bson;
-using HospitalSystem.Core.Utils;
 using HospitalSystem.Core;
-using HospitalSystem.Core.Surveys;
 
 namespace HospitalSystem.ConsoleUI;
 
-public class NotificationUI : UserUI
+public class NotificationUI : PatientUI
 {
-    
-    private Patient _loggedInPatient;
-
     public NotificationUI(Hospital hospital, User user) : base(hospital, user) 
     {
         _loggedInPatient = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);

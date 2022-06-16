@@ -1,17 +1,11 @@
-using System.Globalization;
 using MongoDB.Bson;
-using HospitalSystem.Core.Utils;
 using HospitalSystem.Core;
 using HospitalSystem.Core.Surveys;
 
 
 namespace HospitalSystem.ConsoleUI;
-//TODO:CHANGE THIS
-public class MedicalRecordUI : UserUI
+public class MedicalRecordUI : PatientUI
 {
-    
-    private Patient _loggedInPatient;
-
     public MedicalRecordUI(Hospital hospital, User user) : base(hospital, user) 
     {
         _loggedInPatient = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
@@ -155,7 +149,9 @@ public class MedicalRecordUI : UserUI
             else if (selectedOption == "r")
             {
                 Doctor doctor = _hospital.DoctorService.GetById((ObjectId)selectedCheckup.Doctor.Id);
-                RateDoctor(doctor, _loggedInPatient);
+                PatientSurveyUI surveyUI = new(_hospital, _user);
+                surveyUI.RateDoctor(doctor, _loggedInPatient);
+                
             }
             else if (selectedOption == "return")
             {
@@ -173,134 +169,4 @@ public class MedicalRecordUI : UserUI
             return;
         }
     }
-
-    public void ShowCheckups(AppointmentInTime checkupTime)
-    {
-        //unnecessary but code wouldnt compile
-        List<Checkup> checkups = new List<Checkup>();
-        switch (checkupTime)
-        {
-            case AppointmentInTime.ALL:
-                checkups = _hospital.AppointmentService.GetCheckupsByPatient(_loggedInPatient.Id);
-                break;   
-            case AppointmentInTime.FUTURE:
-                checkups = _hospital.AppointmentService.GetFutureCheckupsByPatient(_loggedInPatient.Id);
-                break;
-            case AppointmentInTime.PAST:
-                checkups = _hospital.AppointmentService.GetPastCheckupsByPatient(_loggedInPatient.Id);
-                break;
-        }
-        
-        if (checkups.Count == 0)
-        {
-            Console.WriteLine("No checkups.");
-            return;
-        }
-        for (int i = 0; i< checkups.Count; i++)
-        {
-            Console.WriteLine(i+" - "+ConvertAppointmentToString(checkups[i]));
-        }
-    }
-
-    public void RateDoctor(Doctor doctor, Patient patient)
-    {
-        var surveys = _hospital.DoctorSurveyService.GetSpecificDoctorUnansweredBy(patient,doctor).ToList();
-        PrintDoctorSurveys(surveys);
-        if (surveys.Count == 0)
-        {
-                return;
-        }
-        System.Console.Write("Please enter a number from a list: ");
-        int selectedIndex;
-        try
-        {
-            selectedIndex = ReadInt(0, surveys.Count-1);
-        }
-        catch (InvalidInputException e)
-        {
-            System.Console.Write(e.Message + " Aborting...");
-            return;
-        }
-
-        CompleteSurvey(surveys[selectedIndex],doctor);
-        System.Console.WriteLine("Survey completed.");
-    }
-
-    public string ConvertAppointmentToString(Appointment a)
-    {
-        string output = "";
-
-        output += a.DateRange.Starts +" ";
-        Doctor doctor = _hospital.DoctorService.GetById((ObjectId)a.Doctor.Id);
-        output += doctor.ToString();
-
-        return output;
-    }
-
-    public void CompleteSurvey(Survey survey,Doctor? doctor = null)
-    {
-        List<string?> answers = AnswerQuestions(survey);
-        List<int?> ratings = AnswerRatingQuestions(survey);
-        SurveyResponse response = new(answers,ratings,_loggedInPatient.Id);
-
-        if (doctor is not null)
-        {
-            _hospital.DoctorSurveyService.AddResponse((DoctorSurvey)survey,response,(Doctor)doctor);
-            return;
-        }
-        _hospital.HospitalSurveyService.AddResponse((HospitalSurvey)survey,response);
-    }
-
-     public void PrintDoctorSurveys(List<DoctorSurvey> surveys)
-    {
-        if (surveys.Count == 0)
-        {
-            System.Console.WriteLine("No unanswered surveys for selected doctor were found.");
-            return;
-        }
-        for (int i=0; i<surveys.Count; ++i)
-        {
-            System.Console.WriteLine(i + " - " + surveys[i].Title);
-        }
-    }
-
-    List<string?> AnswerQuestions(Survey survey)
-    {
-        List<string?> answers = new();
-        foreach( var question in survey.Questions)
-        {
-            System.Console.WriteLine(question);
-            string answer = ReadSanitizedLine();
-            answers.Add(answer);
-        }
-        return answers;
-    }
-
-    List<int?> AnswerRatingQuestions(Survey survey)
-    {
-        List<int?> ratings = new();
-        foreach( var ratingQuestion in survey.RatingQuestions)
-        {
-            System.Console.WriteLine(ratingQuestion);
-            int rating;
-            while (true)
-            {
-                System.Console.Write("Please enter a rating between 1 and 5: ");
-                try
-                {
-                    rating = ReadInt(1, 5);
-                    break;
-                }
-                catch (InvalidInputException e)
-                {
-                    System.Console.WriteLine(e.Message + " Please try again.");
-                }
-            }
-            ratings.Add(rating);
-        }
-        return ratings;
-    }
-
 }
-
-
