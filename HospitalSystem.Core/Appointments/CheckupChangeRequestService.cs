@@ -1,5 +1,4 @@
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 
 namespace HospitalSystem.Core;
 
