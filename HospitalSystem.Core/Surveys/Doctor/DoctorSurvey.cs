@@ -40,16 +40,9 @@ public class DoctorSurvey : Survey
             select drResponse.Key).ToHashSet();
     }
 
-    // TODO: write best and worst in a better way, too similar functions
     public IEnumerable<RatedDoctorId> GetBestDoctorIds(int count)
     {
-        return
-            (from drResponse in Responses
-            orderby drResponse.Value.Average(response => response.Ratings.Average()) descending
-            select new RatedDoctorId(
-                drResponse.Key,
-                drResponse.Value.Average(response => response.Ratings.Average()),
-                drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null)))).Take(count);
+        return GetWorstDoctorIds(count).Reverse();
     }
 
     public IEnumerable<RatedDoctorId> GetWorstDoctorIds(int count)
