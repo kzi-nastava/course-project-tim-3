@@ -150,12 +150,7 @@ public class DoctorUI : UserUI
     public void RequestDaysOff()
     {
         DateRange daysOff = InputDateRange();
-        if (daysOff.Starts > DateTime.Now)
-        {
-           CreateRequest(daysOff);
-        }
-        else
-            Console.WriteLine("Invalid date, cannot be before today.");
+        CreateRequest(daysOff);
     }
 
     public void CreateRequest(DateRange daysOff)

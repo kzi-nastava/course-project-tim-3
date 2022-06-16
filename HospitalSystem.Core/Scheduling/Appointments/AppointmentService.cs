@@ -63,35 +63,17 @@ public class AppointmentService
     
     public List<Checkup> SearchPastCheckups(ObjectId patientId, string anamnesisKeyword)
     {
-        var checkups = _appointmentRepo.GetCheckups();
-        //might not be the best way to indent
-        List<Checkup> filteredCheckups = 
-            (from checkup in checkups.AsQueryable().ToList()  // TODO: inefficient, but bug fix
-            where checkup.Anamnesis.ToLower().Contains(anamnesisKeyword.ToLower())
-            && checkup.DateRange.HasPassed() 
-            && checkup.Patient.Id == patientId
-            select checkup).ToList();
-        return filteredCheckups;
+        return _appointmentRepo.SearchPastCheckups(patientId, anamnesisKeyword);
     }
 
     public List<Checkup> GetFutureCheckupsByPatient(ObjectId id)
     {
-        var checkups = _appointmentRepo.GetCheckups();
-        List<Checkup> patientCheckups = 
-            (from checkup in checkups.AsQueryable().ToList()  // TODO: inefficient, but bug fix
-            where checkup.DateRange.IsFuture() && checkup.Patient.Id == id
-            select checkup).ToList();
-        return patientCheckups;
+        return _appointmentRepo.GetFutureCheckupsByPatient(id);
     }
 
     public List<Operation> GetFutureOperationsByPatient(ObjectId id)
     {
-        var operations = _appointmentRepo.GetOperations();
-        List<Operation> patientOperations = 
-            (from operation in operations.AsQueryable().ToList()  // TODO: inefficient, but bug fix
-            where operation.DateRange.IsFuture() && operation.Patient.Id == id
-            select operation).ToList();
-        return patientOperations;
+        return _appointmentRepo.GetFutureOperationsByPatient(id);
     }
 
     public List<Operation> GetOperationsByPatient(ObjectId id)
@@ -189,12 +171,6 @@ public class AppointmentService
     public List<Checkup> GetCheckupsByDoctor(Doctor doctor)
     {
         return _appointmentRepo.GetCheckupsByDoctor(doctor);
-    }
-
-    public float GetAverageRating(Doctor doctor)
-    {
-        // TODO: instead of doing this, move to SurveyService, and there get Drs together with ratings
-        throw new NotImplementedException("Don't like this, read todo in line above me");
     }
 
     public HashSet<ObjectId> GetAllAppointmentDoctors(Patient pat)

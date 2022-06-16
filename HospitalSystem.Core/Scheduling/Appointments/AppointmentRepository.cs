@@ -97,4 +97,37 @@ public class AppointmentRepository : IAppointmentRepository
             where doctor.Id == checkup.Doctor.Id
             select checkup).ToList();
     }
+
+    public List<Checkup> SearchPastCheckups(ObjectId patientId, string anamnesisKeyword)
+    {
+        var checkups = GetCheckups();
+        //might not be the best way to indent
+        List<Checkup> filteredCheckups = 
+            (from checkup in checkups.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where checkup.Anamnesis.ToLower().Contains(anamnesisKeyword.ToLower())
+            && checkup.DateRange.HasPassed() 
+            && checkup.Patient.Id == patientId
+            select checkup).ToList();
+        return filteredCheckups;
+    }
+
+    public List<Checkup> GetFutureCheckupsByPatient(ObjectId id)
+    {
+        var checkups = GetCheckups();
+        List<Checkup> patientCheckups = 
+            (from checkup in checkups.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where checkup.DateRange.IsFuture() && checkup.Patient.Id == id
+            select checkup).ToList();
+        return patientCheckups;
+    }
+
+    public List<Operation> GetFutureOperationsByPatient(ObjectId id)
+    {
+        var operations = GetOperations();
+        List<Operation> patientOperations = 
+            (from operation in operations.AsQueryable().ToList()  // TODO: inefficient, but bug fix
+            where operation.DateRange.IsFuture() && operation.Patient.Id == id
+            select operation).ToList();
+        return patientOperations;
+    }
 }

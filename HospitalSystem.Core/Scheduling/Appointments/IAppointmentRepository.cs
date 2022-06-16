@@ -16,4 +16,9 @@ public interface IAppointmentRepository
     public List<Operation> GetOperationsByPatient(ObjectId id);
     public List<Checkup> GetCheckupsByDoctor(Doctor doctor);
     public HashSet<ObjectId> GetAllAppointmentDoctors(Patient pat);
+    public List<Operation> GetFutureOperationsByPatient(ObjectId id);
+    public List<Checkup> GetFutureCheckupsByPatient(ObjectId id);
+    public List<Checkup> SearchPastCheckups(ObjectId patientId, string anamnesisKeyword);
+
+
 }
