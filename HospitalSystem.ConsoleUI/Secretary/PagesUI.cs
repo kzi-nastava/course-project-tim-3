@@ -56,7 +56,7 @@ public class PagesUI : HospitalClientUI
             endIndex = endIndex+10;
             Header();
             Page(patients, startIndex, endIndex);
-            System.Console.WriteLine("There are no more previous pages");
+            System.Console.WriteLine("There are no more previous pages.");
         }
     }
 
@@ -82,7 +82,7 @@ public class PagesUI : HospitalClientUI
             Page(patients, startIndex-10, size);
             startIndex = startIndex-10;
             endIndex = endIndex-10;
-            System.Console.WriteLine("There are no more next pages");
+            System.Console.WriteLine("There are no more next pages.");
         }
     }
 
@@ -105,9 +105,8 @@ public class PagesUI : HospitalClientUI
 
     public void Page(List<User> patientAccounts, int startIndex, int endIndex)
     {   
-        int i;
-        for(i = startIndex; i < endIndex; i++ ){
-            var patientAccount = patientAccounts.ElementAt(i);
+        for(var i = startIndex; i < endIndex; i++ ){
+            var patientAccount = patientAccounts[i];
             Patient pat = _hospital.PatientService.GetPatientById((ObjectId) patientAccount.Person.Id);
             System.Console.WriteLine(String.Format("| {0,-21} | {1,-20} | {2, -40} |", pat.FirstName, pat.LastName, patientAccount.Email));
         }
