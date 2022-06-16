@@ -292,5 +292,5 @@ public class ScheduleService
         
         return GetFirstFewFreeCheckups(doctor,3,user);
     }
-    
+
 }

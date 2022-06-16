@@ -14,7 +14,7 @@ public class HospitalSurveyUI : SurveyUI
 
     private void RefreshSurveys()
     {
-        _loadedSurveys = _hospital.SurveyService.GetAllHospital().ToList();
+        _loadedSurveys = _hospital.HospitalSurveyService.GetAll().ToList();
     }
 
     public override void Start()

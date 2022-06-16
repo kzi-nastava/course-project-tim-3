@@ -99,7 +99,7 @@ public static class TestGenerator
 
     private static void GenerateCheckupsAndOperations(Hospital hospital)
     {
-        DateTime dateTime = new DateTime(2022, 6, 11, 4, 15, 0);
+        DateTime dateTime = new DateTime(2022, 6, 12, 4, 15, 0);
         int i = 0;
         try
         {
@@ -142,9 +142,9 @@ public static class TestGenerator
             User user;
             if (i % 4 == 0)
             {
-                var director = new Director("name" + i, "surname" + i);
+                var director = new Person("name" + i, "surname" + i);
                 user = new User("a" + i, "a" + i, director, Role.DIRECTOR);
-                hospital.DirectorRepo.Upsert(director);
+                hospital.PersonRepo.Insert(director);
             }
             else if (i % 4 == 1)
             {
@@ -164,9 +164,9 @@ public static class TestGenerator
             }  
             else
             {
-                var secretary = new Secretary("name" + i, "surname" + i);
+                var secretary = new Person("name" + i, "surname" + i);
                 user = new User("a" + i, "a" + i, secretary, Role.SECRETARY);
-                hospital.SecretaryRepo.Upsert(secretary);
+                hospital.PersonRepo.Insert(secretary);
             }
             hospital.UserService.Upsert(user);                
         }
@@ -194,37 +194,38 @@ public static class TestGenerator
     {
         var hospitalSurvey = new HospitalSurvey(new List<string> {"Opininion?"},
             new List<string>{"Overall"}, "Hospital1");
-        hospital.SurveyService.Insert(hospitalSurvey);
-        hospital.SurveyService.AddResponse(hospitalSurvey,
+
+        hospital.HospitalSurveyService.Insert(hospitalSurvey);
+        hospital.HospitalSurveyService.AddResponse(hospitalSurvey,
             new SurveyResponse(new List<string?>{null}, new List<int?>{4},
             hospital.PatientService.GetByFullName("name2", "surname2").Id));
-        hospital.SurveyService.AddResponse(hospitalSurvey,
+        hospital.HospitalSurveyService.AddResponse(hospitalSurvey,
             new SurveyResponse(new List<string?>{"Bad hospital! Hate it!"}, new List<int?>{5},
             hospital.PatientService.GetByFullName("name6", "surname6").Id));
 
         var doctorSurvey = new DoctorSurvey(new List<string> {"Opininion?"},
             new List<string>{"Overall"}, "Doctor1");
-        hospital.SurveyService.Insert(doctorSurvey);
-        hospital.SurveyService.AddResponse(doctorSurvey,
+        hospital.DoctorSurveyService.Insert(doctorSurvey);
+        hospital.DoctorSurveyService.AddResponse(doctorSurvey,
             new SurveyResponse(new List<string?>{"Good good"}, new List<int?>{null},
                 hospital.PatientService.GetByFullName("name2", "surname2").Id),
                 hospital.DoctorService.GetOneBySpecialty(Specialty.STOMATOLOGY));
-        hospital.SurveyService.AddResponse(doctorSurvey,
+        hospital.DoctorSurveyService.AddResponse(doctorSurvey,
             new SurveyResponse(new List<string?>{"Very Good good"}, new List<int?>{4},
                 hospital.PatientService.GetByFullName("name6", "surname6").Id),
                 hospital.DoctorService.GetOneBySpecialty(Specialty.DERMATOLOGY));
-        hospital.SurveyService.AddResponse(doctorSurvey,
+        hospital.DoctorSurveyService.AddResponse(doctorSurvey,
             new SurveyResponse(new List<string?>{"Very much Good good"}, new List<int?>{3},
                 hospital.PatientService.GetByFullName("name10", "surname10").Id),
                 hospital.DoctorService.GetOneBySpecialty(Specialty.DERMATOLOGY));
-        hospital.SurveyService.AddResponse(doctorSurvey,
+        hospital.DoctorSurveyService.AddResponse(doctorSurvey,
             new SurveyResponse(new List<string?>{"BAD Doctor"}, new List<int?>{1},
                 hospital.PatientService.GetByFullName("name2", "surname2").Id),
                 hospital.DoctorService.GetOneBySpecialty(Specialty.RADIOLOGY));
 
-        hospital.SurveyService.Insert(new HospitalSurvey(new List<string> {"Opininion2?"},
+        hospital.HospitalSurveyService.Insert(new HospitalSurvey(new List<string> {"Opininion2?"},
             new List<string>{"Overall2"}, "Hospital2"));
-        hospital.SurveyService.Insert(new DoctorSurvey(new List<string> {"Opininion2?"},
+        hospital.DoctorSurveyService.Insert(new DoctorSurvey(new List<string> {"Opininion2?"},
             new List<string>{"Overall2"}, "Doctor2"));
     }
 

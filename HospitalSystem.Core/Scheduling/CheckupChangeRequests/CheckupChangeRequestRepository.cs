@@ -58,11 +58,8 @@ namespace HospitalSystem.Core
          requests.DeleteOne(filter);
         }
 
-        public void UpdateRequest(int indexId, RequestState state)
+        public void UpdateRequest(CheckupChangeRequest request, RequestState state)
         {   
-            List<CheckupChangeRequest> requests = GetAll().ToList();
-            requests.RemoveAll(u => u.RequestState != RequestState.PENDING);
-            var request = requests[indexId];
             var requestsGet = GetMongoCollection();
             request.RequestState = state;
             requestsGet.ReplaceOne(req => req.Id == request.Id , request, new ReplaceOptions {IsUpsert = true} );

@@ -57,7 +57,7 @@ public class PatientService
         _repo.Upsert(patient);
     }
 
-    public IMongoCollection<Patient> GetAll()
+    public IQueryable<Patient> GetAll()
     {
         return _repo.GetAll();
     }

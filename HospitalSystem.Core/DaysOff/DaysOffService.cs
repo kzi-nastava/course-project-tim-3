@@ -1,13 +1,13 @@
 using HospitalSystem.Core.Medications.Requests;
 using HospitalSystem.Core.Utils;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.DaysOff;
 
 public class DaysOffRequestService
 {
-    private DaysOffRequestRepository _repo;
+    private IDaysOffRepository _repo;
     private AppointmentService _appointmentService;
-    public DaysOffRequestService(DaysOffRequestRepository repo, AppointmentService appointmentService)
+    public DaysOffRequestService(IDaysOffRepository repo, AppointmentService appointmentService)
     {
         _repo = repo;
         _appointmentService = appointmentService;
@@ -70,5 +70,25 @@ public class DaysOffRequestService
             }
         }
         return true;
+    }
+
+    public IQueryable<DaysOffRequest> GetAll()
+    {
+        return _repo.GetAll();
+    }
+
+    public IQueryable<DaysOffRequest> GetAllOnPending()
+    {
+        return _repo.GetAllOnPending();
+    }
+
+    public void UpdateStatus(DaysOffRequest request, RequestStatus status)
+    {
+        _repo.UpdateStatus(request, status);
+    }
+
+    public void UpdateExplanation(DaysOffRequest request, string explanation)
+    {
+        _repo.UpdateExplanation(request, explanation);
     }
 }

@@ -1,12 +1,10 @@
-using MongoDB.Driver;
 using MongoDB.Bson;
-using System.Linq.Expressions;
 
 namespace HospitalSystem.Core;
 
 public interface IPatientRepository
 {
-    public IMongoCollection<Patient> GetAll();
+    public IQueryable<Patient> GetAll();
 
     public void Upsert(Patient patient);
 

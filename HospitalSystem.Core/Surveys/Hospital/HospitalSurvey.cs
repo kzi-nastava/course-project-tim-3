@@ -1,9 +1,13 @@
+using MongoDB.Bson.Serialization.Attributes;
 namespace HospitalSystem.Core.Surveys;
 
+
+[BsonIgnoreExtraElements]
 public class HospitalSurvey : Survey
 {
     public List<SurveyResponse> Responses { get; set; }
-
+    
+    [BsonConstructor]
     public HospitalSurvey(List<string> questions, List<string> ratingQuestions, string title)
         : base(questions, ratingQuestions, title)
     {
@@ -24,7 +28,7 @@ public class HospitalSurvey : Survey
             select response).Any();
     }
 
-    public IEnumerable<(string, double?, int)> AggregateRatings()
+    public IEnumerable<AggregatedRating> AggregateRatings()
     {
         return AggregateRatings(Responses);
     }

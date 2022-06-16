@@ -6,6 +6,8 @@ public interface IEquipmentBatchRepository
 {
     public IQueryable<EquipmentBatch> GetAll();
 
+    public IQueryable<EquipmentBatch> GetAllExisting();
+
     public EquipmentBatch? Get(string roomLocation, string name);
 
     public void Insert(EquipmentBatch batch);
@@ -16,7 +18,7 @@ public interface IEquipmentBatchRepository
 
     public void DeleteMany(Expression<Func<EquipmentBatch, bool>> filter);
 
-    public IQueryable<EquipmentBatch> Search(EquipmentQuery query);
+    public IQueryable<EquipmentBatch> SearchExisting(EquipmentQuery query);
 
     public IQueryable<EquipmentBatch> GetAllIn(string roomLocation);
 

@@ -16,5 +16,5 @@ public interface ICheckupChangeRequestRepository{
 
     public void Delete(CheckupChangeRequest request);
 
-    public void UpdateRequest(int indexId, RequestState state);
+    public void UpdateRequest(CheckupChangeRequest request, RequestState state);
 }

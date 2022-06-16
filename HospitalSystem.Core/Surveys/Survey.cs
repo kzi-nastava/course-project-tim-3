@@ -1,7 +1,8 @@
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
 
 namespace HospitalSystem.Core.Surveys;
+
+public record AggregatedRating(string Question, double? Average, int Count);
 
 [System.Serializable]
 public class InvalidSurveyException : System.Exception
@@ -17,24 +18,22 @@ public class InvalidSurveyException : System.Exception
 [BsonKnownTypes(typeof(DoctorSurvey), typeof(HospitalSurvey))]
 public abstract class Survey
 {
-    [BsonId]
-    public ObjectId Id { get; }
-    public string Title { get; set; }
+    [BsonElement]
+    public string Title { get; }
     public List<string> Questions { get; set; }
     public List<string> RatingQuestions { get; set; }
 
     public Survey(List<string> questions, List<string> ratingQuestions, string title)
     {
-        Id = ObjectId.GenerateNewId();
         Questions = questions;
         RatingQuestions = ratingQuestions;
         Title = title;
     }
 
-    protected IEnumerable<(string, double?, int)> AggregateRatings(IEnumerable<SurveyResponse> responses)
+    protected IEnumerable<AggregatedRating> AggregateRatings(IEnumerable<SurveyResponse> responses)
     {
         return RatingQuestions.Select((question, i) => 
-            (
+            new AggregatedRating(
                 question, 
                 (from response in responses
                 select response.Ratings[i]).Average(),

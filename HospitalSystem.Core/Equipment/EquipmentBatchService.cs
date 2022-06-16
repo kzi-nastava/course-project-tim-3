@@ -22,9 +22,9 @@ public class EquipmentBatchService
         _repo = repo;
     }
 
-    public IQueryable<EquipmentBatch> GetAll()
+    public IQueryable<EquipmentBatch> GetAllExisting()
     {
-        return _repo.GetAll();
+        return _repo.GetAllExisting();
     }
 
     public IQueryable<EquipmentBatch> GetAllIn(string roomLocation)
@@ -69,9 +69,9 @@ public class EquipmentBatchService
         _repo.DeleteMany(batch => batch.RoomLocation == room.Location);
     }
 
-    public IQueryable<EquipmentBatch> Search(EquipmentQuery query)
+    public IQueryable<EquipmentBatch> SearchExisting(EquipmentQuery query)
     {
-        return _repo.Search(query);
+        return _repo.SearchExisting(query);
     }
 
     public List<EquipmentBatch> GetLow()

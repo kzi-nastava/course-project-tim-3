@@ -53,6 +53,10 @@ public class SurveyUI : HospitalClientUI
             {
                 System.Console.WriteLine(e.Message);
             }
+            catch (InvalidSurveyException e)
+            {
+                System.Console.WriteLine(e.Message);
+            }
             System.Console.Write("Input anything to continue >> ");
             ReadSanitizedLine();
         }
@@ -96,12 +100,13 @@ public class SurveyUI : HospitalClientUI
         }
     }
 
-    protected void DisplayAggregatedRatings(IEnumerable<(string, double?, int)> aggregatedRatings)
+    protected void DisplayAggregatedRatings(IEnumerable<AggregatedRating> aggregatedRatings)
     {
         foreach (var aggregate in aggregatedRatings)
         {
-            System.Console.WriteLine(aggregate.Item1);
-            System.Console.WriteLine("Average: " + (aggregate.Item2?.ToString() ?? "/") + ", Count: " + aggregate.Item3);
+            System.Console.WriteLine(aggregate.Question);
+            System.Console.WriteLine("Average: " + (aggregate.Average?.ToString() ?? "/") +
+                ", Count: " + aggregate.Count);
             System.Console.WriteLine();
         }
     }

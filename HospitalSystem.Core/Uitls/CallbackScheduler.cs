@@ -4,7 +4,7 @@ namespace HospitalSystem.Core.Utils;
 
 public static class CallbackScheduler
 {
-    public static void Register(DateTime invokeAt, Action action)
+    public static void Register(DateTime invokeAt, Action action)  // TODO: not efficient
     {
         var waiting = invokeAt - DateTime.Now;
         if (waiting < TimeSpan.Zero)  // if task is past, just do it

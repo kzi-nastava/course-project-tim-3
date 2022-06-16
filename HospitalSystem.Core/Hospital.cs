@@ -7,6 +7,8 @@ using HospitalSystem.Core.Equipment.Relocations;
 using HospitalSystem.Core.Renovations;
 using HospitalSystem.Core.Medications;
 using HospitalSystem.Core.Medications.Requests;
+using HospitalSystem.Core.DaysOff;
+
 
 namespace HospitalSystem.Core;
 
@@ -14,8 +16,7 @@ public class Hospital
 {
     private MongoClient _dbClient = new MongoClient("mongodb://root:root@localhost:27017"); // TODO: move this
     public UserService UserService { get; }
-    public DirectorRepository DirectorRepo { get; }
-    public SecretaryRepository SecretaryRepo { get; }
+    public PersonRepository PersonRepo { get; }
     public RoomService RoomService { get; }
     public EquipmentBatchService EquipmentService { get; }
     public EquipmentOrderService EquipmentOrderService { get; }
@@ -28,14 +29,14 @@ public class Hospital
     public PatientService PatientService { get; }
     public CheckupChangeRequestService CheckupChangeRequestService  { get; }
     public DaysOffRequestService DaysOffRequestService  { get; }
-    public SurveyService SurveyService { get; set; }
     public ScheduleService ScheduleService { get; set;}
+    public HospitalSurveyService HospitalSurveyService { get; }
+    public DoctorSurveyService DoctorSurveyService { get; }
 
     public Hospital()
     {
         UserService = new (new UserRepository(_dbClient));
-        DirectorRepo = new (_dbClient);
-        SecretaryRepo = new (_dbClient);
+        PersonRepo = new (_dbClient);
         RoomService = new (new RoomRepository(_dbClient));
         // TODO : Might be a wrong way to create a service
         PatientService = new (new PatientRepository(_dbClient));
@@ -50,8 +51,9 @@ public class Hospital
         RelocationService, ScheduleService);
         MedicationRepo = new (_dbClient);
         MedicationRequestService = new (new MedicationRequestRepository(_dbClient), MedicationRepo);
-        DaysOffRequestService = new (new DaysOffRequestRepository(_dbClient), AppointmentService);
-        SurveyService = new SurveyService(new SurveyRepository(_dbClient),
+        DaysOffRequestService = new (new DaysOffRepository(_dbClient), AppointmentService);
+        HospitalSurveyService = new HospitalSurveyService(new HospitalSurveyRepository(_dbClient));
+        DoctorSurveyService = new DoctorSurveyService(new DoctorSurveyRepository(_dbClient),
             AppointmentService, DoctorService);
             
         ScheduleService = new ScheduleService(AppointmentService, RoomService, DoctorService, PatientService);

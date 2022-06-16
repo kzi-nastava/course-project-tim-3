@@ -12,19 +12,24 @@ namespace HospitalSystem.Core
             this._dbClient = _dbClient;
         }
 
-        public IMongoCollection<Patient> GetAll()
+        public IMongoCollection<Patient> GetMongoCollection()
         {
             return _dbClient.GetDatabase("hospital").GetCollection<Patient>("patients");
+        }
+
+        public IQueryable<Patient> GetAll()
+        {
+            return GetMongoCollection().AsQueryable();
         }
         public void Upsert(Patient patient)
         {
             var newPatient = patient;
-            var patients = GetAll();
+            var patients = GetMongoCollection();
             patients.ReplaceOne(patient => patient.Id == newPatient.Id, newPatient, new ReplaceOptions {IsUpsert = true});
         }
         public Patient GetByFullName(string firstName, string lastName)
         {
-            var patients = GetAll();
+            var patients = GetMongoCollection();
             var foundPatient = patients.Find(patient => patient.FirstName == firstName && patient.LastName == lastName)
                 .FirstOrDefault();
             return foundPatient;
@@ -32,7 +37,7 @@ namespace HospitalSystem.Core
 
         public Patient GetById(ObjectId id)
         {
-            var patients = GetAll();
+            var patients = GetMongoCollection();
             var foundPatient = patients.Find(patient => patient.Id == id).FirstOrDefault();
             return foundPatient;
         }

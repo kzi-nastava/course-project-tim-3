@@ -4,18 +4,21 @@ using MongoDB.Bson.Serialization.Options;
 
 namespace HospitalSystem.Core.Surveys;
 
+public record RatedDoctorId(ObjectId Id, double? Average, int Count);
+[BsonIgnoreExtraElements]
 public class DoctorSurvey : Survey
 {
     [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
-    public  Dictionary<ObjectId, List<SurveyResponse>> Responses { get; set; }
+    public  Dictionary<ObjectId, List<SurveyResponse>> Responses { get; set; }  // TODO: naming?
 
+    [BsonConstructor]
     public DoctorSurvey(List<string> questions, List<string> ratingQuestions, string title)
         : base(questions, ratingQuestions, title)
     {
         Responses = new();
     }
 
-    public IEnumerable<(string, double?, int)> AggregateRatingsFor(Doctor dr)
+    public IEnumerable<AggregatedRating> AggregateRatingsFor(Doctor dr)
     {
         return AggregateRatings(Responses[dr.Id]);
     }
@@ -38,26 +41,30 @@ public class DoctorSurvey : Survey
             select drResponse.Key).ToHashSet();
     }
 
-    // TODO: write best and worst in a better way, too similar functions
-    public IEnumerable<(ObjectId, double?, int)> GetBestDoctorIds(int count)
+    public IEnumerable<RatedDoctorId> GetBestDoctorIds(int count)
     {
-        return
-            (from drResponse in Responses
-            orderby drResponse.Value.Average(response => response.Ratings.Average()) descending
-            select (
-                drResponse.Key,
-                drResponse.Value.Average(response => response.Ratings.Average()),
-                drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null)))).Take(count);
+        return GetBestDoctorIds().Take(count);
     }
 
-    public IEnumerable<(ObjectId, double?, int)> GetWorstDoctorIds(int count)
+    private IEnumerable<RatedDoctorId> GetBestDoctorIds()
+    {
+        return GetWorstDoctorIds().Reverse();
+    }
+
+    private IEnumerable<RatedDoctorId> GetWorstDoctorIds()
     {
         return
             (from drResponse in Responses
             orderby drResponse.Value.Average(response => response.Ratings.Average()) ascending
-            select (
+            select new RatedDoctorId(
                 drResponse.Key,
                 drResponse.Value.Average(response => response.Ratings.Average()),
-                drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null)))).Take(count);
+                drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null))));
     }
+
+    public IEnumerable<RatedDoctorId> GetWorstDoctorIds(int count)
+    {
+        return GetWorstDoctorIds().Take(count);
+    }
+
 }
