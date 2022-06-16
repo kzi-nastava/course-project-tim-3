@@ -175,7 +175,7 @@ public class CrudUI : HospitalClientUI
         {
             throw new InvalidInputException("Invalid input");
         }
-        System.Console.Write("\nType anything to get to menu: ");
+        System.Console.Write("\nnSuccessfuly updated. Type anything to get to menu: ");
     }
 
     public void DeletePatientAccount()
@@ -187,6 +187,7 @@ public class CrudUI : HospitalClientUI
         string email = EnterEmail(us);
 
         us.Delete(email);
+        System.Console.Write("\nSuccessfuly deleted. Type anything to get to menu: ");
     }
 
     public void BlockPatientAccount()
@@ -198,6 +199,7 @@ public class CrudUI : HospitalClientUI
         string email = EnterEmail(us);
 
         us.BlockPatient(email);
+        System.Console.Write("\nSuccessfuly blocked. Type anything to get to menu: ");
     }
 
     public void BlockedPatientAccounts()
@@ -217,5 +219,6 @@ public class CrudUI : HospitalClientUI
         string email = EnterEmail(us);
 
         us.UnblockPatient(email);
+        System.Console.Write("\nSuccessfuly unblocked. Type anything to get to menu: ");
     }
 }
