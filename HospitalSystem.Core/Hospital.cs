@@ -47,8 +47,6 @@ public class Hospital
         EquipmentOrderService = new (new EquipmentOrderRepository(_dbClient), EquipmentService); 
         RelocationService = new (new EquipmentRelocationRepository(_dbClient), EquipmentService);
         CheckupChangeRequestService = new (new CheckupChangeRequestRepository(_dbClient));
-        RenovationService = new (new RenovationRepository(_dbClient), RoomService,
-        RelocationService, ScheduleService);
         MedicationRepo = new (_dbClient);
         MedicationRequestService = new (new MedicationRequestRepository(_dbClient), MedicationRepo);
         DaysOffRequestService = new (new DaysOffRepository(_dbClient), AppointmentService);
@@ -57,6 +55,8 @@ public class Hospital
             AppointmentService, DoctorService);
             
         ScheduleService = new ScheduleService(AppointmentService, RoomService, DoctorService, PatientService);
+        RenovationService = new (new RenovationRepository(_dbClient), RoomService,
+            RelocationService, ScheduleService);
         
         // TODO: this maybe shouldn't be here
         RelocationService.ScheduleAll();
