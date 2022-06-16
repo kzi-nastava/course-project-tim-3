@@ -22,7 +22,6 @@ public enum Block
 [BsonIgnoreExtraElements]
 public class User
 {
-    // todo: might want to add objectId here
     [BsonId]
     public ObjectId Id { get; set; }
     public string Email {get;set;}
@@ -53,11 +52,9 @@ public class User
                 break;
             }
             case Role.DIRECTOR:
-                Person = new MongoDBRef("directors", person.Id);
-                break;
             case Role.SECRETARY:
             default:
-                Person = new MongoDBRef("secretaries", person.Id);
+                Person = new MongoDBRef("people", person.Id);
                 break;
         }
     }

@@ -1,6 +1,4 @@
-using MongoDB.Driver;
 using MongoDB.Bson;
-using System.Linq.Expressions;
 
 namespace HospitalSystem.Core;
 

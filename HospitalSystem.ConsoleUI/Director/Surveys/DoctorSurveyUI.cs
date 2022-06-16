@@ -14,7 +14,7 @@ public class DoctorSurveyUI : SurveyUI
 
     private void RefreshSurveys()
     {
-        _loadedSurveys = _hospital.SurveyService.GetAllDoctor().ToList();
+        _loadedSurveys = _hospital.DoctorSurveyService.GetAll().ToList();
     }
 
     public override void Start()
@@ -90,7 +90,7 @@ public class DoctorSurveyUI : SurveyUI
 
     private (Doctor, List<SurveyResponse>) ChooseDoctorResponses(DoctorSurvey survey)
     {
-        var allDrResponses = _hospital.SurveyService.GetDoctorsWithResponsesFor(survey);
+        var allDrResponses = _hospital.DoctorSurveyService.GetDoctorsWithResponsesFor(survey);
         DisplayDoctors(allDrResponses);
         System.Console.Write("Input doctor number >> ");
         return allDrResponses[ReadInt(0, allDrResponses.Count - 1)];
@@ -99,13 +99,13 @@ public class DoctorSurveyUI : SurveyUI
     private void DisplayBest(DoctorSurvey survey)
     {
         System.Console.WriteLine("--- Best Doctors ---");
-        DisplayRatedDoctors(_hospital.SurveyService.GetBestDoctors(survey));
+        DisplayRatedDoctors(_hospital.DoctorSurveyService.GetBestDoctors(survey));
     }
 
     private void DisplayWorst(DoctorSurvey survey)
     {
         System.Console.WriteLine("--- Worst Doctors ---");
-        DisplayRatedDoctors(_hospital.SurveyService.GetWorstDoctors(survey));
+        DisplayRatedDoctors(_hospital.DoctorSurveyService.GetWorstDoctors(survey));
     }
 
     private void DisplayRatedDoctors(IList<RatedDoctor> drRatings)
