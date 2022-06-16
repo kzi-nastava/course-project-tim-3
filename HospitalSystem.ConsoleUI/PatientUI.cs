@@ -1102,17 +1102,16 @@ public class PatientUI : UserUI
         _hospital.PatientService.AddOrUpdatePatient(_loggedInPatient);
         Console.WriteLine("Preference saved.");
     }
-    public void PrintHospitalSurveys()
+    public void PrintHospitalSurveys(List<HospitalSurvey> surveys)
     {
-        var allHospital = _hospital.HospitalSurveyService.GetAll().ToList();
-        if (allHospital.Count == 0)
+        if (surveys.Count == 0)
         {
             System.Console.WriteLine("No hospital surveys found.");
             return;
         }
-        for (int i=0; i<allHospital.Count; ++i)
+        for (int i=0; i<surveys.Count; ++i)
         {
-            System.Console.WriteLine(i + " - " + allHospital[i].Title);
+            System.Console.WriteLine(i + " - " + surveys[i].Title);
         }
     }
 
@@ -1182,8 +1181,8 @@ public class PatientUI : UserUI
 
     public void RateHospital()
     {
-       PrintHospitalSurveys();
-       var surveys = _hospital.HospitalSurveyService.GetAll().ToList();
+       List<HospitalSurvey> surveys = _hospital.HospitalSurveyService.GetUnansweredBy(_loggedInPatient).ToList();
+       PrintHospitalSurveys(surveys);
        if (surveys.Count == 0)
        {
             return;
