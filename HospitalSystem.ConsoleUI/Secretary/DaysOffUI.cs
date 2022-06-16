@@ -1,15 +1,11 @@
 using HospitalSystem.Core;
-using MongoDB.Bson;
-using MongoDB.Bson.IO;
 using MongoDB.Driver;
-using System.Globalization;
 using HospitalSystem.Core.Medications.Requests;
 
 namespace HospitalSystem.ConsoleUI;
 
 public class DaysOffUI : HospitalClientUI
 {
-
     public DaysOffUI(Hospital hospital) : base(hospital){}
 
     public override void Start()
@@ -68,7 +64,6 @@ public class DaysOffUI : HospitalClientUI
         _hospital.DaysOffRequestService.UpdateStatus(request, status);
         _hospital.DaysOffRequestService.UpdateExplanation(request, explanation);
         
-
         System.Console.Write("Press anything to continue.");
     }
 
@@ -88,10 +83,6 @@ public class DaysOffUI : HospitalClientUI
     {
         System.Console.Write("Enter request number: ");
         var number = ReadInt(0, daysOffRequests.Count()-1);
-        // if(number < 0 || number >= daysOffRequests.Count())
-        // {
-        //     throw new InvalidInputException("Number is out of range");
-        // }
         return daysOffRequests[number];
     }
 
@@ -119,4 +110,3 @@ public class DaysOffUI : HospitalClientUI
         return explenation;
     }
 }
-

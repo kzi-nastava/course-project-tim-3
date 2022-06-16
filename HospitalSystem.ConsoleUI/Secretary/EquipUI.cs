@@ -43,20 +43,18 @@ public class EquipUI : HospitalClientUI
                 else
                 {
                     System.Console.Write("Unrecognized option. Intput anything to continue >> ");
-                    ReadSanitizedLine();
                 }
                 
             }
             catch (InvalidInputException e)
             {
                 System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
             }
             catch (FormatException e)
             {
                 System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
             }
+            ReadSanitizedLine();
         }
     }
     
@@ -82,7 +80,6 @@ public class EquipUI : HospitalClientUI
         var order = new EquipmentOrder(emptyEquipments[number].Name, ammount, type, dateTime, location);
         _hospital.EquipmentOrderService.Schedule(order);
         System.Console.Write("Successfully ordered equipment. Press anything to continue.");
-        ReadSanitizedLine();
     }
 
     public int EnterEquipmentNumber(List<EquipmentAmount> emptyEquipments)
@@ -169,7 +166,6 @@ public class EquipUI : HospitalClientUI
         var relocation = new EquipmentRelocation(name, count, EquipmentType.OPERATION, endTime, fromLocation, toLocation);
         _hospital.RelocationService.Schedule(relocation);
         System.Console.Write("Successfully ordered equipment. Press anything to continue.");
-        ReadSanitizedLine();
     }
 
     public string EnterLocation(List<EquipmentBatch> equipments)
@@ -232,4 +228,3 @@ public class EquipUI : HospitalClientUI
         System.Console.WriteLine("|__________|___________|_______|");
     }
 }
-
