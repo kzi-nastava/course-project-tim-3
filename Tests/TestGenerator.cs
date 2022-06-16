@@ -142,9 +142,9 @@ public static class TestGenerator
             User user;
             if (i % 4 == 0)
             {
-                var director = new Director("name" + i, "surname" + i);
+                var director = new Person("name" + i, "surname" + i);
                 user = new User("a" + i, "a" + i, director, Role.DIRECTOR);
-                hospital.DirectorRepo.AddOrUpdateDirector(director);
+                hospital.PersonRepo.Insert(director);
             }
             else if (i % 4 == 1)
             {
@@ -164,9 +164,9 @@ public static class TestGenerator
             }  
             else
             {
-                var secretary = new Secretary("name" + i, "surname" + i);
+                var secretary = new Person("name" + i, "surname" + i);
                 user = new User("a" + i, "a" + i, secretary, Role.SECRETARY);
-                hospital.SecretaryRepo.AddOrUpdateSecretary(secretary);
+                hospital.PersonRepo.Insert(secretary);
             }
             hospital.UserService.Upsert(user);                
         }

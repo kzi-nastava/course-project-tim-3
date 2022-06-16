@@ -9,7 +9,7 @@ public record RatedDoctorId(ObjectId Id, double? Average, int Count);
 public class DoctorSurvey : Survey
 {
     [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
-    public  Dictionary<ObjectId, List<SurveyResponse>> Responses { get; set; }
+    public  Dictionary<ObjectId, List<SurveyResponse>> Responses { get; set; }  // TODO: naming?
 
     public DoctorSurvey(List<string> questions, List<string> ratingQuestions, string title)
         : base(questions, ratingQuestions, title)
