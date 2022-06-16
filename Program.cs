@@ -1,5 +1,6 @@
 ﻿using HospitalSystem.Core;
 using HospitalSystem.ConsoleUI;
+using HospitalSystem.Tests;
 
 public class Program
 {
