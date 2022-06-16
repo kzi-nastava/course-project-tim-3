@@ -80,4 +80,47 @@ public class SurveyService
             select new RatedDoctor(_doctorService.GetById(drIdRatings.Id), drIdRatings.Average,
                 drIdRatings.Count)).ToList();
     }
+
+    public List<DoctorSurvey> GetByDoctor(Doctor doctor)
+    {
+        List<DoctorSurvey> filtered = new();
+        var allDoctor = GetAllDoctor().ToList();
+
+        if (allDoctor == null){
+            return filtered;
+        }
+
+        foreach (var doctorSurvey in allDoctor)
+        {
+            if (doctorSurvey.Responses.ContainsKey(doctor.Id))
+            {
+                filtered.Add(doctorSurvey);
+            }
+        }
+        return filtered;
+
+    }
+
+    public double GetAverageRatingDoctor(Doctor doctor)
+    {   double sum = 0;
+        int count = 0;
+        var selectedSurveys = GetByDoctor(doctor);
+        foreach (var drSurvey in selectedSurveys)
+        {   
+            var agregatedRatings = drSurvey.AggregateRatingsFor(doctor).ToList();
+            foreach (var rating in agregatedRatings)
+            {
+                if (rating.Average != null){
+                    sum += (double)rating.Average;
+                    count++;
+                }
+            }
+        }
+
+        if (count==0)
+        {
+            return 10;
+        }
+        return sum/count;
+    }
 }

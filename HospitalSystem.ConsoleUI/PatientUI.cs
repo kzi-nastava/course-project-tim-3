@@ -818,7 +818,6 @@ public class PatientUI : UserUI
             }
         }
     }
-
     public void CreateCheckup(Doctor ?overrideDoctor = null)
     {
 
@@ -955,13 +954,13 @@ public class PatientUI : UserUI
         }
          else if (sortOption == "a")
         {
-            filteredDoctors.Sort((doctor1, doctor2)=>  _hospital.AppointmentService.GetAverageRating(doctor1).CompareTo(_hospital.AppointmentService.GetAverageRating(doctor2)));
+            filteredDoctors.Sort((doctor1, doctor2)=>  _hospital.SurveyService.GetAverageRatingDoctor(doctor1).CompareTo(_hospital.SurveyService.GetAverageRatingDoctor(doctor2)));
         }
 
         for (int i=0; i<filteredDoctors.Count; i++)
         {
             string rating = "no rating";
-            float averageRating = _hospital.AppointmentService.GetAverageRating(filteredDoctors[i]);
+            double averageRating = _hospital.SurveyService.GetAverageRatingDoctor(filteredDoctors[i]);
             if (averageRating != 10){
                 rating = averageRating + "/5";
             }
