@@ -80,7 +80,6 @@ public class EquipUI : HospitalClientUI
         var order = new EquipmentOrder(emptyEquipments[number].Name, ammount, type, dateTime, location);
         _hospital.EquipmentOrderService.Schedule(order);
         System.Console.Write("Successfully ordered equipment. Press anything to continue.");
-        ReadSanitizedLine();
     }
 
     public int EnterEquipmentNumber(List<EquipmentAmount> emptyEquipments)
@@ -167,7 +166,6 @@ public class EquipUI : HospitalClientUI
         var relocation = new EquipmentRelocation(name, count, EquipmentType.OPERATION, endTime, fromLocation, toLocation);
         _hospital.RelocationService.Schedule(relocation);
         System.Console.Write("Successfully ordered equipment. Press anything to continue.");
-        ReadSanitizedLine();
     }
 
     public string EnterLocation(List<EquipmentBatch> equipments)
