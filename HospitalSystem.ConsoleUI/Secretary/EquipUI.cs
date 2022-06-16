@@ -43,20 +43,18 @@ public class EquipUI : HospitalClientUI
                 else
                 {
                     System.Console.Write("Unrecognized option. Intput anything to continue >> ");
-                    ReadSanitizedLine();
                 }
                 
             }
             catch (InvalidInputException e)
             {
                 System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
             }
             catch (FormatException e)
             {
                 System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
             }
+            ReadSanitizedLine();
         }
     }
     
