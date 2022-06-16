@@ -999,13 +999,13 @@ public class PatientUI : UserUI
         }
          else if (sortOption == "a")
         {
-            filteredDoctors.Sort((doctor1, doctor2)=>  _hospital.SurveyService.GetAverageRatingDoctor(doctor1).CompareTo(_hospital.SurveyService.GetAverageRatingDoctor(doctor2)));
+            filteredDoctors.Sort((doctor1, doctor2)=>  _hospital.DoctorSurveyService.GetAverageRatingDoctor(doctor1).CompareTo(_hospital.DoctorSurveyService.GetAverageRatingDoctor(doctor2)));
         }
 
         for (int i=0; i<filteredDoctors.Count; i++)
         {
             string rating = "no rating";
-            double averageRating = _hospital.SurveyService.GetAverageRatingDoctor(filteredDoctors[i]);
+            double averageRating = _hospital.DoctorSurveyService.GetAverageRatingDoctor(filteredDoctors[i]);
             if (averageRating != 10){
                 rating = averageRating + "/5";
             }
@@ -1104,7 +1104,7 @@ public class PatientUI : UserUI
     }
     public void PrintHospitalSurveys()
     {
-        var allHospital = _hospital.SurveyService.GetAllHospital().ToList();
+        var allHospital = _hospital.HospitalSurveyService.GetAll().ToList();
         if (allHospital.Count == 0)
         {
             System.Console.WriteLine("No hospital surveys found.");
@@ -1174,16 +1174,16 @@ public class PatientUI : UserUI
 
         if (doctor is not null)
         {
-            _hospital.SurveyService.AddResponse((DoctorSurvey)survey,response,(Doctor)doctor);
+            _hospital.DoctorSurveyService.AddResponse((DoctorSurvey)survey,response,(Doctor)doctor);
             return;
         }
-        _hospital.SurveyService.AddResponse((HospitalSurvey)survey,response);
+        _hospital.HospitalSurveyService.AddResponse((HospitalSurvey)survey,response);
     }
 
     public void RateHospital()
     {
        PrintHospitalSurveys();
-       var surveys = _hospital.SurveyService.GetAllHospital().ToList();
+       var surveys = _hospital.HospitalSurveyService.GetAll().ToList();
        if (surveys.Count == 0)
        {
             return;
@@ -1205,7 +1205,7 @@ public class PatientUI : UserUI
 
     public void RateDoctor(Doctor doctor, Patient patient)
     {
-        var surveys = _hospital.SurveyService.GetSpecificDoctorUnansweredBy(patient,doctor).ToList();
+        var surveys = _hospital.DoctorSurveyService.GetSpecificDoctorUnansweredBy(patient,doctor).ToList();
         PrintDoctorSurveys(surveys);
         if (surveys.Count == 0)
         {

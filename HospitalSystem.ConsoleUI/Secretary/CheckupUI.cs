@@ -5,11 +5,9 @@ using MongoDB.Driver;
 using System.Globalization;
 
 namespace HospitalSystem.ConsoleUI;
-// namespace HospitalSystem.Core.Utils;
 
 public class CheckupUI : HospitalClientUI
 {
-
     public CheckupUI(Hospital hospital) : base(hospital){}
 
     public override void Start()
@@ -18,18 +16,18 @@ public class CheckupUI : HospitalClientUI
         {
             System.Console.Clear();
             System.Console.WriteLine("INPUT OPTIONS:");
-             System.Console.WriteLine("   1. View requests, change/delete-(vr)");
-             System.Console.WriteLine("   2. Create checkup-(cr)");
-             System.Console.WriteLine("   3. ");
-             System.Console.WriteLine("   4. Quit-(q)");
-             System.Console.WriteLine("   5. Exit-(x)");
+            System.Console.WriteLine("   1. View requests, change/delete-(vr)");
+            System.Console.WriteLine("   2. Create checkup-(cr)");
+            System.Console.WriteLine("   3. ");
+            System.Console.WriteLine("   4. Quit-(q)");
+            System.Console.WriteLine("   5. Exit-(x)");
             System.Console.Write(">> ");
             var choice = ReadSanitizedLine();
             try
             {
                 if (choice == "view requests" || choice == "vr")
                 {
-                    CheckRequests();
+                    ViewRequests();
                 }
                 else if (choice == "create checkup" || choice == "cr")
                 {
@@ -51,72 +49,75 @@ public class CheckupUI : HospitalClientUI
                 {
                     System.Console.WriteLine("Invalid input - read the available commands!");
                     System.Console.Write("Intput anything to continue >> ");
-                    ReadSanitizedLine();
                 }
             }
             catch (InvalidInputException e)
             {
                 System.Console.Write(e.Message + " Intput anything to continue >> ");
-                ReadSanitizedLine();
             }
             catch (FormatException e)
             {
                 System.Console.Write(e.Message + " Intput anything to continue >> ");
-                ReadSanitizedLine();
             }
+            ReadSanitizedLine();
         }
     }
 
-    public void CheckRequests()
+    public void ViewRequests()
     {
         System.Console.Clear();
         CheckupChangeRequestService cs = _hospital.CheckupChangeRequestService;
         List<CheckupChangeRequest> requests = cs.GetAll().ToList();
         requests.RemoveAll(u => u.RequestState != RequestState.PENDING);
-        
-        for(var i = 0; i < requests.Count; i++){
+
+        ShowRequests(requests);
+    
+        var indexId = EnterIndexId(requests);
+        var state = EnterState(requests);
+
+        System.Console.Write(requests[indexId].Checkup.DateRange.Starts.ToString());
+        var requestState = ReadSanitizedLine();
+
+
+        cs.UpdateRequest(requests[indexId], state);
+        System.Console.Write("Successfully filled a request. Press anything to continue: ");
+    }
+
+    public void ShowRequests(List<CheckupChangeRequest> requests)
+    {
+        for(var i = 0; i < requests.Count; i++)
+        {
             Patient pat = _hospital.PatientService.GetPatientById((ObjectId) requests[i].Checkup.Patient.Id);
             Doctor doc = _hospital.DoctorService.GetById((ObjectId) requests[i].Checkup.Doctor.Id);
 
             System.Console.WriteLine("Index ID: " + i);
-            System.Console.WriteLine("ID: " + requests[i].Id.ToString());
             System.Console.WriteLine("Patient: " +  pat.FirstName + " " + pat.LastName);
             System.Console.WriteLine("Doctor: " +  doc.FirstName + " " + doc.LastName);
             System.Console.WriteLine("Start time: " + requests[i].Checkup.DateRange.Starts);
             System.Console.WriteLine("End time: " + requests[i].Checkup.DateRange.Ends);
-            System.Console.WriteLine("RequestState: " + requests[i].RequestState);
             System.Console.WriteLine("--------------------------------------------------------------------");
             System.Console.WriteLine();
         }
-        
-        System.Console.Write("Enter id: ");
-        int indexId = ReadInt();
+    }
+    
+    public int EnterIndexId(List<CheckupChangeRequest> requests)
+    {
+        System.Console.Write("Enter index ID: ");
+        int indexId = ReadInt(0, requests.Count() - 1);
+        return indexId;
+    }
 
+    public RequestState EnterState(List<CheckupChangeRequest> requests)
+    {
         System.Console.Write("Enter state(approved, denied): ");
-        string stringState = ReadSanitizedLine();
+        var requestState = ReadSanitizedLine();
         
-        if(stringState != "approved" || stringState != "denied")
+        bool success = Enum.TryParse(requestState, true, out RequestState state);
+        if (!success)
         {
-             throw new InvalidInputException("Invalid input!");
+            throw new InvalidInputException("Not a valid state.");
         }
- 
-        if (stringState == "approved")
-        {
-            cs.UpdateRequest(indexId, RequestState.APPROVED);
-            System.Console.Write("Successfully approved request. Press anything to continue: ");
-            ReadSanitizedLine();
-        }
-        else if(stringState == "denied")
-        {
-            cs.UpdateRequest(indexId, RequestState.DENIED);
-            System.Console.Write("Successfully denied request. Press anything to continue: ");
-            ReadSanitizedLine();
-        }
-        else
-        {
-            System.Console.Write("Successfully denied request. Press anything to continue: ");
-            ReadSanitizedLine();
-        }
+        return state;
     }
 
     public void CreateCheckup(){
@@ -244,11 +245,7 @@ public class CheckupUI : HospitalClientUI
     public DateTime EnterAppointment(List<DateTime> allAppointments)
     {
         System.Console.Write("Enter appointment number: ");
-        var number = ReadInt();
-        if(number >= allAppointments.Count() || number < 0)
-        {
-            throw new InvalidInputException("Stock with that location does not exist!");
-        }
+        var number = ReadInt(0, allAppointments.Count()-1);
         return allAppointments[number];
     }
 }

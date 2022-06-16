@@ -9,7 +9,7 @@ public record RatedDoctorId(ObjectId Id, double? Average, int Count);
 public class DoctorSurvey : Survey
 {
     [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
-    public  Dictionary<ObjectId, List<SurveyResponse>> Responses { get; set; }
+    public  Dictionary<ObjectId, List<SurveyResponse>> Responses { get; set; }  // TODO: naming?
 
     [BsonConstructor]
     public DoctorSurvey(List<string> questions, List<string> ratingQuestions, string title)
@@ -41,19 +41,17 @@ public class DoctorSurvey : Survey
             select drResponse.Key).ToHashSet();
     }
 
-    // TODO: write best and worst in a better way, too similar functions
     public IEnumerable<RatedDoctorId> GetBestDoctorIds(int count)
     {
-        return
-            (from drResponse in Responses
-            orderby drResponse.Value.Average(response => response.Ratings.Average()) descending
-            select new RatedDoctorId(
-                drResponse.Key,
-                drResponse.Value.Average(response => response.Ratings.Average()),
-                drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null)))).Take(count);
+        return GetBestDoctorIds().Take(count);
     }
 
-    public IEnumerable<RatedDoctorId> GetWorstDoctorIds(int count)
+    private IEnumerable<RatedDoctorId> GetBestDoctorIds()
+    {
+        return GetWorstDoctorIds().Reverse();
+    }
+
+    private IEnumerable<RatedDoctorId> GetWorstDoctorIds()
     {
         return
             (from drResponse in Responses
@@ -61,6 +59,12 @@ public class DoctorSurvey : Survey
             select new RatedDoctorId(
                 drResponse.Key,
                 drResponse.Value.Average(response => response.Ratings.Average()),
-                drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null)))).Take(count);
+                drResponse.Value.Count(response => response.Ratings.Any(rating => rating != null))));
     }
+
+    public IEnumerable<RatedDoctorId> GetWorstDoctorIds(int count)
+    {
+        return GetWorstDoctorIds().Take(count);
+    }
+
 }
