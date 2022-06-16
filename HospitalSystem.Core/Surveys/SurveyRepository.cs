@@ -29,7 +29,7 @@ public class SurveyRepository : ISurveyRepository
 
     public void Replace(Survey replacement)
     {
-        GetMongoCollection().ReplaceOne(survey => survey.Id == replacement.Id, replacement);
+        GetMongoCollection().ReplaceOne(survey => survey.Title == replacement.Title, replacement);
     }
 
     public IQueryable<HospitalSurvey> GetAllHospital()

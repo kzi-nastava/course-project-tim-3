@@ -1,9 +1,12 @@
 namespace HospitalSystem.Core.Surveys;
+using MongoDB.Bson.Serialization.Attributes;
 
+[BsonIgnoreExtraElements]
 public class HospitalSurvey : Survey
 {
     public List<SurveyResponse> Responses { get; set; }
-
+    
+    [BsonConstructor]
     public HospitalSurvey(List<string> questions, List<string> ratingQuestions, string title)
         : base(questions, ratingQuestions, title)
     {

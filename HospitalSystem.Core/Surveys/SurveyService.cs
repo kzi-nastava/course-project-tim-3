@@ -63,6 +63,23 @@ public class SurveyService
                 notAnsweredSurveyDoctors.Item2.Select(id => _doctorService.GetById(id)));
     }
 
+    public List<DoctorSurvey> GetSpecificDoctorUnansweredBy(Patient pat, Doctor doc)
+    {
+        var allUnanswered = GetDoctorUnansweredBy(pat).ToList();
+        List<DoctorSurvey> filteredUnanswered = new();
+        foreach (var pair in allUnanswered)
+        {
+            foreach( var doctor in pair.Item2.ToList())
+            {
+                if (doctor.Id == doc.Id)
+                {
+                    filteredUnanswered.Add(pair.Item1);
+                }
+            }
+        }
+        return filteredUnanswered;
+    }
+
     public IList<RatedDoctor> GetBestDoctors(DoctorSurvey survey, int count = 3)
     {
         return 

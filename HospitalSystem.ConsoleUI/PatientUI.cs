@@ -2,6 +2,7 @@ using System.Globalization;
 using MongoDB.Bson;
 using HospitalSystem.Core.Utils;
 using HospitalSystem.Core;
+using HospitalSystem.Core.Surveys;
 
 namespace HospitalSystem.ConsoleUI;
 
@@ -53,6 +54,7 @@ public class PatientUI : UserUI
             vm - view medical record
             sd - search doctors
             mn - manage notifications
+            ts - take surveys
             exit - quit the program
 
             ");
@@ -75,6 +77,10 @@ public class PatientUI : UserUI
                 else if (selectedOption == "mn")
                 {
                     ManageNotifications();
+                }
+                else if (selectedOption == "ts")
+                {
+                    RateHospital();
                 }
                 else if (selectedOption == "exit")
                 {
@@ -313,10 +319,16 @@ public class PatientUI : UserUI
     {
         ShowCheckups(AppointmentInTime.PAST);
         List<Checkup> pastCheckups = _hospital.AppointmentService.GetPastCheckupsByPatient(_loggedInPatient.Id);
+        if (pastCheckups.Count == 0)
+        {
+            System.Console.WriteLine("No checkups found.");
+            return;
+        }
+
         int selectedIndex;
         try
         {
-            System.Console.Write("To view checkup anamnesis please enter a number from the list: ");
+            System.Console.Write("Please enter a number from the list: ");
             selectedIndex = ReadInt(0, pastCheckups.Count-1);
         }
         catch (InvalidInputException e)
@@ -324,10 +336,43 @@ public class PatientUI : UserUI
             System.Console.Write(e.Message + " Aborting...");
             throw new QuitToMainMenuException("Wrong input");
         }
-
         Checkup selectedCheckup = pastCheckups[selectedIndex];
-        Console.WriteLine("Anamnesis: "+ selectedCheckup.Anamnesis);
 
+        System.Console.WriteLine(@"
+        Commands:
+        a - show anamnesis
+        r - rate doctor
+        return - go to the previous menu
+        ");
+
+        string selectedOption = ReadSanitizedLine().Trim();
+
+        try
+        {
+            if (selectedOption == "a")
+            {
+                Console.WriteLine("Anamnesis: "+ selectedCheckup.Anamnesis);
+            }
+            else if (selectedOption == "r")
+            {
+                Doctor doctor = _hospital.DoctorService.GetById((ObjectId)selectedCheckup.Doctor.Id);
+                RateDoctor(doctor, _loggedInPatient);
+            }
+            else if (selectedOption == "return")
+            {
+                Console.WriteLine("Returning...\n");
+                return;
+            }
+            else
+            {
+                Console.WriteLine("Unrecognized command, please try again");
+            }
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message);
+            return;
+        }
     }
 
     public Checkup SelectCheckup ()
@@ -1057,5 +1102,130 @@ public class PatientUI : UserUI
         _hospital.PatientService.AddOrUpdatePatient(_loggedInPatient);
         Console.WriteLine("Preference saved.");
     }
+    public void PrintHospitalSurveys()
+    {
+        var allHospital = _hospital.SurveyService.GetAllHospital().ToList();
+        if (allHospital.Count == 0)
+        {
+            System.Console.WriteLine("No hospital surveys found.");
+            return;
+        }
+        for (int i=0; i<allHospital.Count; ++i)
+        {
+            System.Console.WriteLine(i + " - " + allHospital[i].Title);
+        }
+    }
+
+    public void PrintDoctorSurveys(List<DoctorSurvey> surveys)
+    {
+        if (surveys.Count == 0)
+        {
+            System.Console.WriteLine("No unanswered surveys for selected doctor were found.");
+            return;
+        }
+        for (int i=0; i<surveys.Count; ++i)
+        {
+            System.Console.WriteLine(i + " - " + surveys[i].Title);
+        }
+    }
+
+    List<string?> AnswerQuestions(Survey survey)
+    {
+        List<string?> answers = new();
+        foreach( var question in survey.Questions)
+        {
+            System.Console.WriteLine(question);
+            string answer = ReadSanitizedLine();
+            answers.Add(answer);
+        }
+        return answers;
+    }
+
+     List<int?> AnswerRatingQuestions(Survey survey)
+    {
+        List<int?> ratings = new();
+        foreach( var ratingQuestion in survey.RatingQuestions)
+        {
+            System.Console.WriteLine(ratingQuestion);
+            int rating;
+            while (true)
+            {
+                System.Console.Write("Please enter a rating between 1 and 5: ");
+                try
+                {
+                    rating = ReadInt(1, 5);
+                    break;
+                }
+                catch (InvalidInputException e)
+                {
+                    System.Console.WriteLine(e.Message + " Please try again.");
+                }
+            }
+            ratings.Add(rating);
+        }
+        return ratings;
+    }
+
+     public void CompleteSurvey(Survey survey,Doctor? doctor = null)
+    {
+        List<string?> answers = AnswerQuestions(survey);
+        List<int?> ratings = AnswerRatingQuestions(survey);
+        SurveyResponse response = new(answers,ratings,_loggedInPatient.Id);
+
+        if (doctor is not null)
+        {
+            _hospital.SurveyService.AddResponse((DoctorSurvey)survey,response,(Doctor)doctor);
+            return;
+        }
+        _hospital.SurveyService.AddResponse((HospitalSurvey)survey,response);
+    }
+
+    public void RateHospital()
+    {
+       PrintHospitalSurveys();
+       var surveys = _hospital.SurveyService.GetAllHospital().ToList();
+       if (surveys.Count == 0)
+       {
+            return;
+       }
+       System.Console.Write("Please enter a number from a list: ");
+       int selectedIndex;
+       try
+        {
+            selectedIndex = ReadInt(0, surveys.Count-1);
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
+            return;
+        }
+        CompleteSurvey(surveys[selectedIndex]);
+        System.Console.WriteLine("Survey completed.");
+    }
+
+    public void RateDoctor(Doctor doctor, Patient patient)
+    {
+        var surveys = _hospital.SurveyService.GetSpecificDoctorUnansweredBy(patient,doctor).ToList();
+        PrintDoctorSurveys(surveys);
+        if (surveys.Count == 0)
+        {
+                return;
+        }
+        System.Console.Write("Please enter a number from a list: ");
+        int selectedIndex;
+        try
+        {
+            selectedIndex = ReadInt(0, surveys.Count-1);
+        }
+        catch (InvalidInputException e)
+        {
+            System.Console.Write(e.Message + " Aborting...");
+            return;
+        }
+
+        CompleteSurvey(surveys[selectedIndex],doctor);
+        System.Console.WriteLine("Survey completed.");
+    }
 }
+
 
