@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
+using HospitalSystem.Core.Medications;
 
 namespace HospitalSystem.Core;
 
@@ -53,46 +54,39 @@ public class PatientService
     {
         CheckupChangeLog log = new CheckupChangeLog(DateTime.Now,crudOperation);
         patient.CheckupChangeLogs.Add(log);
-        _repo.AddOrUpdatePatient(patient);
+        _repo.Upsert(patient);
     }
 
-    public IMongoCollection<Patient> GetPatients()
+    public IQueryable<Patient> GetAll()
     {
-        return _repo.GetPatients();
+        return _repo.GetAll();
     }
-    public void AddOrUpdatePatient(Patient patient)
+    public void Upsert(Patient patient)
     {
-        _repo.AddOrUpdatePatient(patient);
+        _repo.Upsert(patient);
     }
     public void AddPrescription(Medication medication, int amount, MedicationBestTaken bestTaken, int hours, Patient patient)
     {
-        if (patient.IsAllergicToMedication(medication)) 
-        {
-            Console.WriteLine("Patient is allergic to given Medication. Cancelling prescription.");
-        }
-        else
-        {
-            Prescription prescription = new Prescription(medication, amount, bestTaken, hours);
-            patient.MedicalRecord.Prescriptions.Add(prescription);
-            _repo.AddOrUpdatePatient(patient);
-        }  
+        Prescription prescription = new Prescription(medication, amount, bestTaken, hours);
+        patient.MedicalRecord.Prescriptions.Add(prescription);
+        _repo.Upsert(patient);
     }
 
     public void AddReferral(Patient patient, Doctor doctor)
     {
         Referral referral = new Referral(new MongoDBRef("patients", patient.Id), new MongoDBRef("doctors", doctor.Id));
         patient.MedicalRecord.Referrals.Add(referral);
-        _repo.AddOrUpdatePatient(patient);
+        _repo.Upsert(patient);
         Console.WriteLine("\nReferral succesfully added");
     }
 
-    public Patient GetPatientByFullName(string firstName, string lastName)
+    public Patient GetByFullName(string firstName, string lastName)
     {
-        return _repo.GetPatientByFullName(firstName,lastName);
+        return _repo.GetByFullName(firstName,lastName);
     }
-    public Patient GetPatientById(ObjectId id)
+    public Patient GetById(ObjectId id)
     {
-        return _repo.GetPatientById(id);
+        return _repo.GetById(id);
     }
 
     public List<DateTime> GetAllTimesForMedicine (Prescription prescription)

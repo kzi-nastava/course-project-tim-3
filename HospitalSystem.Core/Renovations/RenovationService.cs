@@ -1,6 +1,9 @@
 using HospitalSystem.Core.Utils;
+using HospitalSystem.Core.Rooms;
+using HospitalSystem.Core.Scheduler;
+using HospitalSystem.Core.Equipment.Relocations;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Renovations;
 
 [System.Serializable]
 public class RenovationException : System.Exception
@@ -18,22 +21,22 @@ public class RenovationService
     private IRenovationRepository _repo;
     private RoomService _roomService;
     private EquipmentRelocationService _relocationService;
-    private AppointmentService _appointmentService;
+    private ScheduleService _scheduleService;
 
     public RenovationService(IRenovationRepository repo, RoomService roomService,
-        EquipmentRelocationService relocationService, AppointmentService appointmentService)
+        EquipmentRelocationService relocationService, ScheduleService scheduleService)
     {
         _repo = repo;
         _roomService = roomService;
         _relocationService = relocationService;
-        _appointmentService = appointmentService;
+        _scheduleService = scheduleService;
     }
 
     public void Schedule(Renovation renovation, IList<Room> newRooms)
     {
         foreach (var loc in renovation.OldLocations)
         {
-            if (!_appointmentService.IsRoomAvailableForRenovation(loc, renovation.BusyRange.Starts))
+            if (!_scheduleService.IsRoomAvailableForRenovation(loc, renovation.BusyRange.Starts))
             {  
                 throw new RenovationException("Room " + loc + " has appointments scheduled, can't renovate.");
             }

@@ -1,3 +1,5 @@
+using HospitalSystem.Core.Medications;
+
 namespace HospitalSystem.Core
 {
     public enum MedicationBestTaken

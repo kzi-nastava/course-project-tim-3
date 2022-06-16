@@ -1,4 +1,4 @@
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Renovations;
 
 public interface IRenovationRepository
 {

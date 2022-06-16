@@ -5,7 +5,6 @@ namespace HospitalSystem.ConsoleUI;
 
 public class CrudUI : HospitalClientUI
 {
-
     public CrudUI(Hospital hospital) : base(hospital){}
 
     public override void Start()
@@ -68,19 +67,17 @@ public class CrudUI : HospitalClientUI
                 {
                     System.Console.WriteLine("Invalit input - read the available commands!");
                     System.Console.Write("Input anything to continue >> ");
-                    ReadSanitizedLine();
                 }
             }
             catch (InvalidInputException e)
             {
                 System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
             }
             catch (FormatException e)
             {
                 System.Console.Write(e.Message + " Input anything to continue >> ");
-                ReadSanitizedLine();
             }
+            ReadSanitizedLine();
         }
     }
 
@@ -133,13 +130,11 @@ public class CrudUI : HospitalClientUI
         string lastName = ReadSanitizedLine();
 
         Patient patient = new Patient(email, lastName, new MedicalRecord());
-        _hospital.PatientService.AddOrUpdatePatient(patient);
+        _hospital.PatientService.Upsert(patient);
         us.Upsert(new User(email, password,patient,Role.PATIENT));
 
         System.Console.Write("Successfuly created a user. Type anything to get back to menu: ");
-        ReadSanitizedLine();
     }
-
     
     public void ViewPatientAccount()
     {
@@ -150,7 +145,7 @@ public class CrudUI : HospitalClientUI
         string email = EnterEmail(us);
 
         var user = us.Get(email);
-        Patient pat = _hospital.PatientService.GetPatientById((ObjectId) user.Person.Id);
+        Patient pat = _hospital.PatientService.GetById((ObjectId) user.Person.Id);
 
         System.Console.WriteLine("Email : " + user.Email.ToString());
         System.Console.WriteLine("Password : " + user.Password.ToString());
@@ -158,7 +153,6 @@ public class CrudUI : HospitalClientUI
         System.Console.WriteLine("Last Name : " + pat.LastName);
 
         System.Console.Write("\nType anything to get to menu: ");
-        ReadSanitizedLine();
     }
 
     public void UpdatePatientAccount()
@@ -181,6 +175,7 @@ public class CrudUI : HospitalClientUI
         {
             throw new InvalidInputException("Invalid input");
         }
+        System.Console.Write("\nnSuccessfuly updated. Type anything to get to menu: ");
     }
 
     public void DeletePatientAccount()
@@ -192,6 +187,7 @@ public class CrudUI : HospitalClientUI
         string email = EnterEmail(us);
 
         us.Delete(email);
+        System.Console.Write("\nSuccessfuly deleted. Type anything to get to menu: ");
     }
 
     public void BlockPatientAccount()
@@ -203,6 +199,7 @@ public class CrudUI : HospitalClientUI
         string email = EnterEmail(us);
 
         us.BlockPatient(email);
+        System.Console.Write("\nSuccessfuly blocked. Type anything to get to menu: ");
     }
 
     public void BlockedPatientAccounts()
@@ -212,8 +209,9 @@ public class CrudUI : HospitalClientUI
         List<User> blockedUsers = us.GetAllBlocked().ToList();
 
         System.Console.WriteLine("Blocked users: ");
-        foreach(var blockedUser in blockedUsers){
-            Patient pat = _hospital.PatientService.GetPatientById((ObjectId) blockedUser.Person.Id);
+        foreach(var blockedUser in blockedUsers)
+        {
+            Patient pat = _hospital.PatientService.GetById((ObjectId) blockedUser.Person.Id);
             System.Console.WriteLine(" << User: " + pat.FirstName.ToString() + " " + pat.LastName.ToString() + ", Email: " + blockedUser.Email.ToString() + " >> ");
         }
 
@@ -221,5 +219,6 @@ public class CrudUI : HospitalClientUI
         string email = EnterEmail(us);
 
         us.UnblockPatient(email);
+        System.Console.Write("\nSuccessfuly unblocked. Type anything to get to menu: ");
     }
 }

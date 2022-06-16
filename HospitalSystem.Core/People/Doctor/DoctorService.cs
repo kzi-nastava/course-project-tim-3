@@ -17,72 +17,59 @@ public class DoctorService
         return _doctorRepo.GetAll();
     }
 
+    public void Upsert(Doctor newDoctor)
+    {
+        _doctorRepo.Upsert(newDoctor);
+    }
+
     public List<Doctor> GetManyBySpecialty(Specialty specialty)
     {
-        var doctors = _doctorRepo.GetAll();
-            var specizedDoctors =
-                from doctor in doctors.AsQueryable<Doctor>()
-                where doctor.Specialty == specialty
-                select doctor;
-
-            return specizedDoctors.ToList();
+        return _doctorRepo.GetManyBySpecialty(specialty);
     }
 
     public List<Doctor> GetManyBySpecialty(string keyword)
     {
-        var doctors = GetAll();
-        var allDoctors =
-            from doctor in doctors.AsQueryable<Doctor>()
-            select doctor;
-
-        List<Doctor> filteredDoctors = allDoctors.ToList().FindAll(doctor => doctor.Specialty.ToString().Contains(keyword.ToUpper()));
-        return filteredDoctors;
+        return _doctorRepo.GetManyBySpecialty(keyword);
     }
 
     public List<Doctor> GetManyByName(string keyword)
     {
-        var doctors = GetAll();
-        var allDoctors =
-            from doctor in doctors.AsQueryable<Doctor>()
-            select doctor;
-
-        return allDoctors.ToList().FindAll(doctor => doctor.FirstName.Contains(keyword));
+        return _doctorRepo.GetManyByName(keyword);
     }
 
     public List<Doctor> GetManyByLastName(string keyword)
     {
-        var doctors = GetAll();
-        var allDoctors =
-            from doctor in doctors.AsQueryable<Doctor>()
-            select doctor;
-
-        List<Doctor> filteredDoctors = allDoctors.ToList().FindAll(doctor => doctor.LastName.Contains(keyword));
-        return filteredDoctors;
+        return _doctorRepo.GetManyByLastName(keyword);
     }
 
     public Doctor GetOneBySpecialty(Specialty specialty)
     {
-        var doctors = _doctorRepo.GetAll();
-        var foundDoctor = doctors.Find(doctor => doctor.Specialty == specialty).FirstOrDefault();
-        return foundDoctor;
-    }
-
-    public void Upsert(Doctor doctor)
-    {
-        _doctorRepo.Upsert(doctor);
+        return _doctorRepo.GetOneBySpecialty(specialty);
     }
 
     public Doctor GetByFullName(string firstName, string lastName)
     {
-        var doctors = _doctorRepo.GetAll();
-        var foundDoctor = doctors.Find(doctor => doctor.FirstName == firstName && doctor.LastName == lastName).FirstOrDefault();
-        return foundDoctor;
+        return _doctorRepo.GetByFullName(firstName, lastName);
     }
 
     public Doctor GetById(ObjectId id)
     {
-        var doctors = _doctorRepo.GetAll();
-        var foundDoctor = doctors.Find(doctor => doctor.Id == id).FirstOrDefault();
-        return foundDoctor;
+        return _doctorRepo.GetById(id);
     }
+
+    
+    public int CompareCheckupsByDoctorsName(Checkup checkup1, Checkup checkup2)
+    {
+        string name1 = GetById((ObjectId)checkup1.Doctor.Id).FirstName;
+        string name2 = GetById((ObjectId)checkup2.Doctor.Id).FirstName;
+        return String.Compare(name1, name2);
+    }
+
+    public int CompareCheckupsByDoctorsSpecialty(Checkup checkup1, Checkup checkup2)
+    {
+        string specialty1 = GetById((ObjectId)checkup1.Doctor.Id).Specialty.ToString();
+        string specialty2 = GetById((ObjectId)checkup2.Doctor.Id).Specialty.ToString();
+        return String.Compare(specialty1, specialty2);
+    }
+
 }

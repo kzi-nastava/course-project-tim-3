@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Equipment;
 
 [System.Serializable]
 public class InvalidTokenException : System.Exception

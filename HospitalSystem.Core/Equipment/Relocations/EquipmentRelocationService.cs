@@ -1,6 +1,6 @@
 using HospitalSystem.Core.Utils;
 
-namespace HospitalSystem.Core;
+namespace HospitalSystem.Core.Equipment.Relocations;
 
 public class EquipmentRelocationService
 {

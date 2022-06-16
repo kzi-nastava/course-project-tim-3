@@ -1,4 +1,6 @@
 using HospitalSystem.Core;
+using HospitalSystem.ConsoleUI.Director;
+using HospitalSystem.ConsoleUI.DoctorUi;
 
 namespace HospitalSystem.ConsoleUI;
 
